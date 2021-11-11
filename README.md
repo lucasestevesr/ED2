@@ -16,4 +16,4 @@ Alunos:</br>
 
 ### Padrão de execução em linha de comando
 
-	"C:\diretório_do_executável\"> trabalho.exe <arquivo_entrada>
+	C:\diretório_do_executável\> trabalho.exe <arquivo_entrada>
