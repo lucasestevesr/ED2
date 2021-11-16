@@ -1,9 +1,6 @@
 #include "Review.h"
-#include <iostream>
 
-using namespace std;
-
-Review::Review(int id, int text, int upvotes, int app_version, int posted_date) {
+Review::Review(string id, string text, int upvotes, string app_version, string posted_date) {
     this->id = id;
     this->text = text;
     this->upvotes = upvotes;
@@ -13,19 +10,19 @@ Review::Review(int id, int text, int upvotes, int app_version, int posted_date) 
 
 Review::~Review() {};
 
-int Review::getId() {
+string Review::getId() {
     return this->id;
 }
 
-void Review::setId(int id) {
+void Review::setId(string id) {
     this->id = id;
 }
 
-int Review::getText() {
+string Review::getText() {
     return this->text;
 }
 
-void Review::setText(int text) {
+void Review::setText(string text) {
     this->text = text;
 }
 
@@ -37,18 +34,18 @@ void Review::setUpvotes(int upvotes) {
     this->upvotes = upvotes;
 }
 
-int Review::getAppVersion() {
+string Review::getAppVersion() {
     return this->app_version;
 }
 
-void Review::setAppVersion(int app_version) {
+void Review::setAppVersion(string app_version) {
     this->app_version = app_version;
 }
 
-int Review::getPostedDate() {
+string Review::getPostedDate() {
     return this->posted_date;
 }
 
-void Review::setPostedDate(int posted_date) {
+void Review::setPostedDate(string posted_date) {
     this->posted_date = posted_date;
 }
