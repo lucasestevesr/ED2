@@ -57,8 +57,61 @@ void mainMenu() {
     }
 }
 
+string* buscarColunas(string linha) {
+    string* colunas = new string[5];
+    int colunaAtual = 0;
+    string col = "";
+    char caractere;
+    bool entreAspas = false;
+    for(int i = 0; i < linha.size(); i++) {
+        caractere = linha[i];
+        if(caractere == '"' && !entreAspas) {
+            entreAspas = true;
+        }else if(caractere == '"' && entreAspas) {
+            entreAspas = false;
+        }
+        if(caractere == ',' && !entreAspas) {
+            colunas[colunaAtual] = col;
+            col = "";
+            colunaAtual++;
+        }else {
+            col += caractere;
+        }
+        if(colunaAtual == 4) {
+            for(int j = linha.size(); j > 0; j--) {
+                if(linha[j] == ',') {
+                    colunas[colunaAtual] = col;
+                    return colunas;
+                }
+                col = linha[j] + col;
+            }
+            break;
+        }
+    }
+    return colunas;
+}
+
 void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     cout << "Processando csv para bin..." << endl;
+    string linha = "";
+    string* colunas;
+    int qnt_linhas = 0;
+    getline(arquivo_csv, linha, '\n');
+    while (getline(arquivo_csv, linha, '\n')) {
+        colunas = buscarColunas(linha);
+        qnt_linhas++;
+//        cout << colunas[0] << endl;
+//        cout << colunas[1] << endl;
+//        cout << colunas[2] << endl;
+//        cout << colunas[3] << endl;
+//        cout << colunas[4] << endl;
+//        cout << "_________________________________________________________" << endl;
+        if(qnt_linhas > 3) {
+            break;
+        }
+    }
+    cout << "Foram processadas " << qnt_linhas << " registros." << endl;
+    cout << "Processamento finalizado!" << endl;
 }
 
 int main(int argc, char const *argv[]) {
@@ -70,7 +123,8 @@ int main(int argc, char const *argv[]) {
     ifstream arquivo_bin;
     arquivo_bin.open(argv[1] + nome_bin, ios::in);
 
-    if(arquivo_bin.is_open()) {
+//    if(arquivo_bin.is_open()) {
+    if(false) {
         mainMenu();
     } else {
         arquivo_bin.close();
