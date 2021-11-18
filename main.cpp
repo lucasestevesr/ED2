@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <cstring>
 #include "Review.h"
 
 using namespace std;
@@ -57,58 +59,62 @@ void mainMenu() {
     }
 }
 
-string* buscarColunas(string linha) {
-    string* colunas = new string[5];
-    int colunaAtual = 0;
-    string col = "";
-    char caractere;
-    bool entreAspas = false;
+bool buscarColunas(string linha, string* colunas, bool &entreAspas, int &colunaAtual) {
+    string dado = "";
     for(int i = 0; i < linha.size(); i++) {
-        caractere = linha[i];
-        if(caractere == '"' && !entreAspas) {
+        if(linha[i] == '"' && !entreAspas) {
             entreAspas = true;
-        }else if(caractere == '"' && entreAspas) {
+        }else if(linha[i] == '"' && entreAspas) {
             entreAspas = false;
         }
-        if(caractere == ',' && !entreAspas) {
-            colunas[colunaAtual] = col;
-            col = "";
+        if(linha[i] == ',' && !entreAspas) {
+            colunas[colunaAtual] += dado;
+            dado = "";
             colunaAtual++;
         }else {
-            col += caractere;
+            dado += linha[i];
         }
         if(colunaAtual == 4) {
+            dado = "";
             for(int j = linha.size(); j > 0; j--) {
                 if(linha[j] == ',') {
-                    colunas[colunaAtual] = col;
-                    return colunas;
+                    colunas[colunaAtual] += dado;
+                    return true;
                 }
-                col = linha[j] + col;
+                dado = linha[j] + dado;
             }
             break;
         }
+        if(i == linha.size() - 1) {
+            colunas[colunaAtual] += dado;
+            break;
+        }
     }
-    return colunas;
+    return false;
 }
 
 void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     cout << "Processando csv para bin..." << endl;
-    string linha = "";
-    string* colunas;
     int qnt_linhas = 0;
+    string linha = "";
+    int colunaAtual;
+    string* colunas;
+    bool entreAspas;
+    bool resposta;
     getline(arquivo_csv, linha, '\n');
     while (getline(arquivo_csv, linha, '\n')) {
-        colunas = buscarColunas(linha);
-        qnt_linhas++;
-//        cout << colunas[0] << endl;
-//        cout << colunas[1] << endl;
-//        cout << colunas[2] << endl;
-//        cout << colunas[3] << endl;
-//        cout << colunas[4] << endl;
-//        cout << "_________________________________________________________" << endl;
-        if(qnt_linhas > 3) {
-            break;
+        colunas = new string[5];
+        entreAspas = false;
+        colunaAtual = 0;
+        resposta = buscarColunas(linha, colunas, entreAspas, colunaAtual);
+        if(!resposta) {
+            do {
+                getline(arquivo_csv, linha, '\n');
+                resposta = buscarColunas(linha, colunas, entreAspas, colunaAtual);
+            }while(!resposta);
         }
+        qnt_linhas++;
+        delete [] colunas;
     }
     cout << "Foram processadas " << qnt_linhas << " registros." << endl;
     cout << "Processamento finalizado!" << endl;
