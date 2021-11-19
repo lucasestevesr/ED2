@@ -15,6 +15,7 @@ class Review {
 
     public:
         Review(string id, string text, int upvotes, string app_version, string posted_date);
+        Review();
         ~Review();
         string getId();
         void setId(string id);
@@ -26,6 +27,9 @@ class Review {
         void setAppVersion(string app_version);
         string getPostedDate();
         void setPostedDate(string posted_date);
+        void imprimir();
+
+        static Review* recuperarReviewPeloId(ifstream &arquivo_processado, int id);
 };
 
 #endif //ED2_REVIEW_H

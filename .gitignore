@@ -34,5 +34,6 @@
 # Add files
 *.idea
 *.csv
+*.bin
 CMakeLists.txt
 cmake-build-debug/
