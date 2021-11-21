@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const string nome_csv = "teste2.csv";
+const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
 
 int menu() {

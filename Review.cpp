@@ -104,15 +104,15 @@ Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
         rev->setPostedDate(textAux);
 
         if (count == id) {
+            auto end = std::chrono::high_resolution_clock::now();
+            auto int_s = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+            cout << "O tempo de execucao para busca do Id escolhido foi de " << std::to_string(int_s.count()) << " segundos." << endl;
             return rev;
         }
 
         count++;
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto int_s = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-    string tempo = "// Tempo de Execucao (Segundos)  = " + std::to_string(int_s.count()) + "\n";
     return nullptr;
 }
 
