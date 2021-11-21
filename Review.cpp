@@ -66,14 +66,46 @@ void Review::imprimir() {
 }
 
 Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
-    int contador = 1;
-    Review *review = new Review();
-//    arquivo_processado.read(reinterpret_cast<char *>(review), sizeof(Review));
-    while(arquivo_processado.read((char *)review, sizeof(Review))) {
-        if(contador == id) {
-            return review;
+    arquivo_processado.clear();
+    arquivo_processado.seekg(0, arquivo_processado.beg);
+    int count = 1;
+    Review *rev = new Review;
+    string textAux;
+    int idAux;
+    while (arquivo_processado.good()) {
+        string::size_type sz;
+        if(!arquivo_processado.read(reinterpret_cast<char*>(&sz), sizeof(string::size_type)))
+            break;
+        textAux.resize(sz);
+        arquivo_processado.read(&textAux[0], sz);
+        rev->setId(textAux);
+
+        string::size_type sz2;
+        arquivo_processado.read(reinterpret_cast<char*>(&sz2), sizeof(string::size_type));
+        textAux.resize(sz2);
+        arquivo_processado.read(&textAux[0], sz2);
+        rev->setText(textAux);
+
+        arquivo_processado.read(reinterpret_cast<char*>(&idAux), sizeof(int));
+        rev->setUpvotes(idAux);
+
+        string::size_type sz3;
+        arquivo_processado.read(reinterpret_cast<char*>(&sz3), sizeof(string::size_type));
+        textAux.resize(sz3);
+        arquivo_processado.read(&textAux[0], sz3);
+        rev->setAppVersion(textAux);
+
+        string::size_type sz4;
+        arquivo_processado.read(reinterpret_cast<char*>(&sz4), sizeof(string::size_type));
+        textAux.resize(sz4);
+        arquivo_processado.read(&textAux[0], sz4);
+        rev->setPostedDate(textAux);
+
+        if(count == id) {
+            return rev;
         }
-        contador++;
+
+        count++;
     }
     return nullptr;
 }
