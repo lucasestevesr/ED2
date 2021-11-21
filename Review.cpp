@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "Review.h"
+#include <chrono>
 
 using namespace std;
 
@@ -65,7 +66,8 @@ void Review::imprimir() {
     cout << "--------------------------------------------------------------------------" << endl;
 }
 
-Review *Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
+Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
+    auto start = std::chrono::high_resolution_clock::now();
     arquivo_processado.clear();
     arquivo_processado.seekg(0, arquivo_processado.beg);
     int count = 1;
@@ -107,6 +109,10 @@ Review *Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
 
         count++;
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto int_s = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+    string tempo = "// Tempo de Execucao (Segundos)  = " + std::to_string(int_s.count()) + "\n";
     return nullptr;
 }
 

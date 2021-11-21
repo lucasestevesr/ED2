@@ -2,10 +2,11 @@
 #include <fstream>
 #include <string>
 #include "Review.h"
+#include <chrono>
 
 using namespace std;
 
-const string nome_csv = "tiktok_app_reviews2.csv";
+const string nome_csv = "teste2.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
 
 int menu() {
@@ -105,6 +106,7 @@ void salvarString(ofstream &arquivo_bin, string valor) {
 }
 
 void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
+    auto start = std::chrono::high_resolution_clock::now();
     cout << "Processando csv para bin..." << endl;
     int qnt_linhas = 0;
     string linha = "";
@@ -145,6 +147,9 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
         }
     }
     arquivo_bin.close();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto int_s = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+    cout << "O tempo de execucao do processamento de csv para bin. foi de " << std::to_string(int_s.count()) << " segundos." << endl;
     cout << "Foram processadas " << qnt_linhas << " registros." << endl;
     cout << "Processamento finalizado!" << endl;
 }
