@@ -10,10 +10,21 @@ Alunos:</br>
 
 
 
-### Padrão de compilação em linha de comando
+### Instalação
+• Clone o repositório
 
-	g++ *.cpp -o trabalho
+	git clone https://github.com/lucasestevesr/ED2.git
+	
+• Download da base de dados
 
-### Padrão de execução em linha de comando
+	https://www.kaggle.com/shivamb/35-million-tiktok-mobile-app-reviews
 
-	C:\diretório_do_executável\> trabalho.exe <arquivo_entrada>
+### Compilação
+
+	g++ *.cpp *.h -o trabalho
+
+### Execução
+
+	C:\diretório_do_executável\> trabalho.exe /diretorio/
+
+##### OBS: /diretorio/ é o caminho da pasta em que se encontra o arquivo CSV, será gerado o arquivo BIN e será gerado o arquivo de saída.
