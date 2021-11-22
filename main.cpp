@@ -150,32 +150,50 @@ void mainMenu(ifstream &arquivo_processado, string diretorio) {
     }
 }
 
+// Início função Buscar Colunas
 bool buscarColunas(string linha, string *colunas, bool &entreAspas, int &colunaAtual) {
+    // String aux para o dado atual que tiver lendo
     string dado = "";
+    // Percorre caracter por caracter da linha
     for (int i = 0; i < linha.size(); i++) {
+        // Se encontrar uma " e não tiver entre aspas, define a variavel entre aspas como true
         if (linha[i] == '"' && !entreAspas) {
             entreAspas = true;
         } else if (linha[i] == '"' && entreAspas) {
+            // Se encontrar uma " e tiver entre aspas, define a variavel entre aspas como false
             entreAspas = false;
         }
+        // Se encontrar uma vírgula e ela não tiver entre aspas chegou no final da coluna
         if (linha[i] == ',' && !entreAspas) {
+            // Armazena o dado na coluna atual
             colunas[colunaAtual] += dado;
+            // Limpa o dado
             dado = "";
+            // Incrementa a coluna atual
             colunaAtual++;
         } else {
+            // Vai alimentando a variavel dado com os caracteres
             dado += linha[i];
         }
+        // Se tiver na última coluna
         if (colunaAtual == 4) {
+            // Limpa a variavel dado
             dado = "";
+            // Começa percorrer a linha de trás pra frente pra pegar a ultima coluna
             for (int j = linha.size(); j > 0; j--) {
+                // Se achar a vírgula chegou no final
                 if (linha[j] == ',') {
                     colunas[colunaAtual] += dado;
+                    // Retorna que acabou de ler o registro
                     return true;
                 }
+                // Incrementa o dado
                 dado = linha[j] + dado;
             }
             break;
         }
+        // Se chegar no final da linha e ainda não terminou o registro.
+        // Volta para a função processar e pega a proxima linha
         if (i == linha.size() - 1) {
             colunas[colunaAtual] += dado;
             break;
@@ -183,6 +201,7 @@ bool buscarColunas(string linha, string *colunas, bool &entreAspas, int &colunaA
     }
     return false;
 }
+// Fim função Buscar Colunas
 
 void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     // iniciando a marcação do tempo
