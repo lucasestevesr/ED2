@@ -56,7 +56,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
                 int n = 10;
                 int intAleatorio;
                 for(int i = 0; i < n; i++) {
-                    intAleatorio = rand()%total;
+                    intAleatorio = rand()%(total) + 1;
                     cout << "Review ID = " << intAleatorio << " abaixo:" << endl;
                     Review *review = Review::recuperarReviewPeloId(arquivo_processado, intAleatorio);
                     if (review != nullptr) {
@@ -77,7 +77,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
                 arquivo_txt << "Contêm " << n << " reviews neste arquivo." << endl << endl;
                 int intAleatorio;
                 for(int i = 0; i < n; i++) {
-                    intAleatorio = rand()%total;
+                    intAleatorio = rand()%(total) + 1;
                     Review *review = Review::recuperarReviewPeloId(arquivo_processado, intAleatorio);
                     if (review != nullptr) {
                         arquivo_txt << "Index: " << intAleatorio << endl;
