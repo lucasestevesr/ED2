@@ -58,59 +58,74 @@ void Review::setPostedDate(string posted_date) {
 }
 
 void Review::imprimir() {
+    cout << "-----------------------------------------------------------------------------------------" << endl;
     cout << this->id << endl;
     cout << this->text << endl;
     cout << this->upvotes << endl;
     cout << this->app_version << endl;
     cout << this->posted_date << endl;
-    cout << "--------------------------------------------------------------------------" << endl;
+    cout << "-----------------------------------------------------------------------------------------" << endl;
+}
+
+void Review::salvarString(ofstream &arquivo_bin, string valor) {
+    size_t tamanho = valor.size();
+    arquivo_bin.write((char *) &tamanho, sizeof(tamanho));
+    arquivo_bin.write(valor.c_str(), tamanho);
+}
+
+void Review::salvarReview(ofstream &arquivo_bin) {
+    salvarString(arquivo_bin, this->id);
+    salvarString(arquivo_bin, this->text);
+    arquivo_bin.write((char *) &this->upvotes, sizeof(int));
+    salvarString(arquivo_bin, this->app_version);
+    salvarString(arquivo_bin, this->posted_date);
+}
+
+int Review::recuperarQuantidadeReviews(ifstream &arquivo_processado) {
+    int quantidade = 0;
+    int posicao = sizeof(int) * -1;
+    arquivo_processado.clear();
+    arquivo_processado.seekg(posicao, arquivo_processado.end);
+    arquivo_processado.read((char *) &quantidade, sizeof(int));
+
+    return quantidade;
+}
+
+string Review::recuperarString(ifstream &arquivo_processado) {
+    string texto;
+    string::size_type tamanho;
+    arquivo_processado.read((char *) &tamanho, sizeof(tamanho));
+    texto.resize(tamanho);
+    arquivo_processado.read(&texto[0], tamanho);
+
+    return texto;
 }
 
 Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
-    auto start = std::chrono::high_resolution_clock::now();
+    int intAux;
+    int idAtual = 1;
+    Review *review = new Review();
+    int total = Review::recuperarQuantidadeReviews(arquivo_processado);
+
     arquivo_processado.clear();
     arquivo_processado.seekg(0, arquivo_processado.beg);
-    int count = 1;
-    Review *rev = new Review;
-    string textAux;
-    int idAux;
+
     while (arquivo_processado.good()) {
-        string::size_type sz;
-        if (!arquivo_processado.read(reinterpret_cast<char *>(&sz), sizeof(string::size_type)))
+        review->setId(Review::recuperarString(arquivo_processado));
+        review->setText(Review::recuperarString(arquivo_processado));
+        arquivo_processado.read((char *) &intAux, sizeof(int));
+        review->setUpvotes(intAux);
+        review->setAppVersion(Review::recuperarString(arquivo_processado));
+        review->setPostedDate(Review::recuperarString(arquivo_processado));
+
+        if (idAtual == id) {
+            return review;
+        }
+        if(idAtual >= total) {
             break;
-        textAux.resize(sz);
-        arquivo_processado.read(&textAux[0], sz);
-        rev->setId(textAux);
-
-        string::size_type sz2;
-        arquivo_processado.read(reinterpret_cast<char *>(&sz2), sizeof(string::size_type));
-        textAux.resize(sz2);
-        arquivo_processado.read(&textAux[0], sz2);
-        rev->setText(textAux);
-
-        arquivo_processado.read(reinterpret_cast<char *>(&idAux), sizeof(int));
-        rev->setUpvotes(idAux);
-
-        string::size_type sz3;
-        arquivo_processado.read(reinterpret_cast<char *>(&sz3), sizeof(string::size_type));
-        textAux.resize(sz3);
-        arquivo_processado.read(&textAux[0], sz3);
-        rev->setAppVersion(textAux);
-
-        string::size_type sz4;
-        arquivo_processado.read(reinterpret_cast<char *>(&sz4), sizeof(string::size_type));
-        textAux.resize(sz4);
-        arquivo_processado.read(&textAux[0], sz4);
-        rev->setPostedDate(textAux);
-
-        if (count == id) {
-            auto end = std::chrono::high_resolution_clock::now();
-            auto int_s = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-            cout << "O tempo de execucao para busca do Id escolhido foi de " << std::to_string(int_s.count()) << " segundos." << endl;
-            return rev;
         }
 
-        count++;
+        idAtual++;
     }
 
     return nullptr;

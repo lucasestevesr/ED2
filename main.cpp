@@ -11,7 +11,7 @@ const string nome_bin = "tiktok_app_reviews.bin";
 
 int menu() {
     int selecao;
-    cout << "--------------- MENU ---------------" << endl;
+    cout << "-------------------- MENU --------------------" << endl;
     cout << "[1] acessaRegistro(i):" << endl;
     cout << "[2] testeImportacao():" << endl;
     cout << "[0] Sair" << endl;
@@ -28,21 +28,27 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
             break;
         }
         case 1: {
-            cout << "Digite o indice do registro: " << endl;
+            int total = Review::recuperarQuantidadeReviews(arquivo_processado);
+            cout << "O arquivo contem " << total << " registros, digite um indice:"  << endl;
             int id;
             cin >> id;
+            auto start = std::chrono::high_resolution_clock::now();
             Review *review = Review::recuperarReviewPeloId(arquivo_processado, id);
             if (review != nullptr) {
                 review->imprimir();
             } else {
-                cout << "Erro: Registro não encontrado!" << endl;
+                cout << "Erro: Registro nao encontrado!" << endl;
             }
+            auto end = std::chrono::high_resolution_clock::now();
+            auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+            cout << "O tempo de busca do Id=" << id << " foi de " << to_string(int_m.count()) << " milissegundos." << endl;
             break;
         }
         case 2: {
             cout << "[1]-Console      [2]-Arquivo de Texto" << endl;
             int opcao;
             cin >> opcao;
+//            srand(time(0));
             if (opcao == 1) {
                 cout << "Importar para console com N = 10" << endl;
             } else {
@@ -98,13 +104,6 @@ bool buscarColunas(string linha, string *colunas, bool &entreAspas, int &colunaA
     return false;
 }
 
-void salvarString(ofstream &arquivo_bin, string valor) {
-    size_t tamanho = valor.size();
-    arquivo_bin.write((char *) &tamanho, sizeof(tamanho));
-//  arquivo_bin.write(reinterpret_cast<char*>(&tamanho), sizeof(size_t));
-    arquivo_bin.write(valor.c_str(), tamanho);
-}
-
 void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     auto start = std::chrono::high_resolution_clock::now();
     cout << "Processando csv para bin..." << endl;
@@ -114,7 +113,6 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     string *colunas;
     bool entreAspas;
     bool resposta;
-    int upvotesAux;
 
     getline(arquivo_csv, linha, '\n');
 
@@ -134,22 +132,19 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
             }
             Review *review = new Review(colunas[0], colunas[1], stoi(colunas[2]), colunas[3], colunas[4]);
 //            review->imprimir();
-            salvarString(arquivo_bin, review->getId());
-            salvarString(arquivo_bin, review->getText());
-            upvotesAux = review->getUpvotes();
-            arquivo_bin.write((char *) &upvotesAux, sizeof(int));
-//            arquivo_bin.write(reinterpret_cast<char*>(&upvotesAux), sizeof(int));
-            salvarString(arquivo_bin, review->getAppVersion());
-            salvarString(arquivo_bin, review->getPostedDate());
+            review->salvarReview(arquivo_bin);
 
             qnt_linhas++;
             delete[] colunas;
         }
     }
+    if(qnt_linhas > 0) {
+        arquivo_bin.write((char *) &qnt_linhas, sizeof(int));
+    }
     arquivo_bin.close();
     auto end = std::chrono::high_resolution_clock::now();
-    auto int_s = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-    cout << "O tempo de execucao do processamento de csv para bin. foi de " << std::to_string(int_s.count()) << " segundos." << endl;
+    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    cout << "O tempo de processamento do CSV para BIN foi de " << to_string(int_m.count()) << " milissegundos." << endl;
     cout << "Foram processadas " << qnt_linhas << " registros." << endl;
     cout << "Processamento finalizado!" << endl;
 }
@@ -164,6 +159,9 @@ int main(int argc, char const *argv[]) {
     arquivo_bin.open(argv[1] + nome_bin, ios::binary);
 
     if (arquivo_bin.is_open()) {
+        int total = Review::recuperarQuantidadeReviews(arquivo_bin);
+        cout << "----------------------------------------------" << endl;
+        cout << "Foi encontrado um arquivo bin com " << total << " reviews." << endl;
         mainMenu(arquivo_bin);
     } else {
         arquivo_bin.close();
