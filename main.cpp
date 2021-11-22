@@ -12,7 +12,7 @@ const string nome_bin = "tiktok_app_reviews.bin";
 int menu() {
     int selecao;
     cout << "-------------------- MENU --------------------" << endl;
-    cout << "[1] acessaRegistro(i):" << endl;
+    cout << "[1] acessarReview(i):" << endl;
     cout << "[2] testeImportacao():" << endl;
     cout << "[0] Sair" << endl;
     cin >> selecao;
@@ -29,7 +29,7 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
         }
         case 1: {
             int total = Review::recuperarQuantidadeReviews(arquivo_processado);
-            cout << "O arquivo contem " << total << " registros, digite um indice:"  << endl;
+            cout << "O arquivo contem " << total << " reviews, digite um indice:"  << endl;
             int id;
             cin >> id;
             auto start = std::chrono::high_resolution_clock::now();
@@ -37,7 +37,7 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
             if (review != nullptr) {
                 review->imprimir();
             } else {
-                cout << "Erro: Registro nao encontrado!" << endl;
+                cout << "Erro: Review nao encontrado!" << endl;
             }
             auto end = std::chrono::high_resolution_clock::now();
             auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -48,9 +48,26 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
             cout << "[1]-Console      [2]-Arquivo de Texto" << endl;
             int opcao;
             cin >> opcao;
-//            srand(time(0));
+            srand(time(0));
+            int total = Review::recuperarQuantidadeReviews(arquivo_processado);
             if (opcao == 1) {
-                cout << "Importar para console com N = 10" << endl;
+                auto start = std::chrono::high_resolution_clock::now();
+                int numeros[10];
+                for(int i = 0; i < 10; i++) {
+                    numeros[i] = rand()%total;
+                }
+                for(int i = 0; i < 10; i++) {
+                    cout << "Review ID = " << numeros[i] << " abaixo:" << endl;
+                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, numeros[i]);
+                    if (review != nullptr) {
+                        review->imprimir();
+                    } else {
+                        cout << "Erro: Review nao encontrado!" << endl;
+                    }
+                }
+                auto end = std::chrono::high_resolution_clock::now();
+                auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                cout << "O tempo para exibir 10 reviews aleatorios no console foi de " << to_string(int_m.count()) << " milissegundos." << endl;
             } else {
                 cout << "Importar para texto com N = 100" << endl;
             }
@@ -145,7 +162,7 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     auto end = std::chrono::high_resolution_clock::now();
     auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     cout << "O tempo de processamento do CSV para BIN foi de " << to_string(int_m.count()) << " milissegundos." << endl;
-    cout << "Foram processadas " << qnt_linhas << " registros." << endl;
+    cout << "Foram processadas " << qnt_linhas << " reviews." << endl;
     cout << "Processamento finalizado!" << endl;
 }
 
