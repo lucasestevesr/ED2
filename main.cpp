@@ -8,6 +8,7 @@ using namespace std;
 
 const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
+const string nome_txt = "export_reviews.txt";
 
 int menu() {
     int selecao;
@@ -19,7 +20,7 @@ int menu() {
     return selecao;
 }
 
-void selecionar(int selecao, ifstream &arquivo_processado) {
+void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
     switch (selecao) {
         case 0: {
             cout << "Programa finalizado!" << endl;
@@ -52,13 +53,12 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
             int total = Review::recuperarQuantidadeReviews(arquivo_processado);
             if (opcao == 1) {
                 auto start = std::chrono::high_resolution_clock::now();
-                int numeros[10];
-                for(int i = 0; i < 10; i++) {
-                    numeros[i] = rand()%total;
-                }
-                for(int i = 0; i < 10; i++) {
-                    cout << "Review ID = " << numeros[i] << " abaixo:" << endl;
-                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, numeros[i]);
+                int n = 10;
+                int intAleatorio;
+                for(int i = 0; i < n; i++) {
+                    intAleatorio = rand()%total;
+                    cout << "Review ID = " << intAleatorio << " abaixo:" << endl;
+                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, intAleatorio);
                     if (review != nullptr) {
                         review->imprimir();
                     } else {
@@ -67,9 +67,36 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
                 }
                 auto end = std::chrono::high_resolution_clock::now();
                 auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                cout << "O tempo para exibir 10 reviews aleatorios no console foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+                cout << "O tempo para exibir " << n << " reviews aleatorios no console foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+            } else if(opcao == 2) {
+                auto start = std::chrono::high_resolution_clock::now();
+                int n = 100;
+                cout << "Exportando " << n << " reviews para o arquivo " << nome_txt << endl;
+                ofstream arquivo_txt;
+                arquivo_txt.open(diretorio + nome_txt, ios::trunc);
+                arquivo_txt << "Contêm " << n << " reviews neste arquivo." << endl << endl;
+                int intAleatorio;
+                for(int i = 0; i < n; i++) {
+                    intAleatorio = rand()%total;
+                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, intAleatorio);
+                    if (review != nullptr) {
+                        arquivo_txt << "Index: " << intAleatorio << endl;
+                        arquivo_txt << "Id: " << review->getId() << endl;
+                        arquivo_txt << "Text: " << review->getText() << endl;
+                        arquivo_txt << "Upvotes: " << to_string(review->getUpvotes()) << endl;
+                        arquivo_txt << "App Version: " << review->getAppVersion() << endl;
+                        arquivo_txt << "Posted Date: " << review->getPostedDate() << endl << endl;
+                    } else {
+                        cout << "Erro: Review " << intAleatorio << " nao encontrado!" << endl;
+                    }
+                }
+                arquivo_txt.close();
+                auto end = std::chrono::high_resolution_clock::now();
+                auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                cout << "O tempo para exportar " << n << " reviews aleatorios foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+                cout << "Finalizado com sucesso!" << endl;
             } else {
-                cout << "Importar para texto com N = 100" << endl;
+                cout << "Resposta Invalida! Responda [1] ou [2]." << endl;
             }
             break;
         }
@@ -79,11 +106,11 @@ void selecionar(int selecao, ifstream &arquivo_processado) {
     }
 }
 
-void mainMenu(ifstream &arquivo_processado) {
+void mainMenu(ifstream &arquivo_processado, string diretorio) {
     int selecao = 1;
     while (selecao != 0) {
         selecao = menu();
-        selecionar(selecao, arquivo_processado);
+        selecionar(selecao, arquivo_processado, diretorio);
     }
 }
 
@@ -179,7 +206,7 @@ int main(int argc, char const *argv[]) {
         int total = Review::recuperarQuantidadeReviews(arquivo_bin);
         cout << "----------------------------------------------" << endl;
         cout << "Foi encontrado um arquivo bin com " << total << " reviews." << endl;
-        mainMenu(arquivo_bin);
+        mainMenu(arquivo_bin, argv[1]);
     } else {
         arquivo_bin.close();
         ifstream arquivo_csv;
@@ -197,7 +224,7 @@ int main(int argc, char const *argv[]) {
             ifstream arquivo_processado;
             arquivo_processado.open(argv[1] + nome_bin, ios::binary);
             if (arquivo_processado.is_open()) {
-                mainMenu(arquivo_processado);
+                mainMenu(arquivo_processado, argv[1]);
             } else {
                 cout << "Erro: Nao foi possivel abrir o arquivo bin '" << nome_bin << "'" << endl;
                 exit(1);

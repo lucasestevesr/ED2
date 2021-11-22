@@ -61,7 +61,7 @@ void Review::imprimir() {
     cout << "-----------------------------------------------------------------------------------------" << endl;
     cout << this->id << endl;
     cout << this->text << endl;
-    cout << this->upvotes << endl;
+    cout << to_string(this->upvotes) << endl;
     cout << this->app_version << endl;
     cout << this->posted_date << endl;
     cout << "-----------------------------------------------------------------------------------------" << endl;
