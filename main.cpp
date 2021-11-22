@@ -231,6 +231,7 @@ int main(int argc, char const *argv[]) {
             }
         } else {
             cout << "Erro: Nao foi possivel abrir o arquivo csv '" << nome_csv << "'" << endl;
+            cout << "Confira se o diretorio realmente existe e contem o arquivo. Atencao nas \\, necessario \\ no final." << endl;
             exit(1);
         }
     }
