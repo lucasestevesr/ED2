@@ -17,7 +17,7 @@ Alunos:</br>
 	
 • Download da base de dados
 
-<a href="https://www.kaggle.com/shivamb/35-million-tiktok-mobile-app-reviews" target="_blank">https://www.kaggle.com/shivamb/35-million-tiktok-mobile-app-reviews</a>
+https://www.kaggle.com/shivamb/35-million-tiktok-mobile-app-reviews
 
 ### Compilação
 
