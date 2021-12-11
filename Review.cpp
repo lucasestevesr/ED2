@@ -6,11 +6,16 @@
 using namespace std;
 
 // Construtor com atributos
-Review::Review(string id, string text, int upvotes, string app_version, string posted_date) {
+Review::Review(char* id, char* text, int upvotes, char* app_version, char* posted_date) {
+    cout << "=================== aqui2 ===================" << endl;
+    this->id = new char[tamanho_id];
     this->id = id;
+    this->text = new char[tamanho_text];
     this->text = text;
     this->upvotes = upvotes;
+    this->app_version = new char[tamanho_app_version];
     this->app_version = app_version;
+    this->posted_date = new char[tamanho_posted_date];
     this->posted_date = posted_date;
 }
 // Fim Construtor com atributos
@@ -19,14 +24,19 @@ Review::Review(string id, string text, int upvotes, string app_version, string p
 Review::Review() {};
 
 // Destrutor
-Review::~Review() {};
+Review::~Review() {
+    delete [] this->id;
+    delete [] this->text;
+    delete [] this->app_version;
+    delete [] this->posted_date;
+};
 
 // Getters e Setters
 string Review::getId() {
     return this->id;
 }
 
-void Review::setId(string id) {
+void Review::setId(char* id) {
     this->id = id;
 }
 
@@ -34,7 +44,7 @@ string Review::getText() {
     return this->text;
 }
 
-void Review::setText(string text) {
+void Review::setText(char* text) {
     this->text = text;
 }
 
@@ -50,7 +60,7 @@ string Review::getAppVersion() {
     return this->app_version;
 }
 
-void Review::setAppVersion(string app_version) {
+void Review::setAppVersion(char* app_version) {
     this->app_version = app_version;
 }
 
@@ -58,7 +68,7 @@ string Review::getPostedDate() {
     return this->posted_date;
 }
 
-void Review::setPostedDate(string posted_date) {
+void Review::setPostedDate(char* posted_date) {
     this->posted_date = posted_date;
 }
 // Fim Getters e Setters
@@ -86,13 +96,26 @@ void Review::salvarString(ofstream &arquivo_bin, string valor) {
 }
 // Fim Salvar atributos do tipo string
 
+void Review::salvarId(ofstream &arquivo_bin, char* valor){
+    arquivo_bin.write(valor, tamanho_id);
+}
+void Review::salvarText(ofstream &arquivo_bin, char* valor){
+    arquivo_bin.write(valor, tamanho_text);
+}
+void Review::salvarAppVersion(ofstream &arquivo_bin, char* valor){
+    arquivo_bin.write(valor, tamanho_app_version);
+}
+void Review::salvarPostedDate(ofstream &arquivo_bin, char* valor){
+    arquivo_bin.write(valor, tamanho_posted_date);
+}
+
 // Salvar todos atributos do Review
 void Review::salvarReview(ofstream &arquivo_bin) {
-    salvarString(arquivo_bin, this->id);
-    salvarString(arquivo_bin, this->text);
+    salvarId(arquivo_bin, this->id);
+    salvarText(arquivo_bin, this->text);
     arquivo_bin.write((char *) &this->upvotes, sizeof(int));
-    salvarString(arquivo_bin, this->app_version);
-    salvarString(arquivo_bin, this->posted_date);
+    salvarAppVersion(arquivo_bin, this->app_version);
+    salvarPostedDate(arquivo_bin, this->posted_date);
 }
 // Fim Salvar todos atributos do Review
 
@@ -128,6 +151,13 @@ string Review::recuperarString(ifstream &arquivo_processado) {
 }
 // Fim Recuperar atributos do tipo string
 
+char* Review::recuperarChar(ifstream &arquivo_processado, int tamanho) {
+    char* valor = new char[tamanho];
+    arquivo_processado.read(&valor[0], tamanho);
+
+    return valor;
+}
+
 // Recuperar Review pelo índice
 Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
     // Declara variaveis auxiliares
@@ -145,12 +175,12 @@ Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
     // Enquanto o arquivo não lançar excessão continua lendo
     while (arquivo_processado.good()) {
         // Le e seta os atributos da Review
-        review->setId(Review::recuperarString(arquivo_processado));
-        review->setText(Review::recuperarString(arquivo_processado));
+        review->setId(Review::recuperarChar(arquivo_processado, tamanho_id));
+        review->setText(Review::recuperarChar(arquivo_processado, tamanho_text));
         arquivo_processado.read((char *) &intAux, sizeof(int));
         review->setUpvotes(intAux);
-        review->setAppVersion(Review::recuperarString(arquivo_processado));
-        review->setPostedDate(Review::recuperarString(arquivo_processado));
+        review->setAppVersion(Review::recuperarChar(arquivo_processado, tamanho_app_version));
+        review->setPostedDate(Review::recuperarChar(arquivo_processado,tamanho_posted_date));
 
         // Se o id procurado for igual ao Id atual, retorna o review
         if (idAtual == id) {
