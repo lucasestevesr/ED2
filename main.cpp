@@ -213,10 +213,10 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     string linha = "";      
     int colunaAtual;
     string *colunas;
-    char* charId = new char[Review::tamanho_id];
-    char* charText = new char[Review::tamanho_text];
-    char* charAppVersion = new char[Review::tamanho_app_version];
-    char* charPostedDate = new char[Review::tamanho_posted_date];
+    char charId[90];
+    char charText[3553];
+    char charAppVersion[11];
+    char charPostedDate[21];
     bool entreAspas;         
     bool resposta;          
 
@@ -241,21 +241,22 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
                 } while (!resposta);
             }
             // ao fim do registro, é criada uma nova instância de Review com os dados do mesmo
-            strcpy(charId, colunas[0].c_str());
-            strcpy(charText, colunas[1].c_str());
-            strcpy(charAppVersion, colunas[3].c_str());
-            strcpy(charPostedDate, colunas[4].c_str());
 
-            cout << "=================== aqui1 ===================" << endl;
+            // convertendo as colunas de string para char
+            strncpy(charId, colunas[0].c_str(), sizeof(charId));
+            charId[sizeof(charId)-1] = '\0';
+            strncpy(charText, colunas[1].c_str(), sizeof(charText));
+            charText[sizeof(charText)-1] = '\0';
+            strncpy(charAppVersion, colunas[3].c_str(), sizeof(charAppVersion));
+            charAppVersion[sizeof(charAppVersion)-1] = '\0';
+            strncpy(charPostedDate, colunas[4].c_str(), sizeof(charPostedDate));
+            charPostedDate[sizeof(charPostedDate)-1] = '\0';
+
             Review *review = new Review(charId, charText, stoi(colunas[2]), charAppVersion, charPostedDate);
-            cout << "=================== aqui3 ===================" << endl;
-            review->imprimir();
-            review->salvarReview(arquivo_bin);
-
-
-            exit(1);
+            //review->imprimir();
 
             // Convertendo o registro encontrado para o arquivo binário
+            review->salvarReview(arquivo_bin);
 
             // verificando a quantidade de registros lidos na operação
             qnt_linhas++;
@@ -268,13 +269,9 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     if(qnt_linhas > 0) {
         arquivo_bin.write((char *) &qnt_linhas, sizeof(int));
     }
-//    delete [] charId;
-//    delete [] charText;
-//    delete [] charAppVersion;
-//    delete [] charPostedDate;
     // fechando o arquivo binário
-
     arquivo_bin.close();
+
     // registando o final da operação
     auto end = std::chrono::high_resolution_clock::now();
     // calculando o tempo total de execução

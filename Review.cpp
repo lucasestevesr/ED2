@@ -7,7 +7,6 @@ using namespace std;
 
 // Construtor com atributos
 Review::Review(char* id, char* text, int upvotes, char* app_version, char* posted_date) {
-    cout << "=================== aqui2 ===================" << endl;
     this->id = new char[tamanho_id];
     this->id = id;
     this->text = new char[tamanho_text];
@@ -168,33 +167,44 @@ Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
     // Recupera quantidade total de Reviews
     int total = Review::recuperarQuantidadeReviews(arquivo_processado);
 
+    int posicao_review = (id - 1) * (tamanho_id + tamanho_text + sizeof(int) + tamanho_app_version + tamanho_posted_date);
+
     // Move o cursor para o início do arquivo
     arquivo_processado.clear();
-    arquivo_processado.seekg(0, arquivo_processado.beg);
+    arquivo_processado.seekg(posicao_review, arquivo_processado.beg);
+
+    review->setId(Review::recuperarChar(arquivo_processado, tamanho_id));
+    review->setText(Review::recuperarChar(arquivo_processado, tamanho_text));
+    arquivo_processado.read((char *) &intAux, sizeof(int));
+    review->setUpvotes(intAux);
+    review->setAppVersion(Review::recuperarChar(arquivo_processado, tamanho_app_version));
+    review->setPostedDate(Review::recuperarChar(arquivo_processado,tamanho_posted_date));
+
+    return review;
 
     // Enquanto o arquivo não lançar excessão continua lendo
-    while (arquivo_processado.good()) {
-        // Le e seta os atributos da Review
-        review->setId(Review::recuperarChar(arquivo_processado, tamanho_id));
-        review->setText(Review::recuperarChar(arquivo_processado, tamanho_text));
-        arquivo_processado.read((char *) &intAux, sizeof(int));
-        review->setUpvotes(intAux);
-        review->setAppVersion(Review::recuperarChar(arquivo_processado, tamanho_app_version));
-        review->setPostedDate(Review::recuperarChar(arquivo_processado,tamanho_posted_date));
-
-        // Se o id procurado for igual ao Id atual, retorna o review
-        if (idAtual == id) {
-            return review;
-        }
-        // Se o id Atual for maior ou igual ao total de reviews
-        // Da um break e para de percorrer o arquivo pois chegou ao final
-        if(idAtual >= total) {
-            break;
-        }
-
-        // Incrementa o id Atual
-        idAtual++;
-    }
+//    while (arquivo_processado.good()) {
+//        // Le e seta os atributos da Review
+//        review->setId(Review::recuperarChar(arquivo_processado, tamanho_id));
+//        review->setText(Review::recuperarChar(arquivo_processado, tamanho_text));
+//        arquivo_processado.read((char *) &intAux, sizeof(int));
+//        review->setUpvotes(intAux);
+//        review->setAppVersion(Review::recuperarChar(arquivo_processado, tamanho_app_version));
+//        review->setPostedDate(Review::recuperarChar(arquivo_processado,tamanho_posted_date));
+//
+//        // Se o id procurado for igual ao Id atual, retorna o review
+//        if (idAtual == id) {
+//            return review;
+//        }
+//        // Se o id Atual for maior ou igual ao total de reviews
+//        // Da um break e para de percorrer o arquivo pois chegou ao final
+//        if(idAtual >= total) {
+//            break;
+//        }
+//
+//        // Incrementa o id Atual
+//        idAtual++;
+//    }
 
     return nullptr;
 }

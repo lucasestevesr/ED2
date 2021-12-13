@@ -17,7 +17,7 @@ class Review {
 
     public:
         static const int tamanho_id = 90;
-        static const int tamanho_text = 4000;
+        static const int tamanho_text = 3553;
         static const int tamanho_app_version = 11;
         static const int tamanho_posted_date = 21;
 
