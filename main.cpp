@@ -1,14 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cstring>
 #include "Review.h"
 #include <chrono>
 
 using namespace std;
 
 // Definindo constantes para os nomes dos arquivos
-const string nome_csv = "tiktok_app_reviews2.csv";
+const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_txt = "export_reviews.txt";
 
@@ -208,17 +207,13 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     // iniciando a marcação do tempo
     auto start = std::chrono::high_resolution_clock::now();
     // mensagem de inicialização
-    cout << "Processando csv para bin..." << endl; 
-    int qnt_linhas = 0;     
-    string linha = "";      
+    cout << "Processando csv para bin..." << endl;
+    int qnt_linhas = 0;
+    string linha = "";
     int colunaAtual;
     string *colunas;
-    char charId[90];
-    char charText[3553];
-    char charAppVersion[11];
-    char charPostedDate[21];
-    bool entreAspas;         
-    bool resposta;          
+    bool entreAspas;
+    bool resposta;
 
     // retirando o header dos registros
     getline(arquivo_csv, linha, '\n');
@@ -228,7 +223,7 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
         // verificando a captura de um registro no arquivo
         if (linha.size() > 0) {
             colunas = new string[5];    // colunas do registro
-            entreAspas = false;        
+            entreAspas = false;
             colunaAtual = 0;
 
             // recuperando as colunas do registro
@@ -241,20 +236,8 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
                 } while (!resposta);
             }
             // ao fim do registro, é criada uma nova instância de Review com os dados do mesmo
-
-            // convertendo as colunas de string para char
-            strncpy(charId, colunas[0].c_str(), sizeof(charId));
-            charId[sizeof(charId)-1] = '\0';
-            strncpy(charText, colunas[1].c_str(), sizeof(charText));
-            charText[sizeof(charText)-1] = '\0';
-            strncpy(charAppVersion, colunas[3].c_str(), sizeof(charAppVersion));
-            charAppVersion[sizeof(charAppVersion)-1] = '\0';
-            strncpy(charPostedDate, colunas[4].c_str(), sizeof(charPostedDate));
-            charPostedDate[sizeof(charPostedDate)-1] = '\0';
-
-            Review *review = new Review(charId, charText, stoi(colunas[2]), charAppVersion, charPostedDate);
-            //review->imprimir();
-
+            Review *review = new Review(colunas[0], colunas[1], stoi(colunas[2]), colunas[3], colunas[4]);
+//            review->imprimir();
             // Convertendo o registro encontrado para o arquivo binário
             review->salvarReview(arquivo_bin);
 
@@ -269,9 +252,9 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
     if(qnt_linhas > 0) {
         arquivo_bin.write((char *) &qnt_linhas, sizeof(int));
     }
+
     // fechando o arquivo binário
     arquivo_bin.close();
-
     // registando o final da operação
     auto end = std::chrono::high_resolution_clock::now();
     // calculando o tempo total de execução
@@ -290,33 +273,32 @@ int main(int argc, char const *argv[]) {
         return 1;
     }
 
-    // declarando e abrindo um arquivo 
+    // declarando e abrindo um arquivo
     ifstream arquivo_bin;
     arquivo_bin.open(argv[1] + nome_bin, ios::binary);
 
     // verificando se a abertura do arquivo ocorreu sem nenhum erro
-//    if (arquivo_bin.is_open()) {
-    if (false) {
+    if (arquivo_bin.is_open()) {
 
-        // quantidade de registros presentes no arquivo 
+        // quantidade de registros presentes no arquivo
         int total = Review::recuperarQuantidadeReviews(arquivo_bin);
         // impressão padrão
         cout << "----------------------------------------------" << endl;
         cout << "Foi encontrado um arquivo bin com " << total << " reviews." << endl;
-        
+
         // menu de opções para o usuário
         mainMenu(arquivo_bin, argv[1]);
 
         // else representando um erro de abertura do arquivo
     } else {
         arquivo_bin.close();
-        // abrindo o arquivo csv para ser processado 
+        // abrindo o arquivo csv para ser processado
         ifstream arquivo_csv;
         arquivo_csv.open(argv[1] + nome_csv);
 
         // checando a abertura do arquivo csv antes de processar de o binário
         if (arquivo_csv.is_open()) {
-            
+
             // abrindo para o modo de escrita
             ofstream arquivo_bin;
             // abrindo o arquivo binario para ser processado
@@ -341,7 +323,7 @@ int main(int argc, char const *argv[]) {
                 exit(1);
             }
 
-        // tratando a exceção para o caso do arquivo csv apresentar problemas na abertura
+            // tratando a exceção para o caso do arquivo csv apresentar problemas na abertura
         } else {
             cout << "Erro: Nao foi possivel abrir o arquivo csv '" << nome_csv << "'" << endl;
             cout << "Confira se o diretorio realmente existe e contem o arquivo. Atencao nas \\, necessario \\ no final." << endl;
