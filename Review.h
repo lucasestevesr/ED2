@@ -39,13 +39,15 @@ public:
     // Salvar atributos do tipo string
     void salvarString(ofstream &arquivo_bin, string valor);
     // Salvar todos atributos do Review
-    void salvarReview(ofstream &arquivo_bin);
+    void salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes);
     // Recuperar quantidade de Reviews dentro do arquivo
     static int recuperarQuantidadeReviews(ifstream &arquivo_processado);
     // Recuperar atributos do tipo string
     static string recuperarString(ifstream &arquivo_processado);
     // Recuperar Review pelo índice
-    static Review* recuperarReviewPeloId(ifstream &arquivo_processado, int id);
+    static Review* recuperarReviewPeloId(ifstream &arquivo_processado, ifstream &posicoes_salvas, int id);
+    // Recuperar Posicao do Review pelo índice
+    static int recuperarPosicaoReviewPeloId(ifstream &posicoes_salvas, int id);
 };
 
 #endif //ED2_REVIEW_H

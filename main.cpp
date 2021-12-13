@@ -9,6 +9,7 @@ using namespace std;
 // Definindo constantes para os nomes dos arquivos
 const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
+const string nome_posicoes = "posicoes_reviews.bin";
 const string nome_txt = "export_reviews.txt";
 
 // Inicio função menu de opções
@@ -25,13 +26,14 @@ int menu() {
 // Fim função menu de opções
 
 // Início função selecionar
-void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
+void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio) {
     // Função serve para fazer o switch da opção escolhida pelo usuário
     switch (selecao) {
         case 0: {
             // Caso escolha 0, fecha o arquivo e finaliza o programa
             cout << "Programa finalizado!" << endl;
             arquivo_processado.close();
+            posicoes_salvas.close();
             exit(0);
             break;
         }
@@ -45,7 +47,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
             // Starta o cronometro
             auto start = std::chrono::high_resolution_clock::now();
             // Chama a função para recuperar o Review pelo id
-            Review *review = Review::recuperarReviewPeloId(arquivo_processado, id);
+            Review *review = Review::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, id);
             // Se o review retornado for diferente de nullptr vai imprimi-lo
             if (review != nullptr) {
                 review->imprimir();
@@ -82,7 +84,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
                     // Escreve seu id
                     cout << "Review ID = " << intAleatorio << " abaixo:" << endl;
                     // Recupera o Review
-                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, intAleatorio);
+                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
                     // Se for diferente de null, escreve o Review, se for null escreve erro
                     if (review != nullptr) {
                         review->imprimir();
@@ -109,7 +111,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
                 for(int i = 0; i < n; i++) {
                     // Pega um int aleatório e busca seu Review correspondente
                     intAleatorio = rand()%(total) + 1;
-                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, intAleatorio);
+                    Review *review = Review::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
                     if (review != nullptr) {
                         // Escreve o review no arquivo txt
                         arquivo_txt << "Index: " << intAleatorio << endl;
@@ -142,11 +144,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, string diretorio) {
 }
 // Fim função selecionar
 
-void mainMenu(ifstream &arquivo_processado, string diretorio) {
+void mainMenu(ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio) {
     int selecao = 1;
     while (selecao != 0) {
         selecao = menu();
-        selecionar(selecao, arquivo_processado, diretorio);
+        selecionar(selecao, arquivo_processado, posicoes_salvas, diretorio);
     }
 }
 
@@ -203,7 +205,7 @@ bool buscarColunas(string linha, string *colunas, bool &entreAspas, int &colunaA
 }
 // Fim função Buscar Colunas
 
-void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
+void processar(ifstream &arquivo_csv, ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
     // iniciando a marcação do tempo
     auto start = std::chrono::high_resolution_clock::now();
     // mensagem de inicialização
@@ -239,7 +241,7 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin) {
             Review *review = new Review(colunas[0], colunas[1], stoi(colunas[2]), colunas[3], colunas[4]);
 //            review->imprimir();
             // Convertendo o registro encontrado para o arquivo binário
-            review->salvarReview(arquivo_bin);
+            review->salvarReview(arquivo_bin, arquivo_posicoes);
 
             // verificando a quantidade de registros lidos na operação
             qnt_linhas++;
@@ -277,9 +279,13 @@ int main(int argc, char const *argv[]) {
     ifstream arquivo_bin;
     arquivo_bin.open(argv[1] + nome_bin, ios::binary);
 
-    // verificando se a abertura do arquivo ocorreu sem nenhum erro
-    if (arquivo_bin.is_open()) {
+    // abrindo para o modo leitura o arquivo das posicoes tambem
+    ifstream posicoes_salvas;
+    posicoes_salvas.open(argv[1] + nome_posicoes, ios::binary);
 
+    // verificando se a abertura do arquivo ocorreu sem nenhum erro
+//    if (arquivo_bin.is_open() && posicoes_salvas.is_open()) {
+    if (false) {
         // quantidade de registros presentes no arquivo
         int total = Review::recuperarQuantidadeReviews(arquivo_bin);
         // impressão padrão
@@ -287,7 +293,7 @@ int main(int argc, char const *argv[]) {
         cout << "Foi encontrado um arquivo bin com " << total << " reviews." << endl;
 
         // menu de opções para o usuário
-        mainMenu(arquivo_bin, argv[1]);
+        mainMenu(arquivo_bin, posicoes_salvas, argv[1]);
 
         // else representando um erro de abertura do arquivo
     } else {
@@ -304,20 +310,29 @@ int main(int argc, char const *argv[]) {
             // abrindo o arquivo binario para ser processado
             arquivo_bin.open(argv[1] + nome_bin, ios::binary | ios::trunc);
 
+            //abrindo arquivo para salvar as posições modo de escrita
+            ofstream arquivo_posicoes;
+            arquivo_posicoes.open(argv[1] + nome_posicoes, ios::binary | ios::trunc);
+
             // chamando a função de processamento do arquivo
-            processar(arquivo_csv, arquivo_bin);
+            processar(arquivo_csv, arquivo_bin, arquivo_posicoes);
 
             // fechando os arquivos abertos
             arquivo_csv.close();
             arquivo_bin.close();
+            arquivo_posicoes.close();
 
             // abrindo para o modo leitura
             ifstream arquivo_processado;
             arquivo_processado.open(argv[1] + nome_bin, ios::binary);
 
+            // abrindo para o modo leitura o arquivo das posicoes tambem
+            ifstream posicoes_salvas;
+            posicoes_salvas.open(argv[1] + nome_posicoes, ios::binary);
+
             // checando se o arquivo foi aberto com sucesso
             if (arquivo_processado.is_open()) {
-                mainMenu(arquivo_processado, argv[1]);
+                mainMenu(arquivo_processado, posicoes_salvas, argv[1]);
             } else {
                 cout << "Erro: Nao foi possivel abrir o arquivo bin '" << nome_bin << "'" << endl;
                 exit(1);

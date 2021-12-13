@@ -87,12 +87,14 @@ void Review::salvarString(ofstream &arquivo_bin, string valor) {
 // Fim Salvar atributos do tipo string
 
 // Salvar todos atributos do Review
-void Review::salvarReview(ofstream &arquivo_bin) {
+void Review::salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
+    int posicaoReview = arquivo_bin.tellp();
     salvarString(arquivo_bin, this->id);
     salvarString(arquivo_bin, this->text);
     arquivo_bin.write((char *) &this->upvotes, sizeof(int));
     salvarString(arquivo_bin, this->app_version);
     salvarString(arquivo_bin, this->posted_date);
+    arquivo_posicoes.write((char *) &posicaoReview, sizeof(int));
 }
 // Fim Salvar todos atributos do Review
 
@@ -129,7 +131,7 @@ string Review::recuperarString(ifstream &arquivo_processado) {
 // Fim Recuperar atributos do tipo string
 
 // Recuperar Review pelo índice
-Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
+Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, ifstream &posicoes_salvas, int id) {
     // Declara variaveis auxiliares
     int intAux;
     int idAtual = 1;
@@ -138,12 +140,15 @@ Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
     // Recupera quantidade total de Reviews
     int total = Review::recuperarQuantidadeReviews(arquivo_processado);
 
-    // Move o cursor para o início do arquivo
+    // Pegando posicao salva do registro
+    int posicao = Review::recuperarPosicaoReviewPeloId(posicoes_salvas, id);
+
+    // Move o cursor para a posicao do review
     arquivo_processado.clear();
-    arquivo_processado.seekg(0, arquivo_processado.beg);
+    arquivo_processado.seekg(posicao, arquivo_processado.beg);
 
     // Enquanto o arquivo não lançar excessão continua lendo
-    while (arquivo_processado.good()) {
+    while(arquivo_processado.good()) {
         // Le e seta os atributos da Review
         review->setId(Review::recuperarString(arquivo_processado));
         review->setText(Review::recuperarString(arquivo_processado));
@@ -152,20 +157,26 @@ Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, int id) {
         review->setAppVersion(Review::recuperarString(arquivo_processado));
         review->setPostedDate(Review::recuperarString(arquivo_processado));
 
-        // Se o id procurado for igual ao Id atual, retorna o review
-        if (idAtual == id) {
-            return review;
-        }
-        // Se o id Atual for maior ou igual ao total de reviews
-        // Da um break e para de percorrer o arquivo pois chegou ao final
-        if(idAtual >= total) {
-            break;
-        }
-
-        // Incrementa o id Atual
-        idAtual++;
+        return review;
     }
 
     return nullptr;
 }
 // Fim Recuperar Review pelo índice
+
+// Recuperar Posição Review pelo índice
+int Review::recuperarPosicaoReviewPeloId(ifstream &posicoes_salvas, int id) {
+    // Declara variaveis uteis de posicao
+    int posicaoReview = -1;
+    int posicaoCursor = (id - 1) * sizeof(int);
+
+    // Move o cursor para o início do arquivo
+    posicoes_salvas.clear();
+    posicoes_salvas.seekg(posicaoCursor, posicoes_salvas.beg);
+
+    // Le a posicao do review
+    posicoes_salvas.read((char *) &posicaoReview, sizeof(int));
+
+    return posicaoReview;
+}
+// Fim recuperar Posição Review pelo índice
