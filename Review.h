@@ -36,6 +36,8 @@ public:
     // Fim Getters e Setters
     // Imprimir Review
     void imprimir();
+    // Receber todos campos do review
+    void receberReview(Review* review);
     // Salvar atributos do tipo string
     void salvarString(ofstream &arquivo_bin, string valor);
     // Salvar todos atributos do Review

@@ -75,6 +75,16 @@ void Review::imprimir() {
 }
 // Fim Imprimir Review
 
+// Inicio Receber Review
+void Review::receberReview(Review* review) {
+    this->id = review->id;
+    this->text = review->text;
+    this->upvotes = review->upvotes;
+    this->app_version = review->app_version;
+    this->posted_date = review->posted_date;
+}
+// Fim Receber Review
+
 // Salvar atributos do tipo string
 void Review::salvarString(ofstream &arquivo_bin, string valor) {
     // Pega o tamanho da string
@@ -99,17 +109,16 @@ void Review::salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
 // Fim Salvar todos atributos do Review
 
 // Recuperar quantidade de Reviews dentro do arquivo
-int Review::recuperarQuantidadeReviews(ifstream &arquivo_processado) {
+int Review::recuperarQuantidadeReviews(ifstream &posicoes_salvas) {
     // Declara variavel quantidade de Reviews
     int quantidade = 0;
-    // Declara variavel posicao com size of do tipo int -1
-    int posicao = sizeof(int) * -1;
-    // Limpa o arquivo e vai para posicao
-    // A quantidade de Reviews no arquivo BIN esta salvo no final do arquivo
-    arquivo_processado.clear();
-    arquivo_processado.seekg(posicao, arquivo_processado.end);
-    // Recupera e seta a quantidade total de Reviews
-    arquivo_processado.read((char *) &quantidade, sizeof(int));
+    // Vai para o final do arquivo das posicoes
+    posicoes_salvas.clear();
+    posicoes_salvas.seekg(0, posicoes_salvas.end);
+    // Pega a posicao do final
+    int posicaoFinal = posicoes_salvas.tellg();
+    // Divide pra saber quantos registros tem no binario
+    quantidade = posicaoFinal / sizeof(int);
 
     return quantidade;
 }
@@ -138,10 +147,20 @@ Review* Review::recuperarReviewPeloId(ifstream &arquivo_processado, ifstream &po
     Review *review = new Review();
 
     // Recupera quantidade total de Reviews
-    int total = Review::recuperarQuantidadeReviews(arquivo_processado);
+    int total = Review::recuperarQuantidadeReviews(posicoes_salvas);
+
+    // Verificando se existe o review salvo
+    if(id <= 0 || id > total) {
+        return nullptr;
+    }
 
     // Pegando posicao salva do registro
     int posicao = Review::recuperarPosicaoReviewPeloId(posicoes_salvas, id);
+
+    // Se a posicao for -1 o registro não existe
+    if(posicao == -1) {
+        return nullptr;
+    }
 
     // Move o cursor para a posicao do review
     arquivo_processado.clear();
@@ -180,3 +199,4 @@ int Review::recuperarPosicaoReviewPeloId(ifstream &posicoes_salvas, int id) {
     return posicaoReview;
 }
 // Fim recuperar Posição Review pelo índice
+

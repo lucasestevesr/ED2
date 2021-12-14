@@ -6,11 +6,15 @@
 
 using namespace std;
 
+typedef Review* ReviewP;
+
 // Definindo constantes para os nomes dos arquivos
 const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_posicoes = "posicoes_reviews.bin";
 const string nome_txt = "export_reviews.txt";
+
+ReviewP* recuperarReviewsAleatorios(ifstream &arquivo_processado, ifstream &posicoes_salvas, int n);
 
 // Inicio função menu de opções
 int menu() {
@@ -18,6 +22,7 @@ int menu() {
     cout << "-------------------- MENU --------------------" << endl;
     cout << "[1] acessarReview(i):" << endl;
     cout << "[2] testeImportacao():" << endl;
+    cout << "[3] importarVetor():" << endl;
     cout << "[0] Sair" << endl;
     cin >> selecao;
     // Retorna a opção escolhida pelo usuário
@@ -39,7 +44,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
         }
         case 1: {
             // Recupera quantidade total de reviews para exibir a faixa para o usuário
-            int total = Review::recuperarQuantidadeReviews(arquivo_processado);
+            int total = Review::recuperarQuantidadeReviews(posicoes_salvas);
             // Pergunta e le qual id de review ele quer acessar
             cout << "O arquivo contem " << total << " reviews, digite um indice:"  << endl;
             int id;
@@ -69,7 +74,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             // Seta a seed do aleatório
             srand(time(0));
             // Recupera a quantidade de reviews salva dentro do arquivo binário
-            int total = Review::recuperarQuantidadeReviews(arquivo_processado);
+            int total = Review::recuperarQuantidadeReviews(posicoes_salvas);
             // Se a opção do usuário for 1 é pra exibir n=10 reviews no console
             if (opcao == 1) {
                 // Starta cronometro
@@ -135,6 +140,18 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             } else {
                 cout << "Resposta Invalida! Responda [1] ou [2]." << endl;
             }
+            break;
+        }
+        case 3: {
+            cout << "Digite o valor de N: " << endl;
+            int n = 0;
+            cin >> n;
+            ReviewP* reviews = recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+//            for(int i = 0; i < n; i++) {
+//                if(i > 10000 && i < 10010) {
+//                    reviews[i]->imprimir();
+//                }
+//            }
             break;
         }
         default: {
@@ -250,13 +267,10 @@ void processar(ifstream &arquivo_csv, ofstream &arquivo_bin, ofstream &arquivo_p
             delete[] colunas;
         }
     }
-    // Salvando a quantidade de reviews no final do arquivo
-    if(qnt_linhas > 0) {
-        arquivo_bin.write((char *) &qnt_linhas, sizeof(int));
-    }
-
     // fechando o arquivo binário
     arquivo_bin.close();
+    arquivo_posicoes.close();
+
     // registando o final da operação
     auto end = std::chrono::high_resolution_clock::now();
     // calculando o tempo total de execução
@@ -284,10 +298,10 @@ int main(int argc, char const *argv[]) {
     posicoes_salvas.open(argv[1] + nome_posicoes, ios::binary);
 
     // verificando se a abertura do arquivo ocorreu sem nenhum erro
-//    if (arquivo_bin.is_open() && posicoes_salvas.is_open()) {
-    if (false) {
+    if (arquivo_bin.is_open() && posicoes_salvas.is_open()) {
+//    if (false) {
         // quantidade de registros presentes no arquivo
-        int total = Review::recuperarQuantidadeReviews(arquivo_bin);
+        int total = Review::recuperarQuantidadeReviews(posicoes_salvas);
         // impressão padrão
         cout << "----------------------------------------------" << endl;
         cout << "Foi encontrado um arquivo bin com " << total << " reviews." << endl;
@@ -348,3 +362,27 @@ int main(int argc, char const *argv[]) {
 
     return 0;
 }
+
+// Inicio Recuperar N reviews aleatorios
+ReviewP* recuperarReviewsAleatorios(ifstream &arquivo_processado, ifstream &posicoes_salvas, int n) {
+    int qntReviews = Review::recuperarQuantidadeReviews(posicoes_salvas);
+    int intAleatorio;
+    if(n <= qntReviews) {
+        cout << "Criando vetor..." << endl;
+        ReviewP* reviews = new ReviewP[n];
+        for(int i = 0; i < n; i++) {
+            reviews[i] = new Review();
+        }
+        for(int i = 0; i < n; i++) {
+            intAleatorio = rand()%(qntReviews) + 1;
+            Review* review = Review::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
+            reviews[i]->receberReview(review);
+        }
+        cout << "Vetor Criado!" << endl;
+        return reviews;
+    }else {
+        cout << "Erro: Nao existe essa quantidade de Reviews para importar" << endl;
+        return nullptr;
+    }
+}
+// Fim Recuperar N reviews aleatorios
