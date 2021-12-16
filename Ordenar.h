@@ -13,6 +13,9 @@ class Ordenar {
         static void heapify(ReviewPonteiro *reviews, int i, int n);
         static void constroiHeap(ReviewPonteiro *reviews, int n);
         static void heapSort(ReviewPonteiro *reviews, int n);
+        static int obterMaiorValor(ReviewPonteiro *reviews, int n);
+        static void countSort(ReviewPonteiro *reviews, int n, int exp);
+        static void radixSort(ReviewPonteiro *reviews, int n);
 };
 
 #endif //ED2_ORDENAR_H

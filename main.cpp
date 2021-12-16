@@ -147,18 +147,18 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             int n = 0;
             cin >> n;
             ReviewP* reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
-//            for(int u = 0; u < n; u++) {
-//                cout << reviews[u]->getUpvotes() << ", ";
-//            }
-//            cout << endl;
+            for(int u = 0; u < n; u++) {
+                cout << reviews[u]->getUpvotes() << ", ";
+            }
+            cout << endl;
             int comparacoes = 0;
             int movimentacoes = 0;
             //Ordenar::quickSort(reviews, 0, n-1, &comparacoes, &movimentacoes);
-            Ordenar::heapSort(reviews, n);
-//            for(int u = 0; u < n; u++) {
-//                cout << reviews[u]->getUpvotes() << ", ";
-//            }
-//            cout << endl;
+            Ordenar::radixSort(reviews, n);
+            for(int u = 0; u < n; u++) {
+                cout << reviews[u]->getUpvotes() << ", ";
+            }
+            cout << endl;
             cout << "Vetor ordenado com: " << comparacoes << " comparacoes e " << movimentacoes << " movimentacoes." << endl;
             break;
         }

@@ -78,3 +78,51 @@ void Ordenar::heapSort(ReviewPonteiro *reviews, int n) {
         n--;
     }
 }
+
+int Ordenar::obterMaiorValor(ReviewPonteiro *reviews, int n) {
+    int maior = reviews[0]->getUpvotes();
+    for (int i = 1; i < n; i++) {
+        if (reviews[i]->getUpvotes() > maior) {
+            maior = reviews[i]->getUpvotes();
+        }
+    }
+    return maior;
+}
+
+void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp) {
+    ReviewPonteiro *output = new ReviewPonteiro[n];
+    int maior = Ordenar::obterMaiorValor(reviews, n);
+    int ultimoIndice = maior + 1;
+    int *count = new int[ultimoIndice];
+
+    for(int i = 0; i < ultimoIndice; i++){
+        count[i] = 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        count[(reviews[i]->getUpvotes() / exp) % 10]++;
+    }
+
+    for (int i = 1; i < ultimoIndice; i++) {
+        count[i] += count[i - 1];
+    }
+
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[(reviews[i]->getUpvotes() / exp) % 10] - 1] = reviews[i];
+        count[(reviews[i]->getUpvotes() / exp) % 10]--;
+    }
+
+    for (int i = 0; i < n; i++) {
+        reviews[i] = output[i];
+    }
+
+    delete [] output;
+}
+
+void Ordenar::radixSort(ReviewPonteiro *reviews, int n) {
+    int m = Ordenar::obterMaiorValor(reviews, n);
+
+    for (int exp = 1; m / exp > 0; exp *= 10) {
+        Ordenar::countSort(reviews, n, exp);
+    }
+}
