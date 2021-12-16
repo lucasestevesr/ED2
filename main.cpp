@@ -153,7 +153,8 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
 //            cout << endl;
             int comparacoes = 0;
             int movimentacoes = 0;
-            Ordenar::quickSort(reviews, 0, n-1, &comparacoes, &movimentacoes);
+            //Ordenar::quickSort(reviews, 0, n-1, &comparacoes, &movimentacoes);
+            Ordenar::heapSort(reviews, n);
 //            for(int u = 0; u < n; u++) {
 //                cout << reviews[u]->getUpvotes() << ", ";
 //            }

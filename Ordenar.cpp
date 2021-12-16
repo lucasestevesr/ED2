@@ -50,3 +50,31 @@ void Ordenar::quickSort(ReviewPonteiro *reviews, int ini, int fim, int *comparac
         return;
     }
 }
+
+void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n) {
+    while(i < n) {
+        int filho = 2*i + 1;
+        if(filho < n) {
+            if(filho+1 < n && reviews[filho+1]->getUpvotes() > reviews[filho]->getUpvotes())
+                filho++;
+
+            if(reviews[filho]->getUpvotes() > reviews[i]->getUpvotes())
+                swap(reviews[i], reviews[filho]);
+        }
+        i = filho;
+    }
+}
+
+void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n) {
+    for(int i = n/2-1; i >= 0; i--)
+        Ordenar::heapify(reviews, i, n);
+}
+
+void Ordenar::heapSort(ReviewPonteiro *reviews, int n) {
+    Ordenar::constroiHeap(reviews, n);
+    while(n > 0) {
+        swap(reviews[0], reviews[n-1]);
+        Ordenar::heapify(reviews, 0, n-1);
+        n--;
+    }
+}
