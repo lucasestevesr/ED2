@@ -77,8 +77,9 @@ void Ordenar::heapSort(ReviewPonteiro *reviews, int n) {
         Ordenar::heapify(reviews, 0, n-1);
         n--;
     }
-}
+}   
 
+// Esta função garante que foi recuperado o valor com maior de quantidade de algarismos dentro dentre todos os indices possíveis do vetor
 int Ordenar::obterMaiorValor(ReviewPonteiro *reviews, int n) {
     int maior = reviews[0]->getUpvotes();
     for (int i = 1; i < n; i++) {
@@ -99,29 +100,37 @@ void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp) {
         count[i] = 0;
     }
 
+    // Avança sobre cara valor dentro de um indice fazendo divisões sucessivas por 10 e recuperando a parte inteira no dono indice para fazer novas comparações
     for (int i = 0; i < n; i++) {
         count[(reviews[i]->getUpvotes() / exp) % 10]++;
     }
 
+    // Após as comparações, um novo indice "i" é preenchido com base nos elementos já orenados do vetor na posição anterior "i-1", ou seja, o indice "i" do array, terá os mesmos elementos 
     for (int i = 1; i < ultimoIndice; i++) {
         count[i] += count[i - 1];
     }
 
+
     for (int i = n - 1; i >= 0; i--) {
+        // Como o algoritmo utiliza a forma LSD(Least significant digit), os indices tem seus algarismos comparados da direita para a esquerda
         output[count[(reviews[i]->getUpvotes() / exp) % 10] - 1] = reviews[i];
+        // Recupera cada algarismo dentro de um determinado indice
         count[(reviews[i]->getUpvotes() / exp) % 10]--;
     }
 
+    // O array de saida recebe em cada um de seus indices os elementos do array output, sendo que output já foi ordenado de acordo com a posição do algarismo atual  
     for (int i = 0; i < n; i++) {
         reviews[i] = output[i];
     }
 
+    // Deleta o array output pois o novo array que será iterado está com seus elementos atualizados (reviews[]), sendo output, um array auxiliar
     delete [] output;
 }
 
 void Ordenar::radixSort(ReviewPonteiro *reviews, int n) {
     int m = Ordenar::obterMaiorValor(reviews, n);
 
+    // Enquanto o total de unidades de um indice for maior que 0, para avançar em uma casa decimal para esquerda dentro deste indice, exp precisa ser um multiplo de 10 para fazer a divisão do indice
     for (int exp = 1; m / exp > 0; exp *= 10) {
         Ordenar::countSort(reviews, n, exp);
     }
