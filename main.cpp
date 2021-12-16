@@ -15,7 +15,7 @@ const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_posicoes = "posicoes_reviews.bin";
 const string nome_txt = "export_reviews.txt";
 
-// Inicio função menu de opções
+// Inicio funcao menu de opcoes
 int menu() {
     int selecao;
     cout << "-------------------- MENU --------------------" << endl;
@@ -27,9 +27,9 @@ int menu() {
     // Retorna a opção escolhida pelo usuário
     return selecao;
 }
-// Fim função menu de opções
+// Fim funcao menu de opcoes
 
-// Início função selecionar
+// Inicio funcao selecionar
 void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio) {
     // Função serve para fazer o switch da opção escolhida pelo usuário
     switch (selecao) {
@@ -158,8 +158,9 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
         }
     }
 }
-// Fim função selecionar
+// Fim funcao selecionar
 
+// Inicio funcao main menu
 void mainMenu(ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio) {
     int selecao = 1;
     while (selecao != 0) {
@@ -167,9 +168,10 @@ void mainMenu(ifstream &arquivo_processado, ifstream &posicoes_salvas, string di
         selecionar(selecao, arquivo_processado, posicoes_salvas, diretorio);
     }
 }
+// Fim funcao main menu
 
+// Inicio funcao main
 int main(int argc, char const *argv[]) {
-
     // verificando os parâmetro de input do usuário por linha de comando
     if (argc != 2) {
         cout << "Erro: Esperando: ./<program_name> <diretorio_arquivos>" << endl;
@@ -186,7 +188,6 @@ int main(int argc, char const *argv[]) {
 
     // verificando se a abertura do arquivo ocorreu sem nenhum erro
     if (arquivo_bin.is_open() && posicoes_salvas.is_open()) {
-//    if (false) {
         // quantidade de registros presentes no arquivo
         int total = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
         // impressão padrão
@@ -238,9 +239,8 @@ int main(int argc, char const *argv[]) {
                 cout << "Erro: Nao foi possivel abrir o arquivo bin '" << nome_bin << "'" << endl;
                 exit(1);
             }
-
-            // tratando a exceção para o caso do arquivo csv apresentar problemas na abertura
         } else {
+            // tratando a exceção para o caso do arquivo csv apresentar problemas na abertura
             cout << "Erro: Nao foi possivel abrir o arquivo csv '" << nome_csv << "'" << endl;
             cout << "Confira se o diretorio realmente existe e contem o arquivo. Atencao nas \\, necessario \\ no final." << endl;
             exit(1);
@@ -249,3 +249,4 @@ int main(int argc, char const *argv[]) {
 
     return 0;
 }
+// Fim funcao main

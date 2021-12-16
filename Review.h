@@ -36,7 +36,7 @@ class Review {
         // Fim Getters e Setters
         // Imprimir Review
         void imprimir();
-        // Receber todos campos do review
+        // Receber todos atributos do Review
         void receberReview(Review* review);
         // Salvar todos atributos do Review
         void salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes);

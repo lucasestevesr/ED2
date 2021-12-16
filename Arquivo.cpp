@@ -1,83 +1,6 @@
 #include "Arquivo.h"
 
-// Inicio Recuperar N reviews aleatorios
-ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado, ifstream &posicoes_salvas, int n) {
-    int qntReviews = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
-    int intAleatorio;
-    if(n <= qntReviews) {
-        cout << "Criando vetor..." << endl;
-        ReviewPonteiro* reviews = new ReviewPonteiro[n];
-        for(int i = 0; i < n; i++) {
-            reviews[i] = new Review();
-        }
-        for(int i = 0; i < n; i++) {
-            intAleatorio = rand()%(qntReviews) + 1;
-            Review* review = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
-            reviews[i]->receberReview(review);
-        }
-        cout << "Vetor Criado!" << endl;
-        return reviews;
-    }else {
-        cout << "Erro: Nao existe essa quantidade de Reviews para importar" << endl;
-        return nullptr;
-    }
-}
-// Fim Recuperar N reviews aleatorios
-
-
-// Início função Buscar Colunas
-bool Arquivo::buscarColunas(string linha, string *colunas, bool &entreAspas, int &colunaAtual) {
-    // String aux para o dado atual que tiver lendo
-    string dado = "";
-    // Percorre caracter por caracter da linha
-    for (int i = 0; i < linha.size(); i++) {
-        // Se encontrar uma " e não tiver entre aspas, define a variavel entre aspas como true
-        if (linha[i] == '"' && !entreAspas) {
-            entreAspas = true;
-        } else if (linha[i] == '"' && entreAspas) {
-            // Se encontrar uma " e tiver entre aspas, define a variavel entre aspas como false
-            entreAspas = false;
-        }
-        // Se encontrar uma vírgula e ela não tiver entre aspas chegou no final da coluna
-        if (linha[i] == ',' && !entreAspas) {
-            // Armazena o dado na coluna atual
-            colunas[colunaAtual] += dado;
-            // Limpa o dado
-            dado = "";
-            // Incrementa a coluna atual
-            colunaAtual++;
-        } else {
-            // Vai alimentando a variavel dado com os caracteres
-            dado += linha[i];
-        }
-        // Se tiver na última coluna
-        if (colunaAtual == 4) {
-            // Limpa a variavel dado
-            dado = "";
-            // Começa percorrer a linha de trás pra frente pra pegar a ultima coluna
-            for (int j = linha.size(); j > 0; j--) {
-                // Se achar a vírgula chegou no final
-                if (linha[j] == ',') {
-                    colunas[colunaAtual] += dado;
-                    // Retorna que acabou de ler o registro
-                    return true;
-                }
-                // Incrementa o dado
-                dado = linha[j] + dado;
-            }
-            break;
-        }
-        // Se chegar no final da linha e ainda não terminou o registro.
-        // Volta para a função processar e pega a proxima linha
-        if (i == linha.size() - 1) {
-            colunas[colunaAtual] += dado;
-            break;
-        }
-    }
-    return false;
-}
-// Fim função Buscar Colunas
-
+// Inicio funcao Processar Csv para Bin
 void Arquivo::processar(ifstream &arquivo_csv, ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
     // iniciando a marcação do tempo
     auto start = std::chrono::high_resolution_clock::now();
@@ -136,8 +59,88 @@ void Arquivo::processar(ifstream &arquivo_csv, ofstream &arquivo_bin, ofstream &
     cout << "Foram processadas " << qnt_linhas << " reviews." << endl;
     cout << "Processamento finalizado!" << endl;
 }
+// Fim funcao Processar Csv para Bin
 
-// Recuperar quantidade de Reviews dentro do arquivo
+// Inicio função Buscar Colunas
+bool Arquivo::buscarColunas(string linha, string *colunas, bool &entreAspas, int &colunaAtual) {
+    // String aux para o dado atual que tiver lendo
+    string dado = "";
+    // Percorre caracter por caracter da linha
+    for (int i = 0; i < linha.size(); i++) {
+        // Se encontrar uma " e não tiver entre aspas, define a variavel entre aspas como true
+        if (linha[i] == '"' && !entreAspas) {
+            entreAspas = true;
+        } else if (linha[i] == '"' && entreAspas) {
+            // Se encontrar uma " e tiver entre aspas, define a variavel entre aspas como false
+            entreAspas = false;
+        }
+        // Se encontrar uma vírgula e ela não tiver entre aspas chegou no final da coluna
+        if (linha[i] == ',' && !entreAspas) {
+            // Armazena o dado na coluna atual
+            colunas[colunaAtual] += dado;
+            // Limpa o dado
+            dado = "";
+            // Incrementa a coluna atual
+            colunaAtual++;
+        } else {
+            // Vai alimentando a variavel dado com os caracteres
+            dado += linha[i];
+        }
+        // Se tiver na última coluna
+        if (colunaAtual == 4) {
+            // Limpa a variavel dado
+            dado = "";
+            // Começa percorrer a linha de trás pra frente pra pegar a ultima coluna
+            for (int j = linha.size(); j > 0; j--) {
+                // Se achar a vírgula chegou no final
+                if (linha[j] == ',') {
+                    colunas[colunaAtual] += dado;
+                    // Retorna que acabou de ler o registro
+                    return true;
+                }
+                // Incrementa o dado
+                dado = linha[j] + dado;
+            }
+            break;
+        }
+        // Se chegar no final da linha e ainda não terminou o registro.
+        // Volta para a função processar e pega a proxima linha
+        if (i == linha.size() - 1) {
+            colunas[colunaAtual] += dado;
+            break;
+        }
+    }
+    return false;
+}
+// Fim função Buscar Colunas
+
+// Inicio salvar atributos do tipo string
+void Arquivo::salvarString(ofstream &arquivo_bin, string valor) {
+    // Pega o tamanho da string
+    size_t tamanho = valor.size();
+    // Escreve o tamanho da string no arquivo
+    arquivo_bin.write((char *) &tamanho, sizeof(tamanho));
+    // Escreve a string com o tamanho dela no arquivo
+    arquivo_bin.write(valor.c_str(), tamanho);
+}
+// Fim salvar atributos do tipo string
+
+// Inicio recuperar atributos do tipo string
+string Arquivo::recuperarString(ifstream &arquivo_processado) {
+    // Declara a variavel texto e a variavel tamanho
+    string texto;
+    string::size_type tamanho;
+    // Le o tamanho da string no arquivo processado
+    arquivo_processado.read((char *) &tamanho, sizeof(tamanho));
+    // Le a string usando o tamanho lido
+    texto.resize(tamanho);
+    arquivo_processado.read(&texto[0], tamanho);
+
+    return texto;
+}
+// Fim recuperar atributos do tipo string
+
+// Inicio recuperar quantidade de Reviews no Bin
 int Arquivo::recuperarQuantidadeReviews(ifstream &posicoes_salvas) {
     // Declara variavel quantidade de Reviews
     int quantidade = 0;
@@ -151,9 +154,9 @@ int Arquivo::recuperarQuantidadeReviews(ifstream &posicoes_salvas) {
 
     return quantidade;
 }
-// Fim Recuperar quantidade de Reviews dentro do arquivo
+// Fim recuperar quantidade de Reviews no Bin
 
-// Recuperar Posição Review pelo índice
+// Inicio recuperar posição Review pelo indice
 int Arquivo::recuperarPosicaoReviewPeloId(ifstream &posicoes_salvas, int id) {
     // Declara variaveis uteis de posicao
     int posicaoReview = -1;
@@ -168,13 +171,12 @@ int Arquivo::recuperarPosicaoReviewPeloId(ifstream &posicoes_salvas, int id) {
 
     return posicaoReview;
 }
-// Fim recuperar Posição Review pelo índice
+// Fim recuperar posição Review pelo indice
 
-// Recuperar Review pelo índice
+// Inicio recuperar Review pelo indice
 Review* Arquivo::recuperarReviewPeloId(ifstream &arquivo_processado, ifstream &posicoes_salvas, int id) {
     // Declara variaveis auxiliares
     int intAux;
-    int idAtual = 1;
     Review *review = new Review();
 
     // Recupera quantidade total de Reviews
@@ -212,31 +214,47 @@ Review* Arquivo::recuperarReviewPeloId(ifstream &arquivo_processado, ifstream &p
 
     return nullptr;
 }
-// Fim Recuperar Review pelo índice
+// Fim recuperar Review pelo indice
 
+// Inicio recuperar N Reviews aleatorios
+ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado, ifstream &posicoes_salvas, int n) {
+    // Guarda o time que comecou
+    auto start = std::chrono::high_resolution_clock::now();
+    // Pega a quantidade de Reviews salvas
+    int qntReviews = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
+    // Declara variavel do indice aleatorio que vai ficar trocando
+    int intAleatorio;
+    // Verifica se o N desejado e possivel
+    if(n <= qntReviews) {
+        cout << "Importando " << n << " Reviews aleatorios do arquivo Bin..." << endl;
+        // Instancia o vetor com os Reviews
+        ReviewPonteiro* reviews = new ReviewPonteiro[n];
+        // Preenche previamente todas posicoes do vetor com Reviews vazias
+        for(int i = 0; i < n; i++) {
+            reviews[i] = new Review();
+        }
+        // Percorre o numero de iteracoes necessarias
+        for(int i = 0; i < n; i++) {
+            // Gera um novo indice aleatorio a cada iteracao
+            intAleatorio = rand()%(qntReviews) + 1;
+            // Busco o Review no arquivo binario
+            Review* review = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
+            // Faz a copia das informacoes para o Review previamente definido em branco
+            reviews[i]->receberReview(review);
+        }
 
-// Recuperar attributes do tipo string
-string Arquivo::recuperarString(ifstream &arquivo_processado) {
-    // Declara a variavel texto e a variavel tamanho
-    string texto;
-    string::size_type tamanho;
-    // Le o tamanho da string no arquivo processado
-    arquivo_processado.read((char *) &tamanho, sizeof(tamanho));
-    // Le a string usando o tamanho lido
-    texto.resize(tamanho);
-    arquivo_processado.read(&texto[0], tamanho);
+        cout << "Importado com sucesso!" << endl;
+        // Registando o final da operação
+        auto end = std::chrono::high_resolution_clock::now();
+        // Calculando o tempo total de execução
+        auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        // Imprimindo resultados do processo
+        cout << "O tempo gasto foi de " << to_string(int_m.count()) << " milissegundos." << endl;
 
-    return texto;
+        return reviews;
+    }else {
+        cout << "Erro: Nao existe essa quantidade de Reviews para importar" << endl;
+        return nullptr;
+    }
 }
-// Fim Recuperar atributos do tipo string
-
-// Salvar atributos do tipo string
-void Arquivo::salvarString(ofstream &arquivo_bin, string valor) {
-    // Pega o tamanho da string
-    size_t tamanho = valor.size();
-    // Escreve o tamanho da string no arquivo
-    arquivo_bin.write((char *) &tamanho, sizeof(tamanho));
-    // Escreve a string com o tamanho dela no arquivo
-    arquivo_bin.write(valor.c_str(), tamanho);
-}
-// Fim Salvar atributos do tipo string
+// Fim recuperar N Reviews aleatorios

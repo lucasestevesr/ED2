@@ -86,7 +86,7 @@ void Review::receberReview(Review* review) {
 }
 // Fim Receber Review
 
-// Salvar todos atributos do Review
+// Inicio Salvar Review
 void Review::salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
     int posicaoReview = arquivo_bin.tellp();
     Arquivo::salvarString(arquivo_bin, this->id);
@@ -96,4 +96,4 @@ void Review::salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
     Arquivo::salvarString(arquivo_bin, this->posted_date);
     arquivo_posicoes.write((char *) &posicaoReview, sizeof(int));
 }
-// Fim Salvar todos atributos do Review
+// Fim Salvar Review
