@@ -16,45 +16,64 @@ const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_posicoes = "posicoes_reviews.bin";
 const string nome_txt = "export_reviews.txt";
 const string nome_input = "input.txt";
+const string nome_saida = "saida.txt";
 
+// Inicio funcao testar quickSort
 void testarQuickSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoes, int *movimentacoes) {
+    // Zera as variaveis de analises
     (*tempo) = 0;
     (*comparacoes) = 0;
     (*movimentacoes) = 0;
+    // Guarda o time que começou
     auto start = std::chrono::high_resolution_clock::now();
+    // Chama a quickSort
     Ordenar::quickSort(reviews, 0, n-1, comparacoes, movimentacoes);
+    // Pega o tempo que acabou e salva
     auto end = std::chrono::high_resolution_clock::now();
     auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     (*tempo) = int_m.count();
 }
+// Fim funcao testar quickSort
 
+// Inicio funcao testar heapSort
 void testarHeapSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoes, int *movimentacoes) {
+    // Zera as variaveis de analises
     (*tempo) = 0;
     (*comparacoes) = 0;
     (*movimentacoes) = 0;
+    // Guarda o time que começou
     auto start = std::chrono::high_resolution_clock::now();
+    // Chama a heapSort
     Ordenar::heapSort(reviews, n, comparacoes, movimentacoes);
+    // Pega o tempo que acabou e salva
     auto end = std::chrono::high_resolution_clock::now();
     auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     (*tempo) = int_m.count();
 }
+// Fim funcao testar heapSort
 
+// Inicio funcao testar radixSort
 void testarRadixSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoes, int *movimentacoes) {
+    // Zera as variaveis de analises
     (*tempo) = 0;
     (*comparacoes) = 0;
     (*movimentacoes) = 0;
+    // Guarda o time que começou
     auto start = std::chrono::high_resolution_clock::now();
+    // Chama a radixSort
     Ordenar::radixSort(reviews, n, comparacoes, movimentacoes);
+    // Pega o tempo que acabou e salva
     auto end = std::chrono::high_resolution_clock::now();
     auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     (*tempo) = int_m.count();
 }
+// Fim funcao testar radixSort
 
 // Inicio funcao menu de opcoes
 int menu() {
     int selecao;
     cout << "-------------------- MENU --------------------" << endl;
-    cout << "[1] Analisar Algoritmos de Ordenacao:" << endl;
+    cout << "[1] Analisar Algoritmos de Ordenacao" << endl;
     cout << "[2] Versoes do app mais frequentes - Hash" << endl;
     cout << "[3] Modulo de Teste" << endl;
     cout << "[0] Sair" << endl;
@@ -78,54 +97,71 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
         }
         case 1: {
             int m = 3, n = 0;
-            int medias[m][3]; // 0 => tempo, 1 => comparacoes, 2 => movimentacoes
+            int medias[3][3]; // 0 => tempo, 1 => comparacoes, 2 => movimentacoes
+            int mediaGeral[3][3];
             int total = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
+
+            for(int i = 0; i < 3; i++) {
+                mediaGeral[i][0] = 0;
+                mediaGeral[i][1] = 0;
+                mediaGeral[i][2] = 0;
+            }
 
             ifstream arquivo_input;
             arquivo_input.open(diretorio + nome_input);
 
+            ofstream arquivo_saida;
+            arquivo_saida.open(diretorio + nome_saida, ios::trunc);
+
             int tempo = 0, comparacoes = 0, movimentacoes = 0;
             while(arquivo_input >> n) {
                 if(n > 0 && n <= total) {
+                    for(int i = 0; i < 3; i++) {
+                        medias[i][0] = 0;
+                        medias[i][1] = 0;
+                        medias[i][2] = 0;
+                    }
+                    arquivo_saida << "============================= N = " << n << " reviews =============================" << endl;
                     // QuickSort
                     for(int i = 0; i < m; i++) {
                         ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
                         testarQuickSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-                        cout << "Quick: tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
-                        medias[0][0] = tempo/m;
-                        medias[0][1] = comparacoes/m;
-                        medias[0][2] = movimentacoes/m;
+                        arquivo_saida << "Quick " << m << ": tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
+                        medias[0][0] += tempo/m;
+                        medias[0][1] += comparacoes/m;
+                        medias[0][2] += movimentacoes/m;
                         Arquivo::desalocarVetorReviews(reviews, n);
                     }
                     // HeapSort
                     for(int i = 0; i < m; i++) {
                         ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
                         testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-                        cout << "Heap: tempo = " << to_string(tempo) << "milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
-                        medias[1][0] = tempo/m;
-                        medias[1][1] = comparacoes/m;
-                        medias[1][2] = movimentacoes/m;
+                        arquivo_saida << "Heap " << m << ": tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
+                        medias[1][0] += tempo/m;
+                        medias[1][1] += comparacoes/m;
+                        medias[1][2] += movimentacoes/m;
                         Arquivo::desalocarVetorReviews(reviews, n);
                     }
                     // RadixSort
                     for(int i = 0; i < m; i++) {
                         ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
-                        testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-                        cout << "Radix: tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
-                        medias[2][0] = tempo/m;
-                        medias[2][1] = comparacoes/m;
-                        medias[2][2] = movimentacoes/m;
+                        testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
+                        arquivo_saida << "Radix " << m << ": tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
+                        medias[2][0] += tempo/m;
+                        medias[2][1] += comparacoes/m;
+                        medias[2][2] += movimentacoes/m;
                         Arquivo::desalocarVetorReviews(reviews, n);
                     }
-                    for(int i = 0; i < m; i++) {
+                    for(int i = 0; i < 3; i++) {
                         if(i == 0)
-                            cout << "Media Quick: ";
+                            arquivo_saida << "Media Quick: ";
                         else if(i == 1)
-                            cout << "Media Heap: ";
+                            arquivo_saida << "Media Heap: ";
                         else
-                            cout << "Media Radix: ";
-                        cout << "tempo=" << medias[i][0] << " milissegundos, comparacoes=" << medias[i][1] << " movimentacoes=" << medias[i][2] << endl;
+                            arquivo_saida << "Media Radix: ";
+                        arquivo_saida << "tempo = " << to_string(medias[i][0]) << " milissegundos, comparacoes = " << to_string(medias[i][1]) << " movimentacoes = " << to_string(medias[i][2]) << endl;
                     }
+                    arquivo_saida << "=============================================================================" << endl;
                 } else {
                     cout << "Erro: Valor de N lido e invalido!" << endl;
                 }
@@ -133,11 +169,18 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 2: {
-
+            cout << "Nao implementado" << endl;
+//            int tempo = 0, comparacoes = 0, movimentacoes = 0, n = 100000;
+//            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+//            testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
+//            for(int i = 0; i < n; i++) {
+//                cout << reviews[i]->getUpvotes() << ", ";
+//            }
+            cout << endl;
             break;
         }
         case 3: {
-
+            cout << "Nao implementado" << endl;
             break;
         }
         default: {
@@ -178,7 +221,7 @@ int main(int argc, char const *argv[]) {
         // quantidade de registros presentes no arquivo
         int total = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
         // impressão padrão
-        cout << "----------------------------------------------" << endl;
+        cout << "================================================" << endl;
         cout << "Foi encontrado um arquivo bin com " << total << " reviews." << endl;
 
         // menu de opções para o usuário
@@ -220,7 +263,7 @@ int main(int argc, char const *argv[]) {
             posicoes_salvas.open(argv[1] + nome_posicoes, ios::binary);
 
             // checando se o arquivo foi aberto com sucesso
-            if (arquivo_processado.is_open()) {
+            if (arquivo_processado.is_open() && posicoes_salvas.is_open()) {
                 mainMenu(arquivo_processado, posicoes_salvas, argv[1]);
             } else {
                 cout << "Erro: Nao foi possivel abrir o arquivo bin '" << nome_bin << "'" << endl;

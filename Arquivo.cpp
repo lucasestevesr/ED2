@@ -35,7 +35,6 @@ void Arquivo::processar(ifstream &arquivo_csv, ofstream &arquivo_bin, ofstream &
             }
             // ao fim do registro, é criada uma nova instância de Review com os dados do mesmo
             Review *review = new Review(colunas[0], colunas[1], stoi(colunas[2]), colunas[3], colunas[4]);
-//            review->imprimir();
             // Convertendo o registro encontrado para o arquivo binário
             review->salvarReview(arquivo_bin, arquivo_posicoes);
 
@@ -43,7 +42,8 @@ void Arquivo::processar(ifstream &arquivo_csv, ofstream &arquivo_bin, ofstream &
             qnt_linhas++;
 
             // deletando o vetor colunas
-            delete[] colunas;
+            delete [] colunas;
+            delete review;
         }
     }
     // fechando o arquivo binário
@@ -230,18 +230,12 @@ ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado
         cout << "Importando " << n << " Reviews aleatorios do arquivo Bin..." << endl;
         // Instancia o vetor com os Reviews
         ReviewPonteiro* reviews = new ReviewPonteiro[n];
-        // Preenche previamente todas posicoes do vetor com Reviews vazias
-        for(int i = 0; i < n; i++) {
-            reviews[i] = new Review();
-        }
         // Percorre o numero de iteracoes necessarias
         for(int i = 0; i < n; i++) {
             // Gera um novo indice aleatorio a cada iteracao
             intAleatorio = rand()%(qntReviews) + 1;
-            // Busco o Review no arquivo binario
-            Review* review = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
-            // Faz a copia das informacoes para o Review previamente definido em branco
-            reviews[i]->receberReview(review);
+            // Busco o Review aleatorio no arquivo binario e seta no vetor
+            reviews[i] = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
         }
 
         cout << "Importado com sucesso!" << endl;

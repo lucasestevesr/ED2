@@ -17,10 +17,15 @@ Review::Review(string id, string text, int upvotes, string app_version, string p
 // Fim Construtor com atributos
 
 // Construtor vazio
-Review::Review() {};
+Review::Review() {}
 
 // Destrutor
-Review::~Review() {};
+Review::~Review() {
+    this->id.clear();
+    this->text.clear();
+    this->app_version.clear();
+    this->posted_date.clear();
+}
 
 // Getters e Setters
 string Review::getId() {
@@ -67,17 +72,18 @@ void Review::setPostedDate(string posted_date) {
 // Imprimir Review
 void Review::imprimir() {
     cout << "-----------------------------------------------------------------------------------------" << endl;
-    cout << this->id << endl;
-    cout << this->text << endl;
-    cout << to_string(this->upvotes) << endl;
-    cout << this->app_version << endl;
-    cout << this->posted_date << endl;
+    cout << "Id: " << this->id << endl;
+    cout << "Text: " << this->text << endl;
+    cout << "Upvotes: " << to_string(this->upvotes) << endl;
+    cout << "Version: " << this->app_version << endl;
+    cout << "Date: " << this->posted_date << endl;
     cout << "-----------------------------------------------------------------------------------------" << endl;
 }
 // Fim Imprimir Review
 
 // Inicio Receber Review
 void Review::receberReview(Review* review) {
+    // Copia todos os dados de um review recebido
     this->id = review->id;
     this->text = review->text;
     this->upvotes = review->upvotes;
@@ -88,12 +94,15 @@ void Review::receberReview(Review* review) {
 
 // Inicio Salvar Review
 void Review::salvarReview(ofstream &arquivo_bin, ofstream &arquivo_posicoes) {
+    // Salva posicao do cursor no binario antes de escrever o novo review, ou seja, esta sera a posicao de inicio dele
     int posicaoReview = arquivo_bin.tellp();
+    // Escreve todos os atributos do review no arquivo bin
     Arquivo::salvarString(arquivo_bin, this->id);
     Arquivo::salvarString(arquivo_bin, this->text);
     arquivo_bin.write((char *) &this->upvotes, sizeof(int));
     Arquivo::salvarString(arquivo_bin, this->app_version);
     Arquivo::salvarString(arquivo_bin, this->posted_date);
+    // Escreve a posicao desse review no arquivo auxiliar que armazena as posicoes de todos reviews
     arquivo_posicoes.write((char *) &posicaoReview, sizeof(int));
 }
 // Fim Salvar Review
