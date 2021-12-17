@@ -51,30 +51,35 @@ void Ordenar::quickSort(ReviewPonteiro *reviews, int ini, int fim, int *comparac
     }
 }
 
-void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n) {
+void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n, int *comparacoes, int *movimentacoes) {
     while(i < n) {
         int filho = 2*i + 1;
         if(filho < n) {
-            if(filho+1 < n && reviews[filho+1]->getUpvotes() > reviews[filho]->getUpvotes())
+            if(filho+1 < n && reviews[filho+1]->getUpvotes() > reviews[filho]->getUpvotes()){
                 filho++;
-
-            if(reviews[filho]->getUpvotes() > reviews[i]->getUpvotes())
+                (*comparacoes)++;
+            }
+            if(reviews[filho]->getUpvotes() > reviews[i]->getUpvotes()){
                 swap(reviews[i], reviews[filho]);
+                (*movimentacoes)++;
+            }
         }
         i = filho;
     }
 }
 
-void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n) {
-    for(int i = n/2-1; i >= 0; i--)
-        Ordenar::heapify(reviews, i, n);
+void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    for(int i = n/2-1; i >= 0; i--) {
+        Ordenar::heapify(reviews, i, n, comparacoes, movimentacoes);
+    }
 }
 
-void Ordenar::heapSort(ReviewPonteiro *reviews, int n) {
-    Ordenar::constroiHeap(reviews, n);
+void Ordenar::heapSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    Ordenar::constroiHeap(reviews, n, comparacoes, movimentacoes);
     while(n > 0) {
         swap(reviews[0], reviews[n-1]);
-        Ordenar::heapify(reviews, 0, n-1);
+        (*movimentacoes)++;
+        Ordenar::heapify(reviews, 0, n-1, comparacoes, movimentacoes);
         n--;
     }
 }   
@@ -90,10 +95,9 @@ int Ordenar::obterMaiorValor(ReviewPonteiro *reviews, int n) {
     return maior;
 }
 
-void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp) {
+void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp, int maiorValor, int *comparacoes, int *movimentacoes) {
     ReviewPonteiro *output = new ReviewPonteiro[n];
-    int maior = Ordenar::obterMaiorValor(reviews, n);
-    int ultimoIndice = maior + 1;
+    int ultimoIndice = maiorValor + 1;
     int *count = new int[ultimoIndice];
 
     for(int i = 0; i < ultimoIndice; i++){
@@ -110,7 +114,6 @@ void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp) {
         count[i] += count[i - 1];
     }
 
-
     for (int i = n - 1; i >= 0; i--) {
         // Como o algoritmo utiliza a forma LSD(Least significant digit), os indices tem seus algarismos comparados da direita para a esquerda
         output[count[(reviews[i]->getUpvotes() / exp) % 10] - 1] = reviews[i];
@@ -120,6 +123,9 @@ void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp) {
 
     // O array de saida recebe em cada um de seus indices os elementos do array output, sendo que output já foi ordenado de acordo com a posição do algarismo atual  
     for (int i = 0; i < n; i++) {
+        if(reviews[i] != output[i]) {
+            (*movimentacoes)++;
+        }
         reviews[i] = output[i];
     }
 
@@ -127,11 +133,12 @@ void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp) {
     delete [] output;
 }
 
-void Ordenar::radixSort(ReviewPonteiro *reviews, int n) {
-    int m = Ordenar::obterMaiorValor(reviews, n);
+void Ordenar::radixSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    int maiorValor = Ordenar::obterMaiorValor(reviews, n);
+    (*comparacoes) += n;
 
     // Enquanto o total de unidades de um indice for maior que 0, para avançar em uma casa decimal para esquerda dentro deste indice, exp precisa ser um multiplo de 10 para fazer a divisão do indice
-    for (int exp = 1; m / exp > 0; exp *= 10) {
-        Ordenar::countSort(reviews, n, exp);
+    for (int exp = 1; maiorValor / exp > 0; exp *= 10) {
+        Ordenar::countSort(reviews, n, exp, maiorValor, comparacoes, movimentacoes);
     }
 }

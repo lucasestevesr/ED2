@@ -26,6 +26,8 @@ class Arquivo {
         static Review* recuperarReviewPeloId(ifstream &arquivo_processado, ifstream &posicoes_salvas, int id);
         // Recuperar N Reviews aleatorios do arquivo bin
         static ReviewPonteiro* recuperarReviewsAleatorios(ifstream &arquivo_processado, ifstream &posicoes_salvas, int n);
+        // Desalocar memoria do vetor de Reviews
+        static void desalocarVetorReviews(ReviewPonteiro *reviews, int n);
 };
 
 #endif //ED2_ARQUIVO_H

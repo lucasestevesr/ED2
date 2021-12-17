@@ -226,6 +226,7 @@ ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado
     int intAleatorio;
     // Verifica se o N desejado e possivel
     if(n <= qntReviews) {
+        cout << "==================================================================" << endl;
         cout << "Importando " << n << " Reviews aleatorios do arquivo Bin..." << endl;
         // Instancia o vetor com os Reviews
         ReviewPonteiro* reviews = new ReviewPonteiro[n];
@@ -249,7 +250,8 @@ ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado
         // Calculando o tempo total de execução
         auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         // Imprimindo resultados do processo
-        cout << "O tempo gasto foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+        cout << "O tempo gasto para importar foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+        cout << "==================================================================" << endl;
 
         return reviews;
     }else {
@@ -258,3 +260,12 @@ ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado
     }
 }
 // Fim recuperar N Reviews aleatorios
+
+// Inicio desalocar memoria do vetor de Reviews
+void Arquivo::desalocarVetorReviews(ReviewPonteiro *reviews, int n) {
+    for(int i = 0; i < n; i++) {
+        delete reviews[i];
+    }
+    delete [] reviews;
+}
+// Fim desalocar memoria do vetor de Reviews

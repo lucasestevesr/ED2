@@ -8,21 +8,55 @@
 
 using namespace std;
 
-typedef Review* ReviewP;
+typedef Review* ReviewPonteiro;
 
 // Definindo constantes para os nomes dos arquivos
 const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_posicoes = "posicoes_reviews.bin";
 const string nome_txt = "export_reviews.txt";
+const string nome_input = "input.txt";
+
+void testarQuickSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoes, int *movimentacoes) {
+    (*tempo) = 0;
+    (*comparacoes) = 0;
+    (*movimentacoes) = 0;
+    auto start = std::chrono::high_resolution_clock::now();
+    Ordenar::quickSort(reviews, 0, n-1, comparacoes, movimentacoes);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    (*tempo) = int_m.count();
+}
+
+void testarHeapSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoes, int *movimentacoes) {
+    (*tempo) = 0;
+    (*comparacoes) = 0;
+    (*movimentacoes) = 0;
+    auto start = std::chrono::high_resolution_clock::now();
+    Ordenar::heapSort(reviews, n, comparacoes, movimentacoes);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    (*tempo) = int_m.count();
+}
+
+void testarRadixSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoes, int *movimentacoes) {
+    (*tempo) = 0;
+    (*comparacoes) = 0;
+    (*movimentacoes) = 0;
+    auto start = std::chrono::high_resolution_clock::now();
+    Ordenar::radixSort(reviews, n, comparacoes, movimentacoes);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    (*tempo) = int_m.count();
+}
 
 // Inicio funcao menu de opcoes
 int menu() {
     int selecao;
     cout << "-------------------- MENU --------------------" << endl;
-    cout << "[1] acessarReview(i):" << endl;
-    cout << "[2] testeImportacao():" << endl;
-    cout << "[3] importarVetor():" << endl;
+    cout << "[1] Analisar Algoritmos de Ordenacao:" << endl;
+    cout << "[2] Versoes do app mais frequentes - Hash" << endl;
+    cout << "[3] Modulo de Teste" << endl;
     cout << "[0] Sair" << endl;
     cin >> selecao;
     // Retorna a opção escolhida pelo usuário
@@ -43,123 +77,67 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 1: {
-            // Recupera quantidade total de reviews para exibir a faixa para o usuário
+            int m = 3, n = 0;
+            int medias[m][3]; // 0 => tempo, 1 => comparacoes, 2 => movimentacoes
             int total = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
-            // Pergunta e le qual id de review ele quer acessar
-            cout << "O arquivo contem " << total << " reviews, digite um indice:"  << endl;
-            int id;
-            cin >> id;
-            // Starta o cronometro
-            auto start = std::chrono::high_resolution_clock::now();
-            // Chama a função para recuperar o Review pelo id
-            Review *review = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, id);
-            // Se o review retornado for diferente de nullptr vai imprimi-lo
-            if (review != nullptr) {
-                review->imprimir();
-            } else {
-                // Se não encontrar o review exibe um erro
-                cout << "Erro: Review nao encontrado!" << endl;
+
+            ifstream arquivo_input;
+            arquivo_input.open(diretorio + nome_input);
+
+            int tempo = 0, comparacoes = 0, movimentacoes = 0;
+            while(arquivo_input >> n) {
+                if(n > 0 && n <= total) {
+                    // QuickSort
+                    for(int i = 0; i < m; i++) {
+                        ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+                        testarQuickSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
+                        cout << "Quick: tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
+                        medias[0][0] = tempo/m;
+                        medias[0][1] = comparacoes/m;
+                        medias[0][2] = movimentacoes/m;
+                        Arquivo::desalocarVetorReviews(reviews, n);
+                    }
+                    // HeapSort
+                    for(int i = 0; i < m; i++) {
+                        ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+                        testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
+                        cout << "Heap: tempo = " << to_string(tempo) << "milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
+                        medias[1][0] = tempo/m;
+                        medias[1][1] = comparacoes/m;
+                        medias[1][2] = movimentacoes/m;
+                        Arquivo::desalocarVetorReviews(reviews, n);
+                    }
+                    // RadixSort
+                    for(int i = 0; i < m; i++) {
+                        ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+                        testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
+                        cout << "Radix: tempo = " << to_string(tempo) << " milissegundos, comparacoes = " << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
+                        medias[2][0] = tempo/m;
+                        medias[2][1] = comparacoes/m;
+                        medias[2][2] = movimentacoes/m;
+                        Arquivo::desalocarVetorReviews(reviews, n);
+                    }
+                    for(int i = 0; i < m; i++) {
+                        if(i == 0)
+                            cout << "Media Quick: ";
+                        else if(i == 1)
+                            cout << "Media Heap: ";
+                        else
+                            cout << "Media Radix: ";
+                        cout << "tempo=" << medias[i][0] << " milissegundos, comparacoes=" << medias[i][1] << " movimentacoes=" << medias[i][2] << endl;
+                    }
+                } else {
+                    cout << "Erro: Valor de N lido e invalido!" << endl;
+                }
             }
-            // Finaliza cronometro e exibe o tempo em milissegundos
-            auto end = std::chrono::high_resolution_clock::now();
-            auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            cout << "O tempo de busca do Id=" << id << " foi de " << to_string(int_m.count()) << " milissegundos." << endl;
             break;
         }
         case 2: {
-            // Exibe as opções para o usuário e le
-            cout << "[1]-Console      [2]-Arquivo de Texto" << endl;
-            int opcao;
-            cin >> opcao;
-            // Seta a seed do aleatório
-            srand(time(0));
-            // Recupera a quantidade de reviews salva dentro do arquivo binário
-            int total = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
-            // Se a opção do usuário for 1 é pra exibir n=10 reviews no console
-            if (opcao == 1) {
-                // Starta cronometro
-                auto start = std::chrono::high_resolution_clock::now();
-                // Declara quantidade de Reviews
-                int n = 10;
-                int intAleatorio;
-                // Loop de 0 a n-1 para pegar N reviews aleatórios
-                for(int i = 0; i < n; i++) {
-                    // Pega o int aleatório
-                    intAleatorio = rand()%(total) + 1;
-                    // Escreve seu id
-                    cout << "Review ID = " << intAleatorio << " abaixo:" << endl;
-                    // Recupera o Review
-                    Review *review = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
-                    // Se for diferente de null, escreve o Review, se for null escreve erro
-                    if (review != nullptr) {
-                        review->imprimir();
-                    } else {
-                        cout << "Erro: Review nao encontrado!" << endl;
-                    }
-                }
-                // Finaliza cronometro e exibe o tempo em milissegundos
-                auto end = std::chrono::high_resolution_clock::now();
-                auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                cout << "O tempo para exibir " << n << " reviews aleatorios no console foi de " << to_string(int_m.count()) << " milissegundos." << endl;
-            } else if(opcao == 2) {
-                // Starta cronometro
-                auto start = std::chrono::high_resolution_clock::now();
-                int n = 100;
-                cout << "Exportando " << n << " reviews para o arquivo " << nome_txt << endl;
-                // Abre o arquivo txt para exportar os reviews
-                ofstream arquivo_txt;
-                arquivo_txt.open(diretorio + nome_txt, ios::trunc);
-                // Escreve um cabeçalho com a quantidade de reviews exportados no arquivo txt
-                arquivo_txt << "Contêm " << n << " reviews neste arquivo." << endl << endl;
-                int intAleatorio;
-                // Loop para pegar N registros aleatórios
-                for(int i = 0; i < n; i++) {
-                    // Pega um int aleatório e busca seu Review correspondente
-                    intAleatorio = rand()%(total) + 1;
-                    Review *review = Arquivo::recuperarReviewPeloId(arquivo_processado, posicoes_salvas, intAleatorio);
-                    if (review != nullptr) {
-                        // Escreve o review no arquivo txt
-                        arquivo_txt << "Index: " << intAleatorio << endl;
-                        arquivo_txt << "Id: " << review->getId() << endl;
-                        arquivo_txt << "Text: " << review->getText() << endl;
-                        arquivo_txt << "Upvotes: " << to_string(review->getUpvotes()) << endl;
-                        arquivo_txt << "App Version: " << review->getAppVersion() << endl;
-                        arquivo_txt << "Posted Date: " << review->getPostedDate() << endl << endl;
-                    } else {
-                        // Se não encontrar da erro
-                        cout << "Erro: Review " << intAleatorio << " nao encontrado!" << endl;
-                    }
-                }
-                // Fecha o arquivo txt
-                arquivo_txt.close();
-                // Finaliza cronometro e exibe o tempo em milissegundos
-                auto end = std::chrono::high_resolution_clock::now();
-                auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                cout << "O tempo para exportar " << n << " reviews aleatorios foi de " << to_string(int_m.count()) << " milissegundos." << endl;
-                cout << "Finalizado com sucesso!" << endl;
-            } else {
-                cout << "Resposta Invalida! Responda [1] ou [2]." << endl;
-            }
+
             break;
         }
         case 3: {
-            cout << "Digite o valor de N: " << endl;
-            int n = 0;
-            cin >> n;
-            ReviewP* reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
-            for(int u = 0; u < n; u++) {
-                cout << reviews[u]->getUpvotes() << ", ";
-            }
-            cout << endl;
-            int comparacoes = 0;
-            int movimentacoes = 0;
-            //Ordenar::quickSort(reviews, 0, n-1, &comparacoes, &movimentacoes);
-            Ordenar::radixSort(reviews, n);
-            for(int u = 0; u < n; u++) {
-                cout << reviews[u]->getUpvotes() << ", ";
-            }
-            cout << endl;
-            cout << "Vetor ordenado com: " << comparacoes << " comparacoes e " << movimentacoes << " movimentacoes." << endl;
+
             break;
         }
         default: {
