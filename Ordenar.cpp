@@ -84,15 +84,20 @@ void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n, int *comparacoes, i
     while(i < n) {
         int filho = 2*i + 1;
         if(filho < n) {
+            // Caso o successor imediato do então elemento filho for maior for maior que este, o sucessor imediato passa a ser o atual filho e o total de comparações é incrementado 
             if(filho+1 < n && reviews[filho+1]->getUpvotes() > reviews[filho]->getUpvotes()){
                 filho++;
                 (*comparacoes)++;
             }
+            // Fazendo a ordenação dos elementos na Heap: Se o filho for maior que seu antecessor imediato, efetue a troca entre eles e contabilize o total de movimentações
             if(reviews[filho]->getUpvotes() > reviews[i]->getUpvotes()){
+                // trocando elementos da heap
                 swap(reviews[i], reviews[filho]);
+                // contabilizando movimentações
                 (*movimentacoes)++;
             }
         }
+        // o então elemento pai agora é o seu sucessor imediato, para seguir nas comparações
         i = filho;
     }
 }
@@ -100,7 +105,9 @@ void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n, int *comparacoes, i
 
 // Inicio funcao para constuir ordenação da heap
 void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    // convertendo a primeira metade dos elementos A[(n/2)-1], A[(n/2)-2]....A[1] em uma Heap
     for(int i = n/2-1; i >= 0; i--) {
+        // iterando sobre cada elemento e reconstituindo a Heap Máximo
         Ordenar::heapify(reviews, i, n, comparacoes, movimentacoes);
     }
 }
@@ -108,9 +115,11 @@ void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n, int *comparacoes, int
 
 // Inicio função principal da ordenação heapSort
 void Ordenar::heapSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    // construindo a heap
     Ordenar::constroiHeap(reviews, n, comparacoes, movimentacoes);
     while(n > 0) {
         swap(reviews[0], reviews[n-1]);
+        // reconstituindo a Heap Máximo sobre os elementos
         Ordenar::heapify(reviews, 0, n-1, comparacoes, movimentacoes);
         n--;
     }
