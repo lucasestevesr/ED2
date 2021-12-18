@@ -4,6 +4,7 @@
 #include "Review.h"
 #include "Arquivo.h"
 #include "Ordenar.h"
+#include "Hash.h"
 #include <chrono>
 
 using namespace std;
@@ -68,6 +69,16 @@ void testarRadixSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoe
     (*tempo) = int_m.count();
 }
 // Fim funcao testar radixSort
+
+// Inicio funcao testar hash
+void testarHash(ReviewPonteiro *reviews, int n) {
+    Hash *tabelaHash = new Hash(6000);
+    for(int i = 0; i < n; i++) {
+        tabelaHash->inserir(reviews[i]);
+    }
+    tabelaHash->imprimirFrequentes(3);
+}
+// Fim funcao testar hash
 
 // Inicio funcao menu de opcoes
 int menu() {
@@ -169,14 +180,9 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 2: {
-            cout << "Nao implementado" << endl;
-//            int tempo = 0, comparacoes = 0, movimentacoes = 0, n = 100000;
-//            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
-//            testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-//            for(int i = 0; i < n; i++) {
-//                cout << reviews[i]->getUpvotes() << ", ";
-//            }
-            cout << endl;
+            int n = 6000;
+            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+            testarHash(reviews, n);
             break;
         }
         case 3: {

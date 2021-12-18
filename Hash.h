@@ -1,7 +1,9 @@
 #ifndef ED2_HASH_H
 #define ED2_HASH_H
 
+#include <iostream>
 #include "HashEncadeado.h"
+#include "Review.h"
 
 typedef HashEncadeado* HashEncadeadoPonteiro;
 
@@ -16,6 +18,9 @@ class Hash {
         void setTamanho(int tamanho);
         HashEncadeadoPonteiro* getHashEncadeado();
         void setHashEncadeado(HashEncadeadoPonteiro *hashEncadeado);
+        int getChave(string app_version);
+        void inserir(Review *review);
+        void imprimirFrequentes(int qnt);
 };
 
 #endif //ED2_HASH_H
