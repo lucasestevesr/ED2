@@ -2,24 +2,33 @@
 
 // Inicio função particionamento usada no quickSort
 int Ordenar::particionamento(ReviewPonteiro *reviews, int ini, int fim, int *comparacoes, int *movimentacoes) {
+    // utilizando o metodo de mediana de três para selecionar o pivo antes de inicializar o algoritmo
     int pivo = Ordenar::medianaDeTres(reviews, ini, fim, comparacoes, movimentacoes);
 
+    // i será responsável por percorrer da esquerda p/ direita e j da direira p/ esquerda
     int i = ini, j = fim-1;
     do {
+        // particionando a sequencia de elementos no primeiro subarranjo L[p...q-1]
         while(i < fim && reviews[i]->getUpvotes() < pivo) {
+            // realiza um comparação com outro elemento e faz o incremento
             (*comparacoes)++;
             i++;
         }
+        // particionando a segunda metada dos elementos no segundo subarranjo L[q+1...r]
         while(j >= ini && reviews[j]->getUpvotes() > pivo) {
+            // realiza um comparação com outro elemento e faz o incremento
             (*comparacoes)++;
             j--;
         }
         if(i < j) {
+            // caso o elemento de indice i for menor que o elemento de indice j, chame a função de troca passando a referência para estes elementos
             swap(reviews[i], reviews[j]);
+            // incremente o total de movimentações feitas
             (*movimentacoes)++;
             i++;
             j--;
         }
+        // clausula de guarda do método que finaliza o algoritmo quando j fica menor que i
     }while(i < j);
 
     swap(reviews[i], reviews[fim]);
@@ -60,8 +69,11 @@ int Ordenar::medianaDeTres(ReviewPonteiro *reviews, int ini, int fim, int *compa
 // Inicio função de ordenação quickSort
 void Ordenar::quickSort(ReviewPonteiro *reviews, int ini, int fim, int *comparacoes, int *movimentacoes) {
     if(ini < fim) {
+        // seleciona o pivô com o metodo da mediana de três
         int p = Ordenar::particionamento(reviews, ini, fim, comparacoes, movimentacoes);
+        // executando o algoritmo com a primeira parte do subarranjo
         Ordenar::quickSort(reviews, ini, p-1, comparacoes, movimentacoes);
+        // executando o algoritmo com a segunda parte do subarranjo
         Ordenar::quickSort(reviews, p+1, fim, comparacoes, movimentacoes);
     }
 }
@@ -72,15 +84,20 @@ void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n, int *comparacoes, i
     while(i < n) {
         int filho = 2*i + 1;
         if(filho < n) {
+            // Caso o successor imediato do então elemento filho for maior for maior que este, o sucessor imediato passa a ser o atual filho e o total de comparações é incrementado 
             if(filho+1 < n && reviews[filho+1]->getUpvotes() > reviews[filho]->getUpvotes()){
                 filho++;
                 (*comparacoes)++;
             }
+            // Fazendo a ordenação dos elementos na Heap: Se o filho for maior que seu antecessor imediato, efetue a troca entre eles e contabilize o total de movimentações
             if(reviews[filho]->getUpvotes() > reviews[i]->getUpvotes()){
+                // trocando elementos da heap
                 swap(reviews[i], reviews[filho]);
+                // contabilizando movimentações
                 (*movimentacoes)++;
             }
         }
+        // o então elemento pai agora é o seu sucessor imediato, para seguir nas comparações
         i = filho;
     }
 }
@@ -88,7 +105,9 @@ void Ordenar::heapify(ReviewPonteiro *reviews, int i, int n, int *comparacoes, i
 
 // Inicio funcao para constuir ordenação da heap
 void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    // convertendo a primeira metade dos elementos A[(n/2)-1], A[(n/2)-2]....A[1] em uma Heap
     for(int i = n/2-1; i >= 0; i--) {
+        // iterando sobre cada elemento e reconstituindo a Heap Máximo
         Ordenar::heapify(reviews, i, n, comparacoes, movimentacoes);
     }
 }
@@ -96,9 +115,11 @@ void Ordenar::constroiHeap(ReviewPonteiro *reviews, int n, int *comparacoes, int
 
 // Inicio função principal da ordenação heapSort
 void Ordenar::heapSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes) {
+    // construindo a heap
     Ordenar::constroiHeap(reviews, n, comparacoes, movimentacoes);
     while(n > 0) {
         swap(reviews[0], reviews[n-1]);
+        // reconstituindo a Heap Máximo sobre os elementos
         Ordenar::heapify(reviews, 0, n-1, comparacoes, movimentacoes);
         n--;
     }
@@ -127,6 +148,7 @@ void Ordenar::countSort(ReviewPonteiro *reviews, int n, int exp, int maiorValor,
     int ultimoIndice = maiorValor + 1;
     int *count = new int[ultimoIndice];
 
+    // o vetor que será ordenado é inicilizado com todos os seus elementos zerados  
     for(int i = 0; i < ultimoIndice; i++){
         count[i] = 0;
     }
