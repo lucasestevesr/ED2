@@ -266,3 +266,75 @@ void Arquivo::desalocarVetorReviews(ReviewPonteiro *reviews, int n) {
     delete [] reviews;
 }
 // Fim desalocar memoria do vetor de Reviews
+
+// Inicio pegar todos reviews do bin e transformar em binario
+ReviewPonteiro* Arquivo::recuperarTodosReviews(ifstream &arquivo_processado, ifstream &posicoes_salvas) {
+    cout << "=================================================================" << endl;
+    cout << "Importando o binario todo para vetor..." << endl;
+    auto start = std::chrono::high_resolution_clock::now();
+    // Recupera quantidade total de Reviews
+    int tamanho = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
+
+    // Declara vetor de reviews
+    ReviewPonteiro* reviews = new ReviewPonteiro[tamanho];
+
+    // Move o cursor para o início do arquivo
+    arquivo_processado.clear();
+    arquivo_processado.seekg(0, arquivo_processado.beg);
+
+    // Variavel auxiliar
+    int intAux = 0, idAtual = 0;
+
+    // Enquanto o arquivo não lançar excessão continua lendo
+    while (arquivo_processado.good() && idAtual < tamanho) {
+        // Le e seta os atributos da Review
+        Review *review = new Review();
+        review->setId(Arquivo::recuperarString(arquivo_processado));
+        review->setText(Arquivo::recuperarString(arquivo_processado));
+        arquivo_processado.read((char *) &intAux, sizeof(int));
+        review->setUpvotes(intAux);
+        review->setAppVersion(Arquivo::recuperarString(arquivo_processado));
+        review->setPostedDate(Arquivo::recuperarString(arquivo_processado));
+
+        // Coloca no vetor
+        reviews[idAtual] = review;
+
+        // Incrementa o id Atual
+        idAtual++;
+    }
+    cout << "Importado com sucesso!" << endl;
+    // Registando o final da operação
+    auto end = std::chrono::high_resolution_clock::now();
+    // Calculando o tempo total de execução
+    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    // Imprimindo resultados do processo
+    cout << "O tempo gasto para importar foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+    cout << "==================================================================" << endl;
+    return reviews;
+}
+// Fim pegar todos reviews do bin e transformar em binario
+
+// Inicio pegar parte aleatória do vetor com todos reviews
+ReviewPonteiro* Arquivo::recuperarReviewsAleatoriosDoVetor(ReviewPonteiro *reviews, int quantidade, int n) {
+    cout << "=================================================================" << endl;
+    cout << "Importando " << n << " reviews do vetor maior para um menor..." << endl;
+    auto start = std::chrono::high_resolution_clock::now();
+    // Declara vetor de reviews
+    ReviewPonteiro* reviewsMenor = new ReviewPonteiro[n];
+
+    int intAleatorio;
+    for(int i = 0; i < n; i++) {
+        intAleatorio = rand()%(quantidade) + 1;
+        reviewsMenor[i] = reviews[intAleatorio];
+    }
+    cout << "Importado com sucesso!" << endl;
+    // Registando o final da operação
+    auto end = std::chrono::high_resolution_clock::now();
+    // Calculando o tempo total de execução
+    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    // Imprimindo resultados do processo
+    cout << "O tempo gasto para importar foi de " << to_string(int_m.count()) << " milissegundos." << endl;
+    cout << "=================================================================" << endl;
+    return reviewsMenor;
+}
+// Fim pegar parte aleatória do vetor com todos reviews

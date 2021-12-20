@@ -110,6 +110,8 @@ int menu() {
 
 // Inicio funcao selecionar
 void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio) {
+    int quantidadeReviews = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
+    ReviewPonteiro *reviewsMaior = Arquivo::recuperarTodosReviews(arquivo_processado, posicoes_salvas);
     // Função serve para fazer o switch da opção escolhida pelo usuário
     switch (selecao) {
         case 0: {
@@ -124,7 +126,6 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             int m = 3, n = 0;
             int medias[3][3]; // 0 => tempo, 1 => comparacoes, 2 => movimentacoes
             int mediaGeral[3][3];
-            int total = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
 
             for (int i = 0; i < 3; i++) {
                 mediaGeral[i][0] = 0;
@@ -141,7 +142,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             int tempo = 0, comparacoes = 0, movimentacoes = 0;
             if (arquivo_input.is_open()) {
                 while (arquivo_input >> n) {
-                    if (n > 0 && n <= total) {
+                    if (n > 0 && n <= quantidadeReviews) {
                         for (int i = 0; i < 3; i++) {
                             medias[i][0] = 0;
                             medias[i][1] = 0;
@@ -151,8 +152,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                                       << " reviews =============================" << endl;
                         // QuickSort
                         for (int i = 0; i < m; i++) {
-                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado,
-                                                                                          posicoes_salvas, n);
+                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
                             testarQuickSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
                             arquivo_saida << "Quick " << m << ": tempo = " << to_string(tempo)
                                           << " milissegundos, comparacoes = " << to_string(comparacoes)
@@ -160,12 +160,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                             medias[0][0] += tempo / m;
                             medias[0][1] += comparacoes / m;
                             medias[0][2] += movimentacoes / m;
-                            Arquivo::desalocarVetorReviews(reviews, n);
+                            delete [] reviews;
                         }
                         // HeapSort
                         for (int i = 0; i < m; i++) {
-                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado,
-                                                                                          posicoes_salvas, n);
+                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
                             testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
                             arquivo_saida << "Heap " << m << ": tempo = " << to_string(tempo)
                                           << " milissegundos, comparacoes = " << to_string(comparacoes)
@@ -173,12 +172,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                             medias[1][0] += tempo / m;
                             medias[1][1] += comparacoes / m;
                             medias[1][2] += movimentacoes / m;
-                            Arquivo::desalocarVetorReviews(reviews, n);
+                            delete [] reviews;
                         }
                         // RadixSort
                         for (int i = 0; i < m; i++) {
-                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado,
-                                                                                          posicoes_salvas, n);
+                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
                             testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
                             arquivo_saida << "Radix " << m << ": tempo = " << to_string(tempo)
                                           << " milissegundos, comparacoes = " << to_string(comparacoes)
@@ -186,7 +184,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                             medias[2][0] += tempo / m;
                             medias[2][1] += comparacoes / m;
                             medias[2][2] += movimentacoes / m;
-                            Arquivo::desalocarVetorReviews(reviews, n);
+                            delete [] reviews;
                         }
                         for (int i = 0; i < 3; i++) {
                             if (i == 0)
@@ -219,11 +217,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             int m;
             cout << "Deseja visualizar quantas versoes mais frequentes? " << endl;
             cin >> m;
-            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
             int tempo = 0;
             testarHash(reviews, n, m, &tempo);
             cout << "Tempo do Hash = " << to_string(tempo) << " milissegundos" << endl;
-            Arquivo::desalocarVetorReviews(reviews, n);
+            delete [] reviews;
             break;
         }
         case 3: {
@@ -232,7 +230,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
 
             // QuickSort
             int n = 100, tempo = 0, comparacoes = 0, movimentacoes = 0;
-            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
             testarQuickSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
             arquivo_testes << "===================================== Quick Sort ====================================="
                            << endl;
@@ -242,11 +240,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 arquivo_testes << "Upvotes: " << reviews[i]->getUpvotes() << " Id: " << reviews[i]->getId() << endl;
             }
             arquivo_testes << endl << endl;
-            Arquivo::desalocarVetorReviews(reviews, n);
+            delete [] reviews;
 
             // HeapSort
             tempo = 0, comparacoes = 0, movimentacoes = 0;
-            reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+            reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
             testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
             arquivo_testes << "===================================== Heap Sort ====================================="
                            << endl;
@@ -256,11 +254,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 arquivo_testes << "Upvotes: " << reviews[i]->getUpvotes() << " Id: " << reviews[i]->getId() << endl;
             }
             arquivo_testes << endl << endl;
-            Arquivo::desalocarVetorReviews(reviews, n);
+            delete [] reviews;
 
             // RadixSort
             tempo = 0, comparacoes = 0, movimentacoes = 0;
-            reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+            reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
             testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
             arquivo_testes << "===================================== Radix Sort ====================================="
                            << endl;
@@ -270,11 +268,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 arquivo_testes << "Upvotes: " << reviews[i]->getUpvotes() << " Id: " << reviews[i]->getId() << endl;
             }
             arquivo_testes << endl << endl;
-            Arquivo::desalocarVetorReviews(reviews, n);
+            delete [] reviews;
 
             // Tabela Hash
             tempo = 0;
-            reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
+            reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
             string app_version;
             // Guarda o time que começou
             auto start = std::chrono::high_resolution_clock::now();
@@ -291,7 +289,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             arquivo_testes << "Tempo = " << to_string(tempo) << " milissegundos" << endl;
             tabelaHash->imprimirArquivo(arquivo_testes);
             delete tabelaHash;
-            Arquivo::desalocarVetorReviews(reviews, n);
+            delete [] reviews;
 
             arquivo_testes.close();
 
@@ -305,6 +303,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cout << "Erro: Opcao invalida!" << endl;
         }
     }
+    Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
 }
 // Fim funcao selecionar
 
