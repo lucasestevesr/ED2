@@ -72,11 +72,12 @@ void testarRadixSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoe
 
 // Inicio funcao testar hash
 void testarHash(ReviewPonteiro *reviews, int n) {
-    Hash *tabelaHash = new Hash(6000);
+    Hash *tabelaHash = new Hash(1000);
     for(int i = 0; i < n; i++) {
-        tabelaHash->inserir(reviews[i]);
+        tabelaHash->inserir(reviews[i]->getAppVersion());
     }
-    tabelaHash->imprimirFrequentes(3);
+
+    tabelaHash->imprimirOrdenado(3);
 }
 // Fim funcao testar hash
 
@@ -180,7 +181,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 2: {
-            int n = 6000;
+            int n = 10000;
             ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatorios(arquivo_processado, posicoes_salvas, n);
             testarHash(reviews, n);
             break;

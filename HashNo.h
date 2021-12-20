@@ -12,9 +12,11 @@ class HashNo {
         HashNo *proximo;
     public:
         HashNo(string app_version, int frequencia);
+        HashNo();
         ~HashNo();
         int getFrequencia();
         void setFrequencia(int frequencia);
+        void incrementarFrequencia();
         string getAppVersion();
         void setAppVersion(string appVersion);
         HashNo *getProximo();

@@ -19,8 +19,12 @@ class Hash {
         HashEncadeadoPonteiro* getHashEncadeado();
         void setHashEncadeado(HashEncadeadoPonteiro *hashEncadeado);
         int getChave(string app_version);
-        void inserir(Review *review);
-        void imprimirFrequentes(int qnt);
+        void inserir(string app_version);
+        void imprimir();
+        void imprimirOrdenado(int qnt);
+        int recuperarQuantidadeNos();
+        int* transformarVetorFrequencia(int tamanho);
+        string* transformarVetorAppVersion(int tamanho);
 };
 
 #endif //ED2_HASH_H

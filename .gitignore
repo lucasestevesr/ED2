@@ -35,5 +35,6 @@
 *.idea
 *.csv
 *.bin
+*.txt
 CMakeLists.txt
 cmake-build-debug/

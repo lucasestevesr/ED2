@@ -2,6 +2,7 @@
 #define ED2_ORDENAR_H
 
 #include "Review.h"
+#include "Hash.h"
 
 typedef Review* ReviewPonteiro;
 
@@ -25,6 +26,12 @@ class Ordenar {
         static void countSort(ReviewPonteiro *reviews, int n, int exp, int maiorValor, int *comparacoes, int *movimentacoes);
         // Função de ordenação radixSort
         static void radixSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *movimentacoes);
+        // Função ordenar o Hash com quickSort
+        static void quickSortHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim);
+        // Função particionamento usada no quickSort do Hash
+        static int particionamentoHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim);
+        // Função para pegar o pivo do quickSort do Hash
+        static int medianaDeTresHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim);
 };
 
 #endif //ED2_ORDENAR_H

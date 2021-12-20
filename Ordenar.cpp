@@ -194,3 +194,66 @@ void Ordenar::radixSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *m
     }
 }
 // Fim função de ordenação radixSort
+
+void Ordenar::quickSortHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim) {
+    if(ini < fim) {
+        // seleciona o pivô com o metodo da mediana de três
+        int p = Ordenar::particionamentoHash(vetorFrequencia, vetorAppVersion, ini, fim);
+        // executando o algoritmo com a primeira parte do subarranjo
+        Ordenar::quickSortHash(vetorFrequencia, vetorAppVersion, ini, p-1);
+        // executando o algoritmo com a segunda parte do subarranjo
+        Ordenar::quickSortHash(vetorFrequencia, vetorAppVersion, p+1, fim);
+    }
+}
+
+int Ordenar::particionamentoHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim) {
+    // utilizando o metodo de mediana de três para selecionar o pivo antes de inicializar o algoritmo
+    int pivo = Ordenar::medianaDeTresHash(vetorFrequencia, vetorAppVersion, ini, fim);
+
+    // i será responsável por percorrer da esquerda p/ direita e j da direira p/ esquerda
+    int i = ini, j = fim-1;
+    do {
+        // particionando a sequencia de elementos no primeiro subarranjo L[p...q-1]
+        while(i < fim && vetorFrequencia[i] < pivo) {
+            i++;
+        }
+        // particionando a segunda metada dos elementos no segundo subarranjo L[q+1...r]
+        while(j >= ini && vetorFrequencia[j] > pivo) {
+            j--;
+        }
+        if(i < j) {
+            // caso o elemento de indice i for menor que o elemento de indice j, chame a função de troca passando a referência para estes elementos
+            swap(vetorFrequencia[i], vetorFrequencia[j]);
+            swap(vetorAppVersion[i], vetorAppVersion[j]);
+            i++;
+            j--;
+        }
+        // clausula de guarda do método que finaliza o algoritmo quando j fica menor que i
+    }while(i < j);
+
+    swap(vetorFrequencia[i], vetorFrequencia[fim]);
+    swap(vetorAppVersion[i], vetorAppVersion[fim]);
+
+    return i;
+}
+
+int Ordenar::medianaDeTresHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim) {
+    int meio = (ini+fim)/2;
+
+    if(vetorFrequencia[ini] > vetorFrequencia[fim]) {
+        swap(vetorFrequencia[ini], vetorFrequencia[fim]);
+        swap(vetorAppVersion[ini], vetorAppVersion[fim]);
+    }
+    if(vetorFrequencia[meio] > vetorFrequencia[fim]) {
+        swap(vetorFrequencia[meio], vetorFrequencia[fim]);
+        swap(vetorAppVersion[meio], vetorAppVersion[fim]);
+    }
+    if(vetorFrequencia[ini] > vetorFrequencia[meio]) {
+        swap(vetorFrequencia[ini], vetorFrequencia[meio]);
+        swap(vetorAppVersion[ini], vetorAppVersion[meio]);
+    }
+    swap(vetorFrequencia[meio], vetorFrequencia[fim]);
+    swap(vetorAppVersion[meio], vetorAppVersion[fim]);
+
+    return vetorFrequencia[fim];
+}

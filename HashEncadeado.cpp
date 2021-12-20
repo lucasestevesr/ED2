@@ -39,26 +39,39 @@ bool HashEncadeado::vazia() {
 }
 
 void HashEncadeado::inserir(string app_version) {
-    HashNo *no = new HashNo(app_version, 1);
-    no->setProximo(this->inicio);
-    this->inicio = no;
-    this->tamanho++;
+    if(!app_version.empty()) {
+        HashNo *no = new HashNo(app_version, 1);
+        no->setProximo(this->inicio);
+        this->inicio = no;
+        this->tamanho++;
+    }
 }
 
 HashNo* HashEncadeado::buscarHashNo(string app_version) {
-    for(HashNo *noAtual = this->inicio; noAtual != nullptr; noAtual = noAtual->getProximo()) {
-        if(noAtual->getAppVersion() == app_version) {
-            return noAtual;
+    if(!app_version.empty()) {
+        for (HashNo *noAtual = this->inicio; noAtual != nullptr; noAtual = noAtual->getProximo()) {
+            if (noAtual->getAppVersion() == app_version) {
+                return noAtual;
+            }
         }
     }
     return nullptr;
 }
 
 bool HashEncadeado::existeHashNo(string app_version) {
-    for(HashNo *noAtual = this->inicio; noAtual != nullptr; noAtual = noAtual->getProximo()) {
-        if(noAtual->getAppVersion() == app_version) {
-            return true;
+    if(!app_version.empty()) {
+        for (HashNo *noAtual = this->inicio; noAtual != nullptr; noAtual = noAtual->getProximo()) {
+            if (noAtual->getAppVersion() == app_version) {
+                return true;
+            }
         }
     }
     return false;
+}
+
+void HashEncadeado::imprimir() {
+    for (HashNo *noAtual = this->inicio; noAtual != nullptr; noAtual = noAtual->getProximo()) {
+        cout << "App Version: " << noAtual->getAppVersion() << endl;
+        cout << "Frequencia Colisao: " << noAtual->getFrequencia() << endl;
+    }
 }

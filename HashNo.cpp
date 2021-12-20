@@ -5,6 +5,8 @@ HashNo::HashNo(string app_version, int frequencia) {
     this->frequencia = frequencia;
 }
 
+HashNo::HashNo() {}
+
 HashNo::~HashNo() {
     this->app_version.clear();
 }
@@ -15,6 +17,10 @@ int HashNo::getFrequencia() {
 
 void HashNo::setFrequencia(int frequencia) {
     this->frequencia = frequencia;
+}
+
+void HashNo::incrementarFrequencia() {
+    this->frequencia++;
 }
 
 string HashNo::getAppVersion() {
