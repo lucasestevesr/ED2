@@ -257,9 +257,12 @@ ReviewPonteiro* Arquivo::recuperarReviewsAleatorios(ifstream &arquivo_processado
 
 // Inicio desalocar memoria do vetor de Reviews
 void Arquivo::desalocarVetorReviews(ReviewPonteiro *reviews, int n) {
+    // Funcao para desalocar memoria do vetor de reviews
     for(int i = 0; i < n; i++) {
+        // Deleta review por review do vetor
         delete reviews[i];
     }
+    // Deleta os ponteiros do vetor
     delete [] reviews;
 }
 // Fim desalocar memoria do vetor de Reviews

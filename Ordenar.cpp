@@ -195,6 +195,7 @@ void Ordenar::radixSort(ReviewPonteiro *reviews, int n, int *comparacoes, int *m
 }
 // Fim função de ordenação radixSort
 
+// Inicio função ordenar o Hash com quickSort
 void Ordenar::quickSortHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim) {
     if(ini < fim) {
         // seleciona o pivô com o metodo da mediana de três
@@ -205,7 +206,9 @@ void Ordenar::quickSortHash(int *vetorFrequencia, string *vetorAppVersion, int i
         Ordenar::quickSortHash(vetorFrequencia, vetorAppVersion, p+1, fim);
     }
 }
+// Fim função ordenar o Hash com quickSort
 
+// Inicio função particionamento usada no quickSort do Hash
 int Ordenar::particionamentoHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim) {
     // utilizando o metodo de mediana de três para selecionar o pivo antes de inicializar o algoritmo
     int pivo = Ordenar::medianaDeTresHash(vetorFrequencia, vetorAppVersion, ini, fim);
@@ -236,7 +239,9 @@ int Ordenar::particionamentoHash(int *vetorFrequencia, string *vetorAppVersion, 
 
     return i;
 }
+// Fim função particionamento usada no quickSort do Hash
 
+// Inicio função para pegar o pivo do quickSort do Hash
 int Ordenar::medianaDeTresHash(int *vetorFrequencia, string *vetorAppVersion, int ini, int fim) {
     int meio = (ini+fim)/2;
 
@@ -257,3 +262,4 @@ int Ordenar::medianaDeTresHash(int *vetorFrequencia, string *vetorAppVersion, in
 
     return vetorFrequencia[fim];
 }
+// Fim função para pegar o pivo do quickSort do Hash

@@ -80,10 +80,13 @@ void testarHash(ReviewPonteiro *reviews, int n, int m, int *tempo) {
     auto start = std::chrono::high_resolution_clock::now();
     Hash *tabelaHash = new Hash(1000);
     for (int i = 0; i < n; i++) {
+        // Insere o app version no hash
         app_version = reviews[i]->getAppVersion().empty() ? "(NULL)" : reviews[i]->getAppVersion();
         tabelaHash->inserir(app_version);
     }
+    // Imprimir Hash ordenadao
     tabelaHash->imprimirOrdenado(m);
+    // Deleta a tabela hash
     delete tabelaHash;
     auto end = std::chrono::high_resolution_clock::now();
     auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
