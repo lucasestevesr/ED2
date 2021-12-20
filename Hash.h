@@ -2,6 +2,7 @@
 #define ED2_HASH_H
 
 #include <iostream>
+#include <fstream>
 #include "HashEncadeado.h"
 #include "Review.h"
 
@@ -22,6 +23,7 @@ class Hash {
         void inserir(string app_version);
         void imprimir();
         void imprimirOrdenado(int qnt);
+        void imprimirArquivo(ofstream &arquivo_testes);
         int recuperarQuantidadeNos();
         int* transformarVetorFrequencia(int tamanho);
         string* transformarVetorAppVersion(int tamanho);

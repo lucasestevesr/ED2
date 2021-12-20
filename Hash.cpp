@@ -81,6 +81,19 @@ void Hash::imprimirOrdenado(int qnt) {
     delete [] vetorAppVersion;
 }
 
+void Hash::imprimirArquivo(ofstream &arquivo_testes) {
+    int tamanhoVetor = Hash::recuperarQuantidadeNos();
+    int *vetorFrequencia = Hash::transformarVetorFrequencia(tamanhoVetor);
+    string *vetorAppVersion = Hash::transformarVetorAppVersion(tamanhoVetor);
+    Ordenar::quickSortHash(vetorFrequencia, vetorAppVersion, 0, tamanhoVetor-1);
+    for (int i = tamanhoVetor-1; i > 0; i--) {
+        arquivo_testes << "Versao: " << vetorAppVersion[i] << endl;
+        arquivo_testes << "Frequencia: " << vetorFrequencia[i] << endl;
+    }
+    delete [] vetorFrequencia;
+    delete [] vetorAppVersion;
+}
+
 int Hash::recuperarQuantidadeNos() {
     int tamanho = 0;
     for (int i = 0; i < this->tamanho; i++) {
