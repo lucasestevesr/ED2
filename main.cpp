@@ -72,11 +72,12 @@ void testarRadixSort(ReviewPonteiro *reviews, int n, int *tempo, int *comparacoe
 
 // Inicio funcao testar hash
 void testarHash(ReviewPonteiro *reviews, int n) {
+    string app_version;
     Hash *tabelaHash = new Hash(1000);
     for(int i = 0; i < n; i++) {
-        tabelaHash->inserir(reviews[i]->getAppVersion());
+        app_version = reviews[i]->getAppVersion().empty() ? "(NULL)" : reviews[i]->getAppVersion();
+        tabelaHash->inserir(app_version);
     }
-
     tabelaHash->imprimirOrdenado(3);
 }
 // Fim funcao testar hash
