@@ -326,9 +326,7 @@ int main(int argc, char const *argv[]) {
         cout << "Erro: Esperando: ./<program_name> <diretorio_arquivos>" << endl;
         return 1;
     }
-
-    ArvoreVp
-
+    
     // declarando e abrindo um arquivo
     ifstream arquivo_bin;
     arquivo_bin.open(argv[1] + nome_bin, ios::binary);
