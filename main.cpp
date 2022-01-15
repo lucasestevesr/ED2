@@ -5,6 +5,7 @@
 #include "Arquivo.h"
 #include "Ordenar.h"
 #include "Hash.h"
+#include "ArvoreVP.h"
 #include <chrono>
 
 using namespace std;
@@ -325,6 +326,8 @@ int main(int argc, char const *argv[]) {
         cout << "Erro: Esperando: ./<program_name> <diretorio_arquivos>" << endl;
         return 1;
     }
+
+    ArvoreVp
 
     // declarando e abrindo um arquivo
     ifstream arquivo_bin;
