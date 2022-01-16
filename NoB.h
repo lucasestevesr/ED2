@@ -3,22 +3,23 @@
 #include <iostream>
 
 class NoB {
-
-    private:
-        int *chaves;    // cada nó possui um array de com até m-1 chaves de capacidade
-        NoB **filhos;   // cada filho pode ter até um total de max outros filhos
-        int totalNos;   // total de chaves que o nó possui
-        bool ehFolha;   // verifica se o nó eh folha
-        int grau; 
+    
     public:
-        NoB(int grau, bool ehFolha);
+        
+        int *chaves;    // array de chaves no nó
+        int grau;       // grau mínimo
+        int n;          // número de chaves atual
+        bool folha;     // verifica se o nó é folha ou não
+        NoB **filhos;   // ponteiro para um array de filhos
+
+        
+        NoB(int grau, bool folha);   // Constructor
         ~NoB();
-        NoB* buscaNo(int indice);
-        void insereNo(int info);
-        bool getEhFolha();
-        int getTotalNos();
-        void incrementaTotalNos();
-        int buscaChaveNo(int indice);
+        void insereNoComEspaco(int k);
+        void particionaNoFilho(int i, NoB *y);
+        void percorreNos();
+        NoB *buscaNo(int k);
+        friend class ArvoreB; // permite acessar propriedades privadas desta classe a partir da classe ArvoreB
 };
 
 #endif
