@@ -13,8 +13,10 @@ ArvoreVP::~ArvoreVP() {
     ArvoreVP::destrutorAux(this->raiz);
 }
 
-// Destrutor Auxliar
+// Destrutor Auxiliar
 void ArvoreVP::destrutorAux(NoVP *no) {
+    // Destrutor auxiliar que vai chamando as subarvores
+    // da esquerda e da direita recursivamente
     if(no != nullptr) {
         ArvoreVP::destrutorAux(no->getEsquerdo());
         ArvoreVP::destrutorAux(no->getDireito());
@@ -32,7 +34,7 @@ void ArvoreVP::setRaiz(NoVP *raiz) {
 }
 // Fim Getters e Setters
 
-// Rotacionar para esquerda
+// Função para rotacionar subarvore para esquerda
 NoVP* ArvoreVP::rotacionarEsquerda(NoVP *no) {
     NoVP *no_dir = no->getDireito();
     no->setDireito(no_dir->getEsquerdo());
@@ -43,7 +45,7 @@ NoVP* ArvoreVP::rotacionarEsquerda(NoVP *no) {
     return no_dir;
 }
 
-// Rotacionar para direita
+// Função para rotacionar subarvore para direita
 NoVP* ArvoreVP::rotacionarDireita(NoVP *no) {
     NoVP *no_esq = no->getEsquerdo();
     no->setEsquerdo(no_esq->getDireito());
@@ -54,7 +56,7 @@ NoVP* ArvoreVP::rotacionarDireita(NoVP *no) {
     return no_esq;
 }
 
-// Trocar Cor
+// Função para trocar cor de um No e dos seus filhos
 void ArvoreVP::trocarCor(NoVP *no) {
     no->trocarCor();
     if(no->getEsquerdo() != nullptr) {
@@ -65,7 +67,7 @@ void ArvoreVP::trocarCor(NoVP *no) {
     }
 }
 
-// Inserir novo no
+// Função para inserir novo No, retorna se inseriu ou não
 bool ArvoreVP::inserir(string id, int localizacao, int *comparacoes) {
     bool resposta = false;
 
@@ -73,6 +75,8 @@ bool ArvoreVP::inserir(string id, int localizacao, int *comparacoes) {
 
     this->raiz = ArvoreVP::inserirAux(this->raiz, novo_no, &resposta, comparacoes);
 
+    // Se tiver inserido garante a cor certa da raiz
+    // Se não tiver inserido exclui o No
     if(resposta) {
         this->raiz->setCor(false);
     }else {
@@ -94,21 +98,30 @@ NoVP* ArvoreVP::inserirAux(NoVP *raiz, NoVP *novo_no, bool *resposta, int *compa
         (*resposta) = false;
     }else {
         (*comparacoes)++;
+        // se for menor insere na esquerda
         if(novo_no->getId() < raiz->getId()) {
             raiz->setEsquerdo(ArvoreVP::inserirAux(raiz->getEsquerdo(), novo_no, resposta, comparacoes));
             raiz->getEsquerdo()->setPai(raiz);
         }else {
+            // se for maior insere na direita
             raiz->setDireito(ArvoreVP::inserirAux(raiz->getDireito(), novo_no, resposta, comparacoes));
             raiz->getDireito()->setPai(raiz);
         }
     }
 
+    // correções das propriedades
+    // caso 1: filho da direita é vermelho e filho da esquerda é preto
+    // solução: rotacionar para esquerda
     if(raiz->getDireito()->isVermelho() && raiz->getEsquerdo()->isPreto()) {
         raiz = ArvoreVP::rotacionarEsquerda(raiz);
     }
+    // caso 2: filho da esquerda é vermelho e o filho do filho da esquerda tambem é vermelho
+    // solução: rotacionar para direita
     if(raiz->getEsquerdo()->isVermelho() && raiz->getEsquerdo()->getEsquerdo()->isVermelho()) {
         raiz = ArvoreVP::rotacionarDireita(raiz);
     }
+    // caso 3: ambos os filhos sao vermelhos
+    // solucao: trocar as cores
     if(raiz->getEsquerdo()->isVermelho() && raiz->getDireito()->isVermelho()) {
         ArvoreVP::trocarCor(raiz);
     }
@@ -119,6 +132,7 @@ NoVP* ArvoreVP::inserirAux(NoVP *raiz, NoVP *novo_no, bool *resposta, int *compa
 // Buscar
 NoVP *ArvoreVP::buscar(string id, int *comparacoes) {
     if(this->raiz != nullptr) {
+        // Chama recursivamente até encontrar o No, ou percorrer tudo e não encontrar
         NoVP *no = ArvoreVP::buscarAux(this->raiz, id, comparacoes);
         if(no != nullptr) {
             return no;
@@ -136,15 +150,19 @@ NoVP *ArvoreVP::buscar(string id, int *comparacoes) {
 NoVP *ArvoreVP::buscarAux(NoVP *no, string id, int *comparacoes) {
     if(no != nullptr) {
         (*comparacoes)++;
+        // Se achar o no retorna ele
         if(id == no->getId()) {
             return no;
         }
 
         (*comparacoes)++;
+        // Se não achou ainda e o atual for menor que o que ta procurando,
+        // tem que ir para direita
         if(id > no->getId()) {
             return ArvoreVP::buscarAux(no->getDireito(), id, comparacoes);
         }
 
+        // Se não, vai para esquerda
         return ArvoreVP::buscarAux(no->getEsquerdo(), id, comparacoes);
     }else {
         return nullptr;

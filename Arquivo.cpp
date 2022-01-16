@@ -360,7 +360,7 @@ ReviewPonteiro* Arquivo::recuperarReviewsAleatoriosDoVetor(ReviewPonteiro *revie
 }
 ReviewPonteiro* Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(ReviewPonteiro *reviews, int *posicoes, int *posicoesReviews, int quantidade, int n) {
     cout << "=================================================================" << endl;
-    cout << "Importando " << n << " reviews do vetor maior para um menor..." << endl;
+    cout << "Importando " << n << " reviews aleatorios do vetor maior para um menor..." << endl;
     auto start = std::chrono::high_resolution_clock::now();
     // Declara vetor de reviews
     ReviewPonteiro* reviewsMenor = new ReviewPonteiro[n];
