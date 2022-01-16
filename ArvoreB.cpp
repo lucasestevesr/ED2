@@ -5,44 +5,54 @@
 
 using namespace std;
 
-// construtor da ÁrvoreB
-
 ArvoreB::ArvoreB(int grau) {
-    raiz = NULL;
-    grauArvore = grau;
+    this->raiz = NULL;
+    this->grau = grau;
 }
-
-
-// Destrutor Arvore B
 
 ArvoreB::~ArvoreB() { }
 
-// Verifica se a Arvore está vazia
-
-bool ArvoreB::vazia() {
-
-    return raiz == NULL;
+void ArvoreB::percorreNos() {
+    
+    if (raiz != NULL)
+        raiz->percorreNos();
 }
 
-// Percorre a Arvore a partir de sua raiz
+NoB* ArvoreB::buscaNo(int indice) {
+    
+    if(this->raiz == NULL) 
+        return NULL;
+    else 
+        return this->raiz->buscaNo(indice);
+}
 
-void ArvoreB::percorreArvore(int indiceBusca) {
 
-    if(vazia()) {
+void ArvoreB::insereNoArvore(int k) {   
 
-        cout << "Arvore Vazia!!" << endl;
-        exit(1);
-    }
+    if (raiz == NULL) {
         
-    // raiz->percorreNos();
-}
+        raiz = new NoB(this->grau, true);
+        raiz->chaves[0] = k;  
+        raiz->n = 1;  
+    }
+    else
+    {
+        if (raiz->n == 2*grau-1) {
 
-void ArvoreB::insereNo(int indice) {
+            NoB *s = new NoB(grau, false);
+ 
+            s->filhos[0] = raiz;
+ 
+            s->particionaNoFilho(0, raiz);
 
-    if(vazia()) {
-
-        raiz = new NoB(grauArvore, true);
-        //raiz->chaves[0] = indice;
-        raiz->incrementaTotalNos();
+            int i = 0;
+            if (s->chaves[0] < k)
+                i++;
+            s->filhos[i]->insereNoComEspaco(k);
+ 
+            raiz = s;
+        }
+        else 
+            raiz->insereNoComEspaco(k);
     }
 }
