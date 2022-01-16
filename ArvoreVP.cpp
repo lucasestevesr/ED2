@@ -66,12 +66,12 @@ void ArvoreVP::trocarCor(NoVP *no) {
 }
 
 // Inserir novo no
-bool ArvoreVP::inserir(string id, int localizacao) {
+bool ArvoreVP::inserir(string id, int localizacao, int *comparacoes) {
     bool resposta = false;
 
     NoVP *novo_no = new NoVP(id, localizacao);
 
-    this->raiz = ArvoreVP::inserirAux(this->raiz, novo_no, &resposta);
+    this->raiz = ArvoreVP::inserirAux(this->raiz, novo_no, &resposta, comparacoes);
 
     if(resposta) {
         this->raiz->setCor(false);
@@ -83,19 +83,22 @@ bool ArvoreVP::inserir(string id, int localizacao) {
 }
 
 // Inserir Aux
-NoVP* ArvoreVP::inserirAux(NoVP *raiz, NoVP *novo_no, bool *resposta) {
+NoVP* ArvoreVP::inserirAux(NoVP *raiz, NoVP *novo_no, bool *resposta, int *comparacoes) {
+    (*comparacoes)++;
     if(raiz == nullptr) {
         (*resposta) = true;
         return novo_no;
     }
+    (*comparacoes)++;
     if(novo_no->getId() == raiz->getId()) {
         (*resposta) = false;
     }else {
+        (*comparacoes)++;
         if(novo_no->getId() < raiz->getId()) {
-            raiz->setEsquerdo(ArvoreVP::inserirAux(raiz->getEsquerdo(), novo_no, resposta));
+            raiz->setEsquerdo(ArvoreVP::inserirAux(raiz->getEsquerdo(), novo_no, resposta, comparacoes));
             raiz->getEsquerdo()->setPai(raiz);
         }else {
-            raiz->setDireito(ArvoreVP::inserirAux(raiz->getDireito(), novo_no, resposta));
+            raiz->setDireito(ArvoreVP::inserirAux(raiz->getDireito(), novo_no, resposta, comparacoes));
             raiz->getDireito()->setPai(raiz);
         }
     }
@@ -114,9 +117,9 @@ NoVP* ArvoreVP::inserirAux(NoVP *raiz, NoVP *novo_no, bool *resposta) {
 }
 
 // Buscar
-NoVP *ArvoreVP::buscar(string id) {
+NoVP *ArvoreVP::buscar(string id, int *comparacoes) {
     if(this->raiz != nullptr) {
-        NoVP *no = ArvoreVP::buscarAux(this->raiz, id);
+        NoVP *no = ArvoreVP::buscarAux(this->raiz, id, comparacoes);
         if(no != nullptr) {
             return no;
         }else{
@@ -130,16 +133,19 @@ NoVP *ArvoreVP::buscar(string id) {
 }
 
 // Buscar Aux
-NoVP *ArvoreVP::buscarAux(NoVP *no, string id) {
+NoVP *ArvoreVP::buscarAux(NoVP *no, string id, int *comparacoes) {
     if(no != nullptr) {
+        (*comparacoes)++;
         if(id == no->getId()) {
             return no;
         }
+
+        (*comparacoes)++;
         if(id > no->getId()) {
-            return ArvoreVP::buscarAux(no->getDireito(), id);
+            return ArvoreVP::buscarAux(no->getDireito(), id, comparacoes);
         }
 
-        return ArvoreVP::buscarAux(no->getEsquerdo(), id);
+        return ArvoreVP::buscarAux(no->getEsquerdo(), id, comparacoes);
     }else {
         return nullptr;
     }

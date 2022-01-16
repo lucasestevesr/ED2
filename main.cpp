@@ -99,11 +99,11 @@ void testarHash(ReviewPonteiro *reviews, int n, int m, int *tempo) {
 int menu() {
     int selecao;
     cout << "-------------------- MENU --------------------" << endl;
-    cout << "[1] Analisar Algoritmos de Ordenacao" << endl;
-    cout << "[2] Versoes do app mais frequentes - Hash" << endl;
-    cout << "[3] Modulo de Teste" << endl;
+    cout << "[1] Arvore Vermelho-Preto" << endl;
+    cout << "[2] Arvore B" << endl;
     cout << "[0] Sair" << endl;
     cin >> selecao;
+
     // Retorna a opção escolhida pelo usuário
     return selecao;
 }
@@ -113,6 +113,7 @@ int menu() {
 void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio) {
     int quantidadeReviews = Arquivo::recuperarQuantidadeReviews(posicoes_salvas);
     ReviewPonteiro *reviewsMaior = Arquivo::recuperarTodosReviews(arquivo_processado, posicoes_salvas);
+    int *posicoesReviews = Arquivo::recuperarTodasPosicoes(posicoes_salvas);
     // Função serve para fazer o switch da opção escolhida pelo usuário
     switch (selecao) {
         case 0: {
@@ -124,180 +125,85 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 1: {
-            int m = 3, n = 0;
-            int medias[3][3]; // 0 => tempo, 1 => comparacoes, 2 => movimentacoes
-            int mediaGeral[3][3];
+            int opcao;
+            cout << "---------- Arvore Vermelho-Preto ----------" << endl;
+            cout << "[1] Analises" << endl;
+            cout << "[2] Buscar pelo ID" << endl;
+            cout << "[0] Sair" << endl;
+            cin >> opcao;
 
-            for (int i = 0; i < 3; i++) {
-                mediaGeral[i][0] = 0;
-                mediaGeral[i][1] = 0;
-                mediaGeral[i][2] = 0;
-            }
+            if(opcao == 1) {
+                int m = 3, n = 1000000, n_buscas = 100, intAleatorio = 0;
 
-            ifstream arquivo_input;
-            arquivo_input.open(diretorio + nome_input);
+                double insercao_media = 0;
+                double comparacoes_insercao_media = 0;
+                double busca_media = 0;
+                double comparacoes_busca_media = 0;
 
-            ofstream arquivo_saida;
-            arquivo_saida.open(diretorio + nome_saida, ios::trunc);
+                for(int j = 0; j < m; j++) {
+                    double insercao = 0;
+                    int comparacoes_insercao = 0;
+                    double busca = 0;
+                    int comparacoes_busca = 0;
 
-            int tempo = 0, comparacoes = 0, movimentacoes = 0;
-            if (arquivo_input.is_open()) {
-                while (arquivo_input >> n) {
-                    if (n > 0 && n <= quantidadeReviews) {
-                        for (int i = 0; i < 3; i++) {
-                            medias[i][0] = 0;
-                            medias[i][1] = 0;
-                            medias[i][2] = 0;
-                        }
-                        arquivo_saida << "============================= N = " << n
-                                      << " reviews =============================" << endl;
-                        // QuickSort
-                        for (int i = 0; i < m; i++) {
-                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-                            testarQuickSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-                            arquivo_saida << "Quick " << m << ": tempo = " << to_string(tempo)
-                                          << " milissegundos, comparacoes = " << to_string(comparacoes)
-                                          << ", movimentacoes = " << to_string(movimentacoes) << endl;
-                            medias[0][0] += tempo / m;
-                            medias[0][1] += comparacoes / m;
-                            medias[0][2] += movimentacoes / m;
-                            delete [] reviews;
-                        }
-                        // HeapSort
-                        for (int i = 0; i < m; i++) {
-                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-                            testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-                            arquivo_saida << "Heap " << m << ": tempo = " << to_string(tempo)
-                                          << " milissegundos, comparacoes = " << to_string(comparacoes)
-                                          << ", movimentacoes = " << to_string(movimentacoes) << endl;
-                            medias[1][0] += tempo / m;
-                            medias[1][1] += comparacoes / m;
-                            medias[1][2] += movimentacoes / m;
-                            delete [] reviews;
-                        }
-                        // RadixSort
-                        for (int i = 0; i < m; i++) {
-                            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-                            testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-                            arquivo_saida << "Radix " << m << ": tempo = " << to_string(tempo)
-                                          << " milissegundos, comparacoes = " << to_string(comparacoes)
-                                          << ", movimentacoes = " << to_string(movimentacoes) << endl;
-                            medias[2][0] += tempo / m;
-                            medias[2][1] += comparacoes / m;
-                            medias[2][2] += movimentacoes / m;
-                            delete [] reviews;
-                        }
-                        for (int i = 0; i < 3; i++) {
-                            if (i == 0)
-                                arquivo_saida << "Media Quick: ";
-                            else if (i == 1)
-                                arquivo_saida << "Media Heap: ";
-                            else
-                                arquivo_saida << "Media Radix: ";
-                            arquivo_saida << "tempo = " << to_string(medias[i][0]) << " milissegundos, comparacoes = "
-                                          << to_string(medias[i][1]) << " movimentacoes = " << to_string(medias[i][2])
-                                          << endl;
-                        }
-                        arquivo_saida << "============================================================================="
-                                      << endl;
-                    } else {
-                        cout << "Erro: Valor de N lido e invalido!" << endl;
+                    ArvoreVP *arvoreVp = new ArvoreVP();
+                    int *posicoes = new int[n];
+                    ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
+                    auto start = std::chrono::high_resolution_clock::now();
+                    for(int i = 0; i < n; i++) {
+                        arvoreVp->inserir(reviews[i]->getId(), posicoes[i], &comparacoes_insercao);
                     }
+                    auto end = std::chrono::high_resolution_clock::now();
+                    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                    insercao = int_m.count();
+
+                    auto start2 = std::chrono::high_resolution_clock::now();
+                    for(int i = 0; i < n_buscas; i++) {
+                        intAleatorio = rand()%(n) + 1;
+                        arvoreVp->buscar(reviews[intAleatorio]->getId(), &comparacoes_busca);
+                    }
+                    auto end2 = std::chrono::high_resolution_clock::now();
+                    auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
+                    busca = int_m2.count();
+
+                    insercao_media += insercao/m;
+                    comparacoes_insercao_media += comparacoes_insercao/m;
+                    busca_media += busca/m;
+                    comparacoes_busca_media += comparacoes_busca/m;
+
+                    delete arvoreVp;
+                    delete [] reviews;
+                    delete [] posicoes;
                 }
+
+                ofstream arquivo_saida;
+                arquivo_saida.open(diretorio + nome_saida, ios::trunc);
+
+                arquivo_saida << "============== Arvore Vermelho-Preto ==============" << endl;
+                arquivo_saida << "Tempo de insercao de 1000000 reviews: " << insercao_media << endl;
+                arquivo_saida << "Quantidade de comparacoes na insercao: " << comparacoes_insercao_media << endl;
+                arquivo_saida << "Tempo de busca de 100 reviews: " << busca_media << endl;
+                arquivo_saida << "Quantidade de comparacoes na busca: " << comparacoes_busca_media << endl;
+
                 arquivo_saida.close();
-                arquivo_input.close();
-            } else {
-                cout << "Erro: Nao foi possivel abrir o arquivo input.txt contendo os valores de N." << endl;
+            }else if(opcao == 2) {
+
             }
             break;
         }
         case 2: {
-            int n;
-            cout << "Digite a quantidade de Reviews: " << endl;
-            cin >> n;
-            int m;
-            cout << "Deseja visualizar quantas versoes mais frequentes? " << endl;
-            cin >> m;
-            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-            int tempo = 0;
-            testarHash(reviews, n, m, &tempo);
-            cout << "Tempo do Hash = " << to_string(tempo) << " milissegundos" << endl;
-            delete [] reviews;
-            break;
-        }
-        case 3: {
-            ofstream arquivo_testes;
-            arquivo_testes.open(diretorio + nome_testes, ios::trunc);
+            int opcao;
+            cout << "---------------- Arvore B -----------------" << endl;
+            cout << "[1] Analises" << endl;
+            cout << "[2] Buscar pelo ID" << endl;
+            cout << "[0] Sair" << endl;
+            cin >> opcao;
 
-            // QuickSort
-            int n = 100, tempo = 0, comparacoes = 0, movimentacoes = 0;
-            ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-            testarQuickSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-            arquivo_testes << "===================================== Quick Sort ====================================="
-                           << endl;
-            arquivo_testes << "Tempo = " << to_string(tempo) << " milissegundos, comparacoes = "
-                           << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
-            for (int i = 0; i < n; i++) {
-                arquivo_testes << "Upvotes: " << reviews[i]->getUpvotes() << " Id: " << reviews[i]->getId() << endl;
+            if(opcao == 1) {
+
+            }else if(opcao == 2) {
+
             }
-            arquivo_testes << endl << endl;
-            delete [] reviews;
-
-            // HeapSort
-            tempo = 0, comparacoes = 0, movimentacoes = 0;
-            reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-            testarHeapSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-            arquivo_testes << "===================================== Heap Sort ====================================="
-                           << endl;
-            arquivo_testes << "Tempo = " << to_string(tempo) << " milissegundos, comparacoes = "
-                           << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
-            for (int i = 0; i < n; i++) {
-                arquivo_testes << "Upvotes: " << reviews[i]->getUpvotes() << " Id: " << reviews[i]->getId() << endl;
-            }
-            arquivo_testes << endl << endl;
-            delete [] reviews;
-
-            // RadixSort
-            tempo = 0, comparacoes = 0, movimentacoes = 0;
-            reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-            testarRadixSort(reviews, n, &tempo, &comparacoes, &movimentacoes);
-            arquivo_testes << "===================================== Radix Sort ====================================="
-                           << endl;
-            arquivo_testes << "Tempo = " << to_string(tempo) << " milissegundos, comparacoes = "
-                           << to_string(comparacoes) << ", movimentacoes = " << to_string(movimentacoes) << endl;
-            for (int i = 0; i < n; i++) {
-                arquivo_testes << "Upvotes: " << reviews[i]->getUpvotes() << " Id: " << reviews[i]->getId() << endl;
-            }
-            arquivo_testes << endl << endl;
-            delete [] reviews;
-
-            // Tabela Hash
-            tempo = 0;
-            reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
-            string app_version;
-            // Guarda o time que começou
-            auto start = std::chrono::high_resolution_clock::now();
-            Hash *tabelaHash = new Hash(1000);
-            for (int i = 0; i < n; i++) {
-                app_version = reviews[i]->getAppVersion().empty() ? "(NULL)" : reviews[i]->getAppVersion();
-                tabelaHash->inserir(app_version);
-            }
-            auto end = std::chrono::high_resolution_clock::now();
-            auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            tempo = int_m.count();
-            arquivo_testes << "===================================== Tabela Hash ====================================="
-                           << endl;
-            arquivo_testes << "Tempo = " << to_string(tempo) << " milissegundos" << endl;
-            tabelaHash->imprimirArquivo(arquivo_testes);
-            delete tabelaHash;
-            delete [] reviews;
-
-            arquivo_testes.close();
-
-            cout << "=================================================================" << endl;
-            cout << "As informacoes do modulo de teste foram salvas do arquivo teste.txt" << endl;
-            cout << "=================================================================" << endl;
-
             break;
         }
         default: {
@@ -326,7 +232,7 @@ int main(int argc, char const *argv[]) {
         cout << "Erro: Esperando: ./<program_name> <diretorio_arquivos>" << endl;
         return 1;
     }
-    
+
     // declarando e abrindo um arquivo
     ifstream arquivo_bin;
     arquivo_bin.open(argv[1] + nome_bin, ios::binary);

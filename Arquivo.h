@@ -30,8 +30,10 @@ class Arquivo {
         static void desalocarVetorReviews(ReviewPonteiro *reviews, int n);
         // Pegar todos reviews do bin e transformar em binario
         static ReviewPonteiro* recuperarTodosReviews(ifstream &arquivo_processado, ifstream &posicoes_salvas);
+        static int* recuperarTodasPosicoes(ifstream &posicoes_salvas);
         // Pegar parte aleatória do vetor com todos reviews
         static ReviewPonteiro* recuperarReviewsAleatoriosDoVetor(ReviewPonteiro *reviews, int quantidade, int n);
+        static ReviewPonteiro* recuperarReviewsAleatoriosDoVetorComPosicao(ReviewPonteiro *reviews, int *posicoes, int *posicoesReviews, int quantidade, int n);
 };
 
 #endif //ED2_ARQUIVO_H
