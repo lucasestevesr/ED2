@@ -6,15 +6,15 @@
 class ArvoreB
 {
 private:
-
     NoB *raiz; // ponteiro para o nó raiz
     int grau;  // grau minimo da arvore
+    int nfilhos;
 
     void destrutorAux(NoB* no);
 
 public:
 
-    ArvoreB(int grau);
+    ArvoreB(int grau, int nfilhos);
 
     ~ArvoreB();
 

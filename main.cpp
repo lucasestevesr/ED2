@@ -189,15 +189,16 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cin >> opcao;
 
             if(opcao == 1) {
-                int n = 3;
-                ArvoreB *arvoreB = new ArvoreB(n/2);
+                int n = 1000000;
+                int b = 20;
+                ArvoreB *arvoreB = new ArvoreB((int)(b+1)/2, b);
                 int *posicoes = new int[n];
                 ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
                 for (int i = 0; i<n; i++)
                 {
                     arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i]);
                 }
-                //arvoreB->insereNoArvore("gp:AOqpTOEx7_3L-70CUZHq9z_GZPidQ89dzjsV6HUTAeg-v8GFsRiymZXD_0GtBuAw9bzzqvko-xo5lgOriuS2nA", 900);
+                arvoreB->insereNoArvore("gp:AOqpTOEx7_3L-70CUZHq9z_GZPidQ89dzjsV6HUTAeg-v8GFsRiymZXD_0GtBuAw9bzzqvko-xo5lgOriuS2nA", 100);
                 string id;
                 cout << "Id?" <<endl;
                 cin >> id;

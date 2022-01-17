@@ -4,13 +4,14 @@
 using namespace std;
 
 
-NoB::NoB(int grau, bool folha) {
+NoB::NoB(int grau, bool folha, int nfilhos) {
 
     this->grau = grau;
     this->folha = folha;
-    this->chaves = new string[2*grau-1];
+    this->chaves = new InfoArvoreB *[2*grau-1];
     this->filhos = new NoB *[2*grau];
     this->n = 0;
+    this->nfilhos = nfilhos;
 }
 
 NoB::~NoB() {}
@@ -22,12 +23,12 @@ void NoB::percorreNos() {
     int i;
     for (i = 0; i < n; i++) {
 
-        if (folha == false)
+        if (!folha)
             filhos[i]->percorreNos();
         cout << " " << chaves[i];
     }
  
-    if (folha == false)
+    if (!folha)
         filhos[i]->percorreNos();
 }
  
@@ -36,17 +37,13 @@ void NoB::percorreNos() {
 NoB *NoB::buscaNo(string k) {
 
     int i = 0;
-    while (i < n && k > chaves[i])
+    while (i < n && k > chaves[i]->id)
         i++;
 
-    if (chaves[i] == k){
-        cout << chaves[i] << endl;
-        cout << k << endl;
+    if (chaves[i]->id == k)
         return this;
-    }
 
- 
-    if (folha == true)
+    if (folha)
         return nullptr;
  
     return filhos[i]->buscaNo(k);
@@ -54,43 +51,47 @@ NoB *NoB::buscaNo(string k) {
 
 // Função que insere um no na subarvore daquele nó desde que o nó tenha espaço para inserir uma nova chave
 
-void NoB::insereNoComEspaco(string k) {
+void NoB::insereNoComEspaco(string k, int localizacao) {
 
+    InfoArvoreB* info = new InfoArvoreB();
+    info->id = k;
+    info->localizacao = localizacao;
     int i = n-1;
-    if (folha == true) {
 
-        while (i >= 0 && chaves[i] > k) {
+    if (folha) {
+
+        while (i >= 0 && chaves[i]->id > k) {
             chaves[i+1] = chaves[i];
             i--;
         }
-        chaves[i+1] = k;
+        chaves[i+1] = info;
         n = n+1;
     }
     else 
     {
-        while (i >= 0 && chaves[i] > k)
+        while (i >= 0 && chaves[i]->id > k)
             i--;
  
-        if (filhos[i+1]->n == 2*grau-1) {
+        if (filhos[i+1]->n == nfilhos) {
             particionaNoFilho(i+1, filhos[i+1]);
  
-            if (chaves[i+1] < k)
+            if (chaves[i+1]->id < k)
                 i++;
         }
-        filhos[i+1]->insereNoComEspaco(k);
+        filhos[i+1]->insereNoComEspaco(k, localizacao);
     }
 }
  
 // função utilizada para inserir um nó quando o filho de um determinado nó estiver totalmente cheio.
 void NoB::particionaNoFilho(int i, NoB *y) {
 
-    NoB *z = new NoB(y->grau, y->folha);
+    NoB *z = new NoB(y->grau, y->folha, y->nfilhos);
     z->n = grau - 1;
  
     for (int j = 0; j < grau-1; j++)
         z->chaves[j] = y->chaves[j+grau];
  
-    if (y->folha == false) {
+    if (!y->folha) {
         for (int j = 0; j < grau; j++)
             z->filhos[j] = y->filhos[j+grau];
     }
@@ -110,11 +111,11 @@ void NoB::particionaNoFilho(int i, NoB *y) {
     n = n + 1;
 }
 
-string *NoB::getChaves() {
+InfoArvoreB **NoB::getChaves() {
     return this->chaves;
 }
 
-void NoB::setChaves(string *chaves) {
+void NoB::setChaves(InfoArvoreB **chaves) {
     this->chaves = chaves;
 }
 
@@ -150,10 +151,12 @@ void NoB::setFilhos(NoB **filhos) {
     this->filhos = filhos;
 }
 
-int NoB::getLocalizacao() {
-    return this->localizacao;
+int NoB::getNfilhos() {
+    return this->nfilhos;
 }
 
-void NoB::setLocalizacao(int localizacao) {
-    this->localizacao = localizacao;
+void NoB::setNfilhos(int nfilhos) {
+    this->nfilhos = nfilhos;
 }
+
+

@@ -5,9 +5,10 @@
 
 using namespace std;
 
-ArvoreB::ArvoreB(int grau) {
+ArvoreB::ArvoreB(int grau, int nfilhos) {
     this->raiz = nullptr;
     this->grau = grau;
+    this->nfilhos = nfilhos;
 }
 
 // Destrutor
@@ -59,37 +60,43 @@ NoB* ArvoreB::buscaNo(string indice) {
 
 void ArvoreB::insereNoArvore(string k, int localizacao) {
 
+    InfoArvoreB *info = new InfoArvoreB();
+    info->id = k;
+    info->localizacao = localizacao;
     if (raiz == nullptr) {
 
-        raiz = new NoB(this->grau, true);
-
-        string *vetAux = raiz->getChaves();
-        vetAux[0] = k;
-        raiz->setChaves(vetAux);
+        raiz = new NoB(this->grau, true, nfilhos);
+        raiz->chaves[0] = info;
+        //string *vetAux = raiz->getChaves();
+        //vetAux[0] = k;
+        //raiz->setChaves(vetAux);
         //raiz->setLocalizacao(localizacao);
-        raiz->setN(1);
+        //raiz->setN(1);
+        raiz->n = 1;
     }
     else
     {
-        if (raiz->getN() == 2*grau-1) {
+        if (raiz->getN() == nfilhos) {
 
-            NoB *s = new NoB(grau, false);
+            NoB *s = new NoB(grau, false, nfilhos);
 
-            NoB **vetAux2 = raiz->getFilhos();
-            vetAux2[0] = raiz;
-            raiz->setFilhos(vetAux2);
+            s->filhos[0] = raiz;
+
+            //NoB **vetAux2 = raiz->getFilhos();
+            //vetAux2[0] = raiz;
+            //raiz->setFilhos(vetAux2);
 
             s->particionaNoFilho(0, raiz);
 
             int i = 0;
-            if (s->getChaves()[0] < k)
+            if (s->getChaves()[0]->id < k)
                 i++;
-            s->getFilhos()[i]->insereNoComEspaco(k);
+            s->getFilhos()[i]->insereNoComEspaco(k, localizacao);
 
             raiz = s;
         }
         else 
-            raiz->insereNoComEspaco(k);
+            raiz->insereNoComEspaco(k, localizacao);
     }
 }
 

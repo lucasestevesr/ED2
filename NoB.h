@@ -5,19 +5,32 @@
 
 using namespace std;
 
+struct InfoArvoreB{
+    string id;
+    int localizacao;
+};
+
 class NoB {
 private:
-    string *chaves; // array de chaves no nó
+    InfoArvoreB **chaves; // array de chaves no nó
     int grau;       // grau mínimo
     int n;          // número de chaves atual
     bool folha;     // verifica se o nó é folha ou não
     NoB **filhos;   // ponteiro para um array de filhos
-    int localizacao; // localização dentro do arq binário
+    int nfilhos;
+public:
+    int getNfilhos();
+
+    void setNfilhos(int nfilhos);
 
 public:
-    string *getChaves();
+    NoB(int grau, bool folha, int nfilhos);   // Constructor
 
-    void setChaves(string *chaves);
+    ~NoB();
+
+    InfoArvoreB **getChaves();
+
+    void setChaves(InfoArvoreB **chaves);
 
     int getGrau();
 
@@ -35,21 +48,14 @@ public:
 
     void setFilhos(NoB **filhos);
 
-    int getLocalizacao();
-
-    void setLocalizacao(int localizacao);
-
-    NoB(int grau, bool folha);   // Constructor
-
-    ~NoB();
-
-    void insereNoComEspaco(string k);
+    void insereNoComEspaco(string k, int localizacao);
 
     void particionaNoFilho(int i, NoB *y);
 
     void percorreNos();
 
     NoB *buscaNo(string k);
+    friend class ArvoreB;
 };
 
 #endif
