@@ -6,6 +6,7 @@
 #include "Ordenar.h"
 #include "Hash.h"
 #include "ArvoreVP.h"
+#include "ArvoreB.h"
 #include <chrono>
 
 using namespace std;
@@ -188,7 +189,26 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cin >> opcao;
 
             if(opcao == 1) {
-
+                int n = 3;
+                ArvoreB *arvoreB = new ArvoreB(n/2);
+                int *posicoes = new int[n];
+                ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
+                for (int i = 0; i<n; i++)
+                {
+                    arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i]);
+                }
+                //arvoreB->insereNoArvore("gp:AOqpTOEx7_3L-70CUZHq9z_GZPidQ89dzjsV6HUTAeg-v8GFsRiymZXD_0GtBuAw9bzzqvko-xo5lgOriuS2nA", 900);
+                string id;
+                cout << "Id?" <<endl;
+                cin >> id;
+                NoB *noB = arvoreB->buscaNo(id);
+                if (noB != nullptr)
+                    cout << "Encontrou o no" << endl;
+                else
+                    cout << "Nao encontrou o No" << endl;
+                delete arvoreB;
+                delete [] posicoes;
+                delete [] reviews;
             }else if(opcao == 2) {
 
             }

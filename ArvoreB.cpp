@@ -6,53 +6,91 @@
 using namespace std;
 
 ArvoreB::ArvoreB(int grau) {
-    this->raiz = NULL;
+    this->raiz = nullptr;
     this->grau = grau;
 }
 
-ArvoreB::~ArvoreB() { }
+// Destrutor
+ArvoreB::~ArvoreB() {
+    ArvoreB::destrutorAux(this->raiz);
+}
+
+// Destrutor Auxiliar
+void ArvoreB::destrutorAux(NoB *no) {
+    // Destrutor auxiliar que vai chamando as subarvores
+    // da esquerda e da direita recursivamente
+    if(no != nullptr) {
+        //ArvoreB::destrutorAux(no->getEsquerdo());
+        //ArvoreB::destrutorAux(no->getDireito());
+        delete no;
+    }
+}
+
+NoB *ArvoreB::getRaiz(){
+    return this->raiz;
+}
+
+void ArvoreB::setRaiz(NoB *raiz){
+    this->raiz = raiz;
+}
+
+int ArvoreB::getGrau() {
+    return this->grau;
+}
+
+void ArvoreB::setGrau(int grau){
+    this->grau = grau;
+}
+
 
 void ArvoreB::percorreNos() {
     
-    if (raiz != NULL)
+    if (raiz != nullptr)
         raiz->percorreNos();
 }
 
-NoB* ArvoreB::buscaNo(int indice) {
+NoB* ArvoreB::buscaNo(string indice) {
     
-    if(this->raiz == NULL) 
-        return NULL;
+    if(this->raiz == nullptr)
+        return nullptr;
     else 
         return this->raiz->buscaNo(indice);
 }
 
+void ArvoreB::insereNoArvore(string k, int localizacao) {
 
-void ArvoreB::insereNoArvore(int k) {   
+    if (raiz == nullptr) {
 
-    if (raiz == NULL) {
-        
         raiz = new NoB(this->grau, true);
-        raiz->chaves[0] = k;  
-        raiz->n = 1;  
+
+        string *vetAux = raiz->getChaves();
+        vetAux[0] = k;
+        raiz->setChaves(vetAux);
+        //raiz->setLocalizacao(localizacao);
+        raiz->setN(1);
     }
     else
     {
-        if (raiz->n == 2*grau-1) {
+        if (raiz->getN() == 2*grau-1) {
 
             NoB *s = new NoB(grau, false);
- 
-            s->filhos[0] = raiz;
- 
+
+            NoB **vetAux2 = raiz->getFilhos();
+            vetAux2[0] = raiz;
+            raiz->setFilhos(vetAux2);
+
             s->particionaNoFilho(0, raiz);
 
             int i = 0;
-            if (s->chaves[0] < k)
+            if (s->getChaves()[0] < k)
                 i++;
-            s->filhos[i]->insereNoComEspaco(k);
- 
+            s->getFilhos()[i]->insereNoComEspaco(k);
+
             raiz = s;
         }
         else 
             raiz->insereNoComEspaco(k);
     }
 }
+
+
