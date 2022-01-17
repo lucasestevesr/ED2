@@ -6,26 +6,20 @@
 class ArvoreB
 {
 private:
+
     NoB *raiz; // ponteiro para o nó raiz
     int grau;  // grau minimo da arvore
     int nfilhos;
-
     void destrutorAux(NoB* no);
 
 public:
 
     ArvoreB(int grau, int nfilhos);
-
     ~ArvoreB();
-
     NoB *getRaiz();
-
     void setRaiz(NoB *raiz);
-
     int getGrau();
-
     void setGrau(int grau);
-
     void percorreNos();
     NoB* buscaNo(string k);
     void insereNoArvore(string k, int localizacao);

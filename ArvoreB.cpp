@@ -27,30 +27,35 @@ void ArvoreB::destrutorAux(NoB *no) {
     }
 }
 
+// recupera a raiz da ArvoreB
 NoB *ArvoreB::getRaiz(){
     return this->raiz;
 }
 
+// seta a raiz da ArvoreB
 void ArvoreB::setRaiz(NoB *raiz){
     this->raiz = raiz;
 }
 
+// recupera o grau da ArvoreB
 int ArvoreB::getGrau() {
     return this->grau;
 }
 
+// seta o grau da ArvoreB
 void ArvoreB::setGrau(int grau){
     this->grau = grau;
 }
 
-
 void ArvoreB::percorreNos() {
     
-    if (raiz != nullptr)
+    // se a ArvoreB não estiver vazia, percorra seus nós a partir da raiz
+    if (raiz != nullptr)               
         raiz->percorreNos();
 }
 
-NoB* ArvoreB::buscaNo(string indice) {
+// busca um determinado nó na árvore a partir do id de um review
+NoB* ArvoreB::buscaNo(string indice) {  
     
     if(this->raiz == nullptr)
         return nullptr;
@@ -58,44 +63,39 @@ NoB* ArvoreB::buscaNo(string indice) {
         return this->raiz->buscaNo(indice);
 }
 
+// insere um novo nó na arvore, passando seu id e sua localização no arquivo binário
 void ArvoreB::insereNoArvore(string k, int localizacao) {
 
-    InfoArvoreB *info = new InfoArvoreB();
+    // instanciando um novo nó do tipó InfoArvore(struct)
+    InfoArvoreB *info = new InfoArvoreB();     
     info->id = k;
     info->localizacao = localizacao;
-    if (raiz == nullptr) {
+
+    // se a raiz for nula, defina o novo nó como sendo raiz da ArvoreB
+    if (raiz == nullptr) {                     
 
         raiz = new NoB(this->grau, true, nfilhos);
         raiz->chaves[0] = info;
-        //string *vetAux = raiz->getChaves();
-        //vetAux[0] = k;
-        //raiz->setChaves(vetAux);
-        //raiz->setLocalizacao(localizacao);
-        //raiz->setN(1);
         raiz->n = 1;
     }
     else
     {
-        if (raiz->getN() == nfilhos) {
+        if (raiz->getN() == nfilhos) {              // verifica se a raiz atingiu o numero máximo de filhos
 
-            NoB *s = new NoB(grau, false, nfilhos);
+            NoB *s = new NoB(grau, false, nfilhos); // instanciando um novo nó que será a nova raiz da arvore
+            s->filhos[0] = raiz;                    // a então raiz da árvore passa a ter a antigo como filha
+            s->particionaNoFilho(0, raiz);          // particionanod a antiga raiz
 
-            s->filhos[0] = raiz;
-
-            //NoB **vetAux2 = raiz->getFilhos();
-            //vetAux2[0] = raiz;
-            //raiz->setFilhos(vetAux2);
-
-            s->particionaNoFilho(0, raiz);
-
+            // a então raiz da Arvore agora precisa ver qual dos filhos terá a nova chave
             int i = 0;
             if (s->getChaves()[0]->id < k)
                 i++;
             s->getFilhos()[i]->insereNoComEspaco(k, localizacao);
 
+            // define s como nova raiz
             raiz = s;
         }
-        else 
+        else // se a raiz não estiver cheia, inserir o novo nó a partir nela
             raiz->insereNoComEspaco(k, localizacao);
     }
 }

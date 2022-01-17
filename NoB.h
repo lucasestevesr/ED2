@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// definindo o tipo de cada Nó
 struct InfoArvoreB{
     string id;
     int localizacao;
@@ -13,14 +14,14 @@ struct InfoArvoreB{
 class NoB {
 private:
     InfoArvoreB **chaves; // array de chaves no nó
-    int grau;       // grau mínimo
-    int n;          // número de chaves atual
-    bool folha;     // verifica se o nó é folha ou não
-    NoB **filhos;   // ponteiro para um array de filhos
+    int grau;             // grau mínimo
+    int n;                // número de chaves atual
+    bool folha;           // verifica se o nó é folha ou não
+    NoB **filhos;         // ponteiro para um array de filhos
     int nfilhos;
 public:
-    int getNfilhos();
 
+    int getNfilhos();
     void setNfilhos(int nfilhos);
 
 public:
