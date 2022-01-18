@@ -55,16 +55,16 @@ void ArvoreB::percorreNos() {
 }
 
 // busca um determinado nó na árvore a partir do id de um review
-NoB* ArvoreB::buscaNo(string indice) {  
+NoB* ArvoreB::buscaNo(string indice, int *comparacoes) {  
     
     if(this->raiz == nullptr)
         return nullptr;
     else 
-        return this->raiz->buscaNo(indice);
+        return this->raiz->buscaNo(indice, comparacoes);
 }
 
 // insere um novo nó na arvore, passando seu id e sua localização no arquivo binário
-void ArvoreB::insereNoArvore(string k, int localizacao) {
+void ArvoreB::insereNoArvore(string k, int localizacao, int *comparacoes) {
 
     // instanciando um novo nó do tipó InfoArvore(struct)
     InfoArvoreB *info = new InfoArvoreB();     
@@ -89,14 +89,15 @@ void ArvoreB::insereNoArvore(string k, int localizacao) {
             // a então raiz da Arvore agora precisa ver qual dos filhos terá a nova chave
             int i = 0;
             if (s->getChaves()[0]->id < k)
+                (*comparacoes)++;   // added
                 i++;
-            s->getFilhos()[i]->insereNoComEspaco(k, localizacao);
+            s->getFilhos()[i]->insereNoComEspaco(k, localizacao, comparacoes);
 
             // define s como nova raiz
             raiz = s;
         }
         else // se a raiz não estiver cheia, inserir o novo nó a partir nela
-            raiz->insereNoComEspaco(k, localizacao);
+            raiz->insereNoComEspaco(k, localizacao, comparacoes);
     }
 }
 

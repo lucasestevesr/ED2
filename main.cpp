@@ -189,20 +189,26 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cin >> opcao;
 
             if(opcao == 1) {
-                int n = 1000000;
-                int b = 20;
-                ArvoreB *arvoreB = new ArvoreB((int)(b+1)/2, b);
+                cout << "Você selecionou o modulo Analises. Aguarde o resultado..." << endl;
+                int n = 10;
+                int b1 = 20;
+                int b2 = 200;
+                int m = 3;
+                int intAleatorio = 0;
+                int comparacoes = 0;
+                //================================================================================
+                 ArvoreB *arvoreB = new ArvoreB((int)(b1+1)/2, b1);
                 int *posicoes = new int[n];
                 ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
                 for (int i = 0; i<n; i++)
                 {
-                    arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i]);
+                    arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i], &comparacoes);
                 }
-                arvoreB->insereNoArvore("gp:AOqpTOEx7_3L-70CUZHq9z_GZPidQ89dzjsV6HUTAeg-v8GFsRiymZXD_0GtBuAw9bzzqvko-xo5lgOriuS2nA", 100);
+                arvoreB->insereNoArvore("gp:AOqpTOEx7_3L-70CUZHq9z_GZPidQ89dzjsV6HUTAeg-v8GFsRiymZXD_0GtBuAw9bzzqvko-xo5lgOriuS2nA", 100, &comparacoes);
                 string id;
                 cout << "Id?" <<endl;
                 cin >> id;
-                NoB *noB = arvoreB->buscaNo(id);
+                NoB *noB = arvoreB->buscaNo(id, &comparacoes);
                 if (noB != nullptr)
                     cout << "Encontrou o no" << endl;
                 else
@@ -210,8 +216,158 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 delete arvoreB;
                 delete [] posicoes;
                 delete [] reviews;
-            }else if(opcao == 2) {
+               /* // Metricas das médias
+                double insercao_media = 0;
+                double comparacoes_insercao_media = 0;
+                double busca_media = 0;
+                double comparacoes_busca_media = 0;
 
+                for(int k = 0; k < m; k++) {
+                    // Zerando métricas locais
+                    double insercao = 0;
+                    int comparacoes_insercao = 0;
+                    double busca = 0;
+                    int comparacoes_busca = 0;
+
+                    // Criando árvore, vetor de reviews aleatorios e suas respectivas posicoes (Ordem 20)
+                    ArvoreB *arvoreB = new ArvoreB((int)(b1+1)/2, b1);
+                    int *posicoes = new int[n];
+                    ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
+
+                    // Testes de inserção (Ordem 20)
+                    auto start = std::chrono::high_resolution_clock::now();
+                    cout << "Inserindo " << n << " reviews..." << endl;
+                    for(int i = 0; i < n; i++) {
+                        arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i], &comparacoes_insercao);
+                    }
+                    auto end = std::chrono::high_resolution_clock::now();
+                    auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                    insercao = int_m.count();
+                    cout << "Tempo Insercao: " << to_string(insercao) << " milisegundos     Comparacoes: " << comparacoes_insercao << endl;
+
+                    // Testes de busca ( Ordem 20)
+                    auto start2 = std::chrono::high_resolution_clock::now();
+                    cout << "Buscando " << b1 << " reviews..." << endl;
+                    for(int i = 0; i < b1; i++) {
+                        intAleatorio = rand()%(n) + 1;
+                        arvoreB->buscaNo(reviews[intAleatorio]->getId(), &comparacoes_busca);
+                    }
+                    auto end2 = std::chrono::high_resolution_clock::now();
+                    auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
+                    busca = int_m2.count();
+                    cout << "Tempo Busca: " << to_string(busca) << " milisegundos     Comparacoes: " << comparacoes_busca << endl;
+
+                    // Calculando médias das métricas
+                    insercao_media += insercao/m;
+                    comparacoes_insercao_media += comparacoes_insercao/m;
+                    busca_media += busca/m;
+                    comparacoes_busca_media += comparacoes_busca/m;
+
+                    // Desalocando memorias
+                    delete arvoreB;
+                    delete [] reviews;
+                    delete [] posicoes;
+                }
+
+                ofstream arquivo_saida;
+                arquivo_saida.open(diretorio + nome_saida, ios::trunc);
+
+                arquivo_saida << "============== ArvoreB (Ordem = 20) ==============" << endl;
+                arquivo_saida << "Tempo de insercao de " << n << " reviews: " << insercao_media << " milisegundos" << endl;
+                arquivo_saida << "Quantidade de comparacoes na insercao: " << comparacoes_insercao_media << endl;
+                arquivo_saida << "Tempo de busca de " << b1 << " reviews: " << busca_media << " milisegundos" << endl;
+                arquivo_saida << "Quantidade de comparacoes na busca: " << comparacoes_busca_media << endl;
+
+                arquivo_saida.close();
+
+                //=================================================================================
+                
+                */
+            }else if(opcao == 2) {
+                cout << "Você selecionou o modulo de busca pelo id..." << endl;
+                int n = 0, ordem = 0;
+                double insercao = 0, busca = 0;
+                int comparacoes_insercao = 0, comparacoes_busca = 0;
+
+                cout << "Deseja importar quantos Reviews para a Arvore?" << endl;
+                cin >> n;
+
+                cout << "Qual a ordem da Arvore?" << endl;
+                cin >> ordem;
+
+                if(ordem < 0) {
+                    cout << "Valor invalido para Ordem!" << endl;
+                    return;
+                }
+
+                // Criando árvore, vetor de reviews aleatorios e suas respectivas posicoes
+                ArvoreB *arvoreB = new ArvoreB((int)(ordem=+1)/2, ordem);
+                int *posicoes = new int[n];
+                ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
+
+                // Testes de inserção
+                auto start = std::chrono::high_resolution_clock::now();
+                cout << "Inserindo " << n << " reviews..." << endl;
+                for(int i = 0; i < n; i++) {
+                    arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i], &comparacoes_insercao);
+                }
+                auto end = std::chrono::high_resolution_clock::now();
+                auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                insercao = int_m.count();
+                cout << "Tempo Insercao: " << to_string(insercao) << " milisegundos     Comparacoes: " << comparacoes_insercao << endl;
+
+                int continuar = 1;
+
+                do {
+                    string id_busca;
+                    cout << "Qual ID deseja buscar na Arvore?" << endl;
+                    cin >> id_busca;
+
+                    // Teste de busca
+                    auto start2 = std::chrono::high_resolution_clock::now();
+                    cout << "Buscando o review..." << endl;
+                    NoB *noB = arvoreB->buscaNo(id_busca, &comparacoes_busca);
+                    auto end2 = std::chrono::high_resolution_clock::now();
+                    auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
+                    busca = int_m2.count();
+                    cout << "Tempo Busca: " << to_string(busca) << " milisegundos     Comparacoes: " << comparacoes_busca << endl;
+
+                    if(noB != nullptr) {
+                        cout << "ID encontrado:" << endl;
+                       // cout << "ID: " << noB->getId() << endl;
+                       // cout << "Localizacao: " << noB->getLocalizacao() << endl;
+                    }else {
+                        cout << "ID nao encontrado" << endl;
+                    }
+
+                    cout << "Deseja buscar outro ID?  [0]-NAO   [1]-SIM" << endl;
+                    cin >> continuar;
+                }while(continuar == 1);
+
+                // Desalocando memorias
+                delete arvoreB;
+                delete [] reviews;
+                delete [] posicoes;
+                /*
+                ArvoreB *arvoreB = new ArvoreB((int)(b1+1)/2, b1);
+                int *posicoes = new int[n];
+                ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
+                for (int i = 0; i<n; i++)
+                {
+                    arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i], 0);
+                }
+                arvoreB->insereNoArvore("gp:AOqpTOEx7_3L-70CUZHq9z_GZPidQ89dzjsV6HUTAeg-v8GFsRiymZXD_0GtBuAw9bzzqvko-xo5lgOriuS2nA", 100, 0);
+                string id;
+                cout << "Id?" <<endl;
+                cin >> id;
+                NoB *noB = arvoreB->buscaNo(id, 0);
+                if (noB != nullptr)
+                    cout << "Encontrou o no" << endl;
+                else
+                    cout << "Nao encontrou o No" << endl;
+                delete arvoreB;
+                delete [] posicoes;
+                delete [] reviews; */
             }
             break;
         }

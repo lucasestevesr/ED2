@@ -34,24 +34,28 @@ void NoB::percorreNos() {
  
 // Busca uma chave específica em um determinado nó
 
-NoB *NoB::buscaNo(string k) {
+NoB *NoB::buscaNo(string k, int *comparacoes) {
 
     int i = 0;                      
-    while (i < n && k > chaves[i]->id) // busca entre total de chaves alguma maior ou igual 
+    while (i < n && k > chaves[i]->id) { // busca entre total de chaves alguma maior ou igual
+        (*comparacoes)++; // added 
         i++;
+    }
 
-    if (chaves[i]->id == k)         // verfica se o id do registro eh igual ao passado p/ função
+    if (chaves[i]->id == k){         // verfica se o id do registro eh igual ao passado p/ função
+        (*comparacoes)++; // added    
         return this;
+    }
 
     if (folha)                      // verifica se o nó eh folha
         return nullptr;
  
-    return filhos[i]->buscaNo(k);   // continua buscando em seus filhos
+    return filhos[i]->buscaNo(k, comparacoes);   // continua buscando em seus filhos
 }
 
 // Função que insere um no na subarvore daquele nó desde que o nó tenha espaço para inserir uma nova chave
 
-void NoB::insereNoComEspaco(string k, int localizacao) {
+void NoB::insereNoComEspaco(string k, int localizacao, int *comparacoes) { // added
 
     InfoArvoreB* info = new InfoArvoreB(); // instanciando um novo nó
     info->id = k;
@@ -62,6 +66,7 @@ void NoB::insereNoComEspaco(string k, int localizacao) {
 
         // abrindo espaços no array de chaves do nó
         while (i >= 0 && chaves[i]->id > k) {
+            (*comparacoes)++; // added
             chaves[i+1] = chaves[i];
             i--;
         }
@@ -72,18 +77,21 @@ void NoB::insereNoComEspaco(string k, int localizacao) {
     {
         // buscando o filho que receberá o novo nó
         while (i >= 0 && chaves[i]->id > k)
+            (*comparacoes)++; // added
             i--;
 
         // verificando se o filho possui espaço 
         if (filhos[i+1]->n == nfilhos) {
+            (*comparacoes)++; // added
             // se estiver cheio, particione-o
             particionaNoFilho(i+1, filhos[i+1]);
 
             // o elemento do meio sobe e também é selecionado qual das partes receberá o novo nó
             if (chaves[i+1]->id < k)
+                (*comparacoes)++; // added
                 i++;
         }
-        filhos[i+1]->insereNoComEspaco(k, localizacao);
+        filhos[i+1]->insereNoComEspaco(k, localizacao, comparacoes); // added
     }
 }
  
@@ -100,23 +108,26 @@ void NoB::particionaNoFilho(int i, NoB *y) {
     
     // copiando também os filhos de y para os filhos de z
     if (!y->folha) {
-        for (int j = 0; j < grau; j++)
+        for (int j = 0; j < grau; j++) 
             z->filhos[j] = y->filhos[j+grau];
+        
     }
 
     // atualizando o total de chaves
     y->n = grau - 1;
 
     // abrindo espaço em seus filhos para inserir um novo filho
-    for (int j = n; j >= i+1; j--)
+    for (int j = n; j >= i+1; j--) {
         filhos[j+1] = filhos[j];
+    }
     
     // inserindo novo filho
     filhos[i+1] = z;
     
     // também é necessario abrir espaços no array de chaves do nó para inserir uma chave de y
-    for (int j = n-1; j >= i; j--)
+    for (int j = n-1; j >= i; j--) 
         chaves[j+1] = chaves[j];
+    
     
     // após abrir espaço no array de chaves, é possível inserir uma chave de y
     chaves[i] = y->chaves[grau-1];

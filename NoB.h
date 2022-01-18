@@ -49,13 +49,13 @@ public:
 
     void setFilhos(NoB **filhos);
 
-    void insereNoComEspaco(string k, int localizacao);
+    void insereNoComEspaco(string k, int localizacao, int *comparacoes);
 
     void particionaNoFilho(int i, NoB *y);
 
     void percorreNos();
 
-    NoB *buscaNo(string k);
+    NoB *buscaNo(string k, int *comparacoes);
     friend class ArvoreB;
 };
 

@@ -21,8 +21,8 @@ public:
     int getGrau();
     void setGrau(int grau);
     void percorreNos();
-    NoB* buscaNo(string k);
-    void insereNoArvore(string k, int localizacao);
+    NoB* buscaNo(string k, int *comparacoes_busca);
+    void insereNoArvore(string k, int localizacao, int *comparacoes);
 };
 
 
