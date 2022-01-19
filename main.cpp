@@ -97,11 +97,7 @@ void testarArvoreB(int b, int n, int m, int p, ReviewPonteiro *reviewsMaior, int
     arquivo_saida << "Quantidade de comparacoes na busca: " << comparacoes_busca_media << endl;
 }
 
-void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews) {
-    // Abrindo arquivo de saida
-    ofstream arquivo_saida;
-    arquivo_saida.open(diretorio + nome_saida, ios::trunc);
-
+void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews, ofstream &arquivo_saida) {
     // Função serve para fazer o switch da opção escolhida pelo usuário
     switch (selecao) {
         case 0: {
@@ -322,17 +318,19 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cout << "Erro: Opcao invalida!" << endl;
         }
     }
-    arquivo_saida.close();
-    delete [] posicoesReviews;
-    Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
 }
 
 void mainMenu(ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews) {
+    // Abrindo arquivo de saida
+    ofstream arquivo_saida;
+    arquivo_saida.open(diretorio + nome_saida, ios::trunc);
     int selecao = 1;
     while (selecao != 0) {
         selecao = menu();
-        selecionar(selecao, arquivo_processado, posicoes_salvas, diretorio, reviewsMaior, posicoesReviews, quantidadeReviews);
+        selecionar(selecao, arquivo_processado, posicoes_salvas, diretorio, reviewsMaior, posicoesReviews, quantidadeReviews, arquivo_saida);
     }
+    delete [] posicoesReviews;
+    Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
 }
 
 int main(int argc, char const *argv[]) {
