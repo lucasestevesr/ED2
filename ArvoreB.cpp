@@ -14,6 +14,7 @@ ArvoreB::ArvoreB(int grau, int nfilhos) {
 // Destrutor
 ArvoreB::~ArvoreB() {
     ArvoreB::destrutorAux(this->raiz);
+    delete this->raiz;
 }
 
 // Destrutor Auxiliar
@@ -88,7 +89,7 @@ void ArvoreB::insereNoArvore(string k, int localizacao, int *comparacoes) {
                 (*comparacoes)++;   // added
                 i++;
             }
-            s->getFilhos()[i]->insereNoComEspaco(k, localizacao, comparacoes);
+            s->filhos[i]->insereNoComEspaco(k, localizacao, comparacoes);
 
             // define s como nova raiz
             raiz = s;

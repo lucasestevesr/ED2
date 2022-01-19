@@ -10,7 +10,7 @@ class ArvoreVP {
         NoVP *rotacionarDireita(NoVP *no);
         NoVP *inserirAux(NoVP *raiz, NoVP *novo_no, bool *resposta, int *comparacoes);
         NoVP *buscarAux(NoVP *no, string id, int *comparacoes);
-        void destrutorAux(NoVP *no);
+        NoVP * destrutorAux(NoVP *no);
         void trocarCor(NoVP *no);
 
     public:

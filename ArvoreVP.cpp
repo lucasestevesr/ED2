@@ -10,18 +10,19 @@ ArvoreVP::ArvoreVP() {
 
 // Destrutor
 ArvoreVP::~ArvoreVP() {
-    ArvoreVP::destrutorAux(this->raiz);
+    this->raiz = ArvoreVP::destrutorAux(this->raiz);
 }
 
 // Destrutor Auxiliar
-void ArvoreVP::destrutorAux(NoVP *no) {
+NoVP * ArvoreVP::destrutorAux(NoVP *no) {
     // Destrutor auxiliar que vai chamando as subarvores
     // da esquerda e da direita recursivamente
     if(no != nullptr) {
-        ArvoreVP::destrutorAux(no->getEsquerdo());
-        ArvoreVP::destrutorAux(no->getDireito());
+        no->setEsquerdo(ArvoreVP::destrutorAux(no->getEsquerdo()));
+        no->setDireito(ArvoreVP::destrutorAux(no->getDireito()));
         delete no;
     }
+    return nullptr;
 }
 
 // Getters e Setters

@@ -34,9 +34,8 @@ int menu() {
     return selecao;
 }
 
-void testarArvoreB(int b, int n, int m, int p, ReviewPonteiro *reviews, int *posicoes, ofstream &arquivo_saida) {
+void testarArvoreB(int b, int n, int m, int p, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews, ofstream &arquivo_saida) {
     int intAleatorio = 0;
-    int comparacoes = 0;
 
     // Metricas das médias
     double insercao_media = 0;
@@ -53,6 +52,8 @@ void testarArvoreB(int b, int n, int m, int p, ReviewPonteiro *reviews, int *pos
 
         // Criando árvore, vetor de reviews aleatorios e suas respectivas posicoes (Ordem 20)
         ArvoreB *arvoreB = new ArvoreB((int)(b+1)/2, b);
+        int *posicoes = new int[n];
+        ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
 
         // Testes de inserção (Ordem 20)
         auto start = std::chrono::high_resolution_clock::now();
@@ -85,6 +86,8 @@ void testarArvoreB(int b, int n, int m, int p, ReviewPonteiro *reviews, int *pos
 
         // Desalocando memorias
         delete arvoreB;
+        delete [] reviews;
+        delete [] posicoes;
     }
 
     arquivo_saida << "===================== ArvoreB (Ordem = " << b << ") =====================" << endl;
@@ -95,6 +98,10 @@ void testarArvoreB(int b, int n, int m, int p, ReviewPonteiro *reviews, int *pos
 }
 
 void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews) {
+    // Abrindo arquivo de saida
+    ofstream arquivo_saida;
+    arquivo_saida.open(diretorio + nome_saida, ios::trunc);
+
     // Função serve para fazer o switch da opção escolhida pelo usuário
     switch (selecao) {
         case 0: {
@@ -102,6 +109,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cout << "Programa finalizado!" << endl;
             arquivo_processado.close();
             posicoes_salvas.close();
+            arquivo_saida.close();
             delete [] posicoesReviews;
             Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
             exit(0);
@@ -144,8 +152,8 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                     }
                     auto end = std::chrono::high_resolution_clock::now();
                     auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                    insercao = int_m.count();
-                    cout << "Tempo Insercao: " << to_string(insercao) << " milisegundos     Comparacoes: " << comparacoes_insercao << endl;
+                    insercao = int_m.count() / 1000;
+                    cout << "Tempo Insercao: " << to_string(insercao) << " segundos     Comparacoes: " << comparacoes_insercao << endl;
 
                     // Testes de busca
                     auto start2 = std::chrono::high_resolution_clock::now();
@@ -171,16 +179,11 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                     delete [] posicoes;
                 }
 
-                ofstream arquivo_saida;
-                arquivo_saida.open(diretorio + nome_saida, ios::trunc);
-
                 arquivo_saida << "============== Arvore Vermelho-Preto ==============" << endl;
-                arquivo_saida << "Tempo de insercao de " << n << " reviews: " << insercao_media << " milisegundos" << endl;
+                arquivo_saida << "Tempo de insercao de " << n << " reviews: " << insercao_media << " segundos" << endl;
                 arquivo_saida << "Quantidade de comparacoes na insercao: " << comparacoes_insercao_media << endl;
                 arquivo_saida << "Tempo de busca de " << b << " reviews: " << busca_media << " milisegundos" << endl;
                 arquivo_saida << "Quantidade de comparacoes na busca: " << comparacoes_busca_media << endl;
-
-                arquivo_saida.close();
             }else if(opcao == 2) {
                 int n = 0;
                 double insercao = 0, busca = 0;
@@ -202,36 +205,31 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 }
                 auto end = std::chrono::high_resolution_clock::now();
                 auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                insercao = int_m.count();
-                cout << "Tempo Insercao: " << to_string(insercao) << " milisegundos     Comparacoes: " << comparacoes_insercao << endl;
+                insercao = int_m.count() / 1000;
+                cout << "Tempo Insercao: " << to_string(insercao) << " segundos     Comparacoes: " << comparacoes_insercao << endl;
 
-                int continuar = 1;
+                string id_busca;
+                cout << "Qual ID deseja buscar na Arvore?" << endl;
+                cin >> id_busca;
 
-                do {
-                    string id_busca;
-                    cout << "Qual ID deseja buscar na Arvore?" << endl;
-                    cin >> id_busca;
+                // Teste de busca
+                auto start2 = std::chrono::high_resolution_clock::now();
+                cout << "Buscando o review..." << endl;
+                NoVP *no = arvoreVp->buscar(id_busca, &comparacoes_busca);
+                auto end2 = std::chrono::high_resolution_clock::now();
+                auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
+                busca = int_m2.count();
+                cout << "Tempo Busca: " << to_string(busca) << " milisegundos     Comparacoes: " << comparacoes_busca << endl;
 
-                    // Teste de busca
-                    auto start2 = std::chrono::high_resolution_clock::now();
-                    cout << "Buscando o review..." << endl;
-                    NoVP *no = arvoreVp->buscar(id_busca, &comparacoes_busca);
-                    auto end2 = std::chrono::high_resolution_clock::now();
-                    auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
-                    busca = int_m2.count();
-                    cout << "Tempo Busca: " << to_string(busca) << " milisegundos     Comparacoes: " << comparacoes_busca << endl;
+                if(no != nullptr) {
+                    cout << "ID encontrado:" << endl;
+                    cout << "ID: " << no->getId() << endl;
+                    cout << "Localizacao: " << no->getLocalizacao() << endl;
+                }else {
+                    cout << "ID nao encontrado!" << endl;
+                }
 
-                    if(no != nullptr) {
-                        cout << "ID encontrado:" << endl;
-                        cout << "ID: " << no->getId() << endl;
-                        cout << "Localizacao: " << no->getLocalizacao() << endl;
-                    }else {
-                        cout << "ID nao encontrado" << endl;
-                    }
-
-                    cout << "Deseja buscar outro ID?  [0]-NAO   [1]-SIM" << endl;
-                    cin >> continuar;
-                }while(continuar == 1);
+                cout << "Voltando para o menu..." << endl;
 
                 // Desalocando memorias
                 delete arvoreVp;
@@ -249,25 +247,15 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cin >> opcao;
 
             if(opcao == 1) {
-                cout << "Você selecionou o modulo Analises. Aguarde o resultado..." << endl;
+                cout << "Voce selecionou o modulo Analises. Aguarde o resultado..." << endl;
                 int n = 1000000;
                 int b1 = 20;
                 int b2 = 200;
                 int m = 3;
                 int p = 100;
 
-                int *posicoes = new int[n];
-                ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetorComPosicao(reviewsMaior, posicoes, posicoesReviews, quantidadeReviews, n);
-
-                ofstream arquivo_saida;
-                arquivo_saida.open(diretorio + nome_saida, ios::trunc);
-
-                testarArvoreB(b1, n, m, p, reviews, posicoes, arquivo_saida);
-                testarArvoreB(b2, n, m, p, reviews, posicoes, arquivo_saida);
-
-                arquivo_saida.close();
-                delete [] reviews;
-                delete [] posicoes;
+                testarArvoreB(b1, n, m, p, reviewsMaior, posicoesReviews, quantidadeReviews, arquivo_saida);
+                testarArvoreB(b2, n, m, p, reviewsMaior, posicoesReviews, quantidadeReviews, arquivo_saida);
             }else if(opcao == 2) {
                 cout << "Voce selecionou o modulo de busca pelo id..." << endl;
                 int n = 0, ordem = 0;
@@ -294,7 +282,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 auto start = std::chrono::high_resolution_clock::now();
                 cout << "Inserindo " << n << " reviews..." << endl;
                 for(int i = 0; i < n; i++) {
-                    cout << "Inseriu o " << i << endl;
+//                    cout << "Inseriu o " << i << endl;
                     arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i], &comparacoes_insercao);
                 }
                 auto end = std::chrono::high_resolution_clock::now();
@@ -302,33 +290,26 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 insercao = int_m.count() / 1000;
                 cout << "Tempo Insercao: " << to_string(insercao) << " segundos     Comparacoes: " << comparacoes_insercao << endl;
 
-                int continuar = 1;
+                string id_busca;
+                cout << "Qual ID deseja buscar na Arvore?" << endl;
+                cin >> id_busca;
 
-                do {
-                    string id_busca;
-                    cout << "Qual ID deseja buscar na Arvore?" << endl;
-                    cin >> id_busca;
+                // Teste de busca
+                auto start2 = std::chrono::high_resolution_clock::now();
+                cout << "Buscando o review..." << endl;
+                NoB *noB = arvoreB->buscaNo(id_busca, &comparacoes_busca);
+                auto end2 = std::chrono::high_resolution_clock::now();
+                auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
+                busca = int_m2.count();
+                cout << "Tempo Busca: " << to_string(busca) << " milisegundos     Comparacoes: " << comparacoes_busca << endl;
 
-                    // Teste de busca
-                    auto start2 = std::chrono::high_resolution_clock::now();
-                    cout << "Buscando o review..." << endl;
-                    NoB *noB = arvoreB->buscaNo(id_busca, &comparacoes_busca);
-                    auto end2 = std::chrono::high_resolution_clock::now();
-                    auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
-                    busca = int_m2.count();
-                    cout << "Tempo Busca: " << to_string(busca) << " milisegundos     Comparacoes: " << comparacoes_busca << endl;
-
-                    if(noB != nullptr) {
-                        cout << "ID encontrado:" << endl;
-                       // cout << "ID: " << noB->getId() << endl;
-                       // cout << "Localizacao: " << noB->getLocalizacao() << endl;
-                    }else {
-                        cout << "ID nao encontrado" << endl;
-                    }
-
-                    cout << "Deseja buscar outro ID?  [0]-NAO   [1]-SIM" << endl;
-                    cin >> continuar;
-                }while(continuar == 1);
+                if(noB != nullptr) {
+                    cout << "ID encontrado:" << endl;
+                    cout << "ID: " << noB->getChaves()->id << endl;
+                    cout << "Localizacao: " << noB->getChaves()->localizacao << endl;
+                }else {
+                    cout << "ID nao encontrado!" << endl;
+                }
 
                 // Desalocando memorias
                 delete arvoreB;
@@ -341,6 +322,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             cout << "Erro: Opcao invalida!" << endl;
         }
     }
+    arquivo_saida.close();
     delete [] posicoesReviews;
     Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
 }

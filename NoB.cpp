@@ -5,7 +5,6 @@ using namespace std;
 
 
 NoB::NoB(int grau, bool folha, int nfilhos) { // Construtor padrão do nó
-
     this->grau = grau;
     this->folha = folha;
     this->chaves = new InfoArvoreB[nfilhos];
@@ -15,8 +14,8 @@ NoB::NoB(int grau, bool folha, int nfilhos) { // Construtor padrão do nó
 }
 
 NoB::~NoB() {
-    delete [] chaves;
-    delete [] filhos;
+    delete [] this->chaves;
+    delete [] this->filhos;
 }
 
 // Função que percorre todos os nós pertencentes a um nó específico 
@@ -74,13 +73,12 @@ void NoB::insereNoComEspaco(string k, int localizacao, int *comparacoes) { // ad
         chaves[i+1].id = k;
         chaves[i+1].localizacao = localizacao;
         n = n+1;            // incrementando elementos da chave
-    }
-    else 
-    {
+    }else {
         // buscando o filho que receberá o novo nó
-        while (i >= 0 && chaves[i].id > k)
+        while (i >= 0 && chaves[i].id > k) {
             (*comparacoes)++; // added
             i--;
+        }
 
         // verificando se o filho possui espaço 
         if (filhos[i+1]->getN() == nfilhos) {
