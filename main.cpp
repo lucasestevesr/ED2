@@ -294,6 +294,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                 auto start = std::chrono::high_resolution_clock::now();
                 cout << "Inserindo " << n << " reviews..." << endl;
                 for(int i = 0; i < n; i++) {
+                    cout << "Inseriu o " << i << endl;
                     arvoreB->insereNoArvore(reviews[i]->getId(), posicoes[i], &comparacoes_insercao);
                 }
                 auto end = std::chrono::high_resolution_clock::now();

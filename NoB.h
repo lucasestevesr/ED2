@@ -12,52 +12,52 @@ struct InfoArvoreB{
 };
 
 class NoB {
-private:
-    InfoArvoreB **chaves; // array de chaves no nó
-    int grau;             // grau mínimo
-    int n;                // número de chaves atual
-    bool folha;           // verifica se o nó é folha ou não
-    NoB **filhos;         // ponteiro para um array de filhos
-    int nfilhos;
+    private:
+        InfoArvoreB *chaves; // array de chaves no nó
+        int grau;             // grau mínimo
+        int n;                // número de chaves atual
+        bool folha;           // verifica se o nó é folha ou não
+        NoB **filhos;         // ponteiro para um array de filhos
+        int nfilhos;
 
-public:
-    NoB(int grau, bool folha, int nfilhos);   // Constructor
+    public:
+        NoB(int grau, bool folha, int nfilhos);   // Constructor
 
-    ~NoB();
+        ~NoB();
 
-    InfoArvoreB **getChaves();
+        InfoArvoreB *getChaves();
 
-    void setChaves(InfoArvoreB **chaves);
+        void setChaves(InfoArvoreB *chaves);
 
-    int getGrau();
+        int getGrau();
 
-    void setGrau(int grau);
+        void setGrau(int grau);
 
-    int getN();
+        int getN();
 
-    void setN(int n);
+        void setN(int n);
 
-    int getNfilhos();
+        int getNfilhos();
 
-    void setNfilhos(int nfilhos);
+        void setNfilhos(int nfilhos);
 
-    bool isFolha();
+        bool isFolha();
 
-    void setFolha(bool folha);
+        void setFolha(bool folha);
 
-    NoB **getFilhos();
+        NoB **getFilhos();
 
-    void setFilhos(NoB **filhos);
+        void setFilhos(NoB **filhos);
 
-    void insereNoComEspaco(string k, int localizacao, int *comparacoes);
+        void insereNoComEspaco(string k, int localizacao, int *comparacoes);
 
-    void particionaNoFilho(int i, NoB *y);
+        void particionaNoFilho(int i, NoB *y);
 
-    void percorreNos();
+        void percorreNos();
 
-    NoB *buscaNo(string k, int *comparacoes);
+        NoB *buscaNo(string k, int *comparacoes);
 
-    friend class ArvoreB;
+        friend class ArvoreB;
 };
 
 #endif

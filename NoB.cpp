@@ -8,7 +8,7 @@ NoB::NoB(int grau, bool folha, int nfilhos) { // Construtor padrão do nó
 
     this->grau = grau;
     this->folha = folha;
-    this->chaves = new InfoArvoreB *[nfilhos];
+    this->chaves = new InfoArvoreB[nfilhos];
     this->filhos = new NoB *[nfilhos+1];
     this->n = 0;
     this->nfilhos = nfilhos;
@@ -26,9 +26,10 @@ void NoB::percorreNos() {
     int i;
     for (i = 0; i < n; i++) {
 
-        if (!folha)
+        if (!folha){
             filhos[i]->percorreNos();
-        cout << " " << chaves[i];
+        }
+        cout << " " << chaves[i].id;
     }
  
     if (!folha)
@@ -40,12 +41,12 @@ void NoB::percorreNos() {
 NoB *NoB::buscaNo(string k, int *comparacoes) {
 
     int i = 0;                      
-    while (i < n && k > chaves[i]->id) { // busca entre total de chaves alguma maior ou igual
+    while (i < n && k > chaves[i].id) { // busca entre total de chaves alguma maior ou igual
         (*comparacoes)++; // added 
         i++;
     }
 
-    if (chaves[i]->id == k){         // verfica se o id do registro eh igual ao passado p/ função
+    if (chaves[i].id == k){         // verfica se o id do registro eh igual ao passado p/ função
         (*comparacoes)++; // added    
         return this;
     }
@@ -59,38 +60,36 @@ NoB *NoB::buscaNo(string k, int *comparacoes) {
 // Função que insere um no na subarvore daquele nó desde que o nó tenha espaço para inserir uma nova chave
 
 void NoB::insereNoComEspaco(string k, int localizacao, int *comparacoes) { // added
-
-    InfoArvoreB* info = new InfoArvoreB(); // instanciando um novo nó
-    info->id = k;
-    info->localizacao = localizacao;
     int i = n-1;        // a busca pela posição nas chaves será feita a partir da direita              
 
     if (folha) {
 
         // abrindo espaços no array de chaves do nó
-        while (i >= 0 && chaves[i]->id > k) {
+        while (i >= 0 && chaves[i].id > k) {
             (*comparacoes)++; // added
             chaves[i+1] = chaves[i];
             i--;
         }
-        chaves[i+1] = info; // inserindo o novo registro nas chaves
+        // inserindo o novo registro nas chaves
+        chaves[i+1].id = k;
+        chaves[i+1].localizacao = localizacao;
         n = n+1;            // incrementando elementos da chave
     }
     else 
     {
         // buscando o filho que receberá o novo nó
-        while (i >= 0 && chaves[i]->id > k)
+        while (i >= 0 && chaves[i].id > k)
             (*comparacoes)++; // added
             i--;
 
         // verificando se o filho possui espaço 
-        if (filhos[i+1]->n == nfilhos) {
+        if (filhos[i+1]->getN() == nfilhos) {
             (*comparacoes)++; // added
             // se estiver cheio, particione-o
             particionaNoFilho(i+1, filhos[i+1]);
 
             // o elemento do meio sobe e também é selecionado qual das partes receberá o novo nó
-            if (chaves[i+1]->id < k)
+            if (chaves[i+1].id < k)
                 (*comparacoes)++; // added
                 i++;
         }
@@ -113,7 +112,6 @@ void NoB::particionaNoFilho(int i, NoB *y) {
     if (!y->folha) {
         for (int j = 0; j < grau; j++) 
             z->filhos[j] = y->filhos[j+grau];
-        
     }
 
     // atualizando o total de chaves
@@ -141,11 +139,11 @@ void NoB::particionaNoFilho(int i, NoB *y) {
 
 // getters e setters 
 
-InfoArvoreB **NoB::getChaves() {
+InfoArvoreB *NoB::getChaves() {
     return this->chaves;
 }
 
-void NoB::setChaves(InfoArvoreB **chaves) {
+void NoB::setChaves(InfoArvoreB *chaves) {
     this->chaves = chaves;
 }
 
