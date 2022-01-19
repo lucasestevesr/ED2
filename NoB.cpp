@@ -8,13 +8,16 @@ NoB::NoB(int grau, bool folha, int nfilhos) { // Construtor padrão do nó
 
     this->grau = grau;
     this->folha = folha;
-    this->chaves = new InfoArvoreB *[2*grau-1];
-    this->filhos = new NoB *[2*grau];
+    this->chaves = new InfoArvoreB *[nfilhos];
+    this->filhos = new NoB *[nfilhos+1];
     this->n = 0;
     this->nfilhos = nfilhos;
 }
 
-NoB::~NoB() {}
+NoB::~NoB() {
+    delete [] chaves;
+    delete [] filhos;
+}
 
 // Função que percorre todos os nós pertencentes a um nó específico 
 

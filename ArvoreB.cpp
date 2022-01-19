@@ -19,11 +19,13 @@ ArvoreB::~ArvoreB() {
 // Destrutor Auxiliar
 void ArvoreB::destrutorAux(NoB *no) {
     // Destrutor auxiliar que vai chamando as subarvores
-    // da esquerda e da direita recursivamente
     if(no != nullptr) {
-        //ArvoreB::destrutorAux(no->getEsquerdo());
-        //ArvoreB::destrutorAux(no->getDireito());
-        delete no;
+        if(!no->isFolha()) {
+            for(int i = 0; i < no->getN(); i++) {
+                destrutorAux(no->filhos[i]);
+                delete no->filhos[i];
+            }
+        }
     }
 }
 
@@ -48,7 +50,6 @@ void ArvoreB::setGrau(int grau){
 }
 
 void ArvoreB::percorreNos() {
-    
     // se a ArvoreB não estiver vazia, percorra seus nós a partir da raiz
     if (raiz != nullptr)               
         raiz->percorreNos();
@@ -65,7 +66,6 @@ NoB* ArvoreB::buscaNo(string indice, int *comparacoes) {
 
 // insere um novo nó na arvore, passando seu id e sua localização no arquivo binário
 void ArvoreB::insereNoArvore(string k, int localizacao, int *comparacoes) {
-
     // instanciando um novo nó do tipó InfoArvore(struct)
     InfoArvoreB *info = new InfoArvoreB();     
     info->id = k;

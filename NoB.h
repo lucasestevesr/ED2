@@ -19,10 +19,6 @@ private:
     bool folha;           // verifica se o nó é folha ou não
     NoB **filhos;         // ponteiro para um array de filhos
     int nfilhos;
-public:
-
-    int getNfilhos();
-    void setNfilhos(int nfilhos);
 
 public:
     NoB(int grau, bool folha, int nfilhos);   // Constructor
@@ -41,6 +37,10 @@ public:
 
     void setN(int n);
 
+    int getNfilhos();
+
+    void setNfilhos(int nfilhos);
+
     bool isFolha();
 
     void setFolha(bool folha);
@@ -56,6 +56,7 @@ public:
     void percorreNos();
 
     NoB *buscaNo(string k, int *comparacoes);
+
     friend class ArvoreB;
 };
 
