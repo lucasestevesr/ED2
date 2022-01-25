@@ -201,31 +201,23 @@ int Ordenar::particionamentoHash(int *vetorFrequencia, string *vetorAppVersion, 
     // utilizando o metodo de mediana de três para selecionar o pivo antes de inicializar o algoritmo
     int pivo = Ordenar::medianaDeTresHash(vetorFrequencia, vetorAppVersion, ini, fim);
 
-    // i será responsável por percorrer da esquerda p/ direita e j da direira p/ esquerda
-    int i = ini, j = fim-1;
-    do {
-        // particionando a sequencia de elementos no primeiro subarranjo L[p...q-1]
-        while(i < fim && vetorFrequencia[i] < pivo) {
+    int i = (ini - 1);  // indice do elemento menor
+
+    for (int j = ini; j <= fim - 1; j++) {
+        // se o elemento atual for menor ou igual ao pivo
+        if (vetorFrequencia[j] <= pivo) {
+            // incrementa o indice do menor elemento e faz a troca
             i++;
-        }
-        // particionando a segunda metada dos elementos no segundo subarranjo L[q+1...r]
-        while(j >= ini && vetorFrequencia[j] > pivo) {
-            j--;
-        }
-        if(i < j) {
-            // caso o elemento de indice i for menor que o elemento de indice j, chame a função de troca passando a referência para estes elementos
             swap(vetorFrequencia[i], vetorFrequencia[j]);
             swap(vetorAppVersion[i], vetorAppVersion[j]);
-            i++;
-            j--;
         }
-        // clausula de guarda do método que finaliza o algoritmo quando j fica menor que i
-    }while(i < j);
+    }
+    // por fim troca o i atual + 1 pelo elemento do fim
+    swap(vetorFrequencia[i + 1], vetorFrequencia[fim]);
+    swap(vetorAppVersion[i + 1], vetorAppVersion[fim]);
 
-    swap(vetorFrequencia[i], vetorFrequencia[fim]);
-    swap(vetorAppVersion[i], vetorAppVersion[fim]);
-
-    return i;
+    // retorna onde ocorreu a partição
+    return (i + 1);
 }
 // Fim função particionamento usada no quickSort do Hash
 
