@@ -5,36 +5,24 @@ int Ordenar::particionamento(ReviewPonteiro *reviews, int ini, int fim, int *com
     // utilizando o metodo de mediana de três para selecionar o pivo antes de inicializar o algoritmo
     int pivo = Ordenar::medianaDeTres(reviews, ini, fim, comparacoes, movimentacoes);
 
-    // i será responsável por percorrer da esquerda p/ direita e j da direira p/ esquerda
-    int i = ini, j = fim-1;
-    do {
-        // particionando a sequencia de elementos no primeiro subarranjo L[p...q-1]
-        while(i < fim && reviews[i]->getUpvotes() < pivo) {
-            // realiza um comparação com outro elemento e faz o incremento
-            (*comparacoes)++;
-            i++;
-        }
-        // particionando a segunda metada dos elementos no segundo subarranjo L[q+1...r]
-        while(j >= ini && reviews[j]->getUpvotes() > pivo) {
-            // realiza um comparação com outro elemento e faz o incremento
-            (*comparacoes)++;
-            j--;
-        }
-        if(i < j) {
-            // caso o elemento de indice i for menor que o elemento de indice j, chame a função de troca passando a referência para estes elementos
-            swap(reviews[i], reviews[j]);
-            // incremente o total de movimentações feitas
-            (*movimentacoes)++;
-            i++;
-            j--;
-        }
-        // clausula de guarda do método que finaliza o algoritmo quando j fica menor que i
-    }while(i < j);
+    int i = (ini - 1);  // indice do elemento menor
 
-    swap(reviews[i], reviews[fim]);
+    for (int j = ini; j <= fim - 1; j++) {
+        // se o elemento atual for menor ou igual ao pivo
+        if (reviews[j]->getUpvotes() <= pivo) {
+            // incrementa o indice do menor elemento e faz a troca
+            i++;
+            swap(reviews[i], reviews[j]);
+            (*movimentacoes)++;
+            (*comparacoes)++;
+        }
+    }
+    // por fim troca o i atual + 1 pelo elemento do fim
+    swap(reviews[i + 1], reviews[fim]);
     (*movimentacoes)++;
 
-    return i;
+    // retorna onde ocorreu a partição
+    return (i + 1);
 }
 // Fim função particionamento usada no quickSort
 
