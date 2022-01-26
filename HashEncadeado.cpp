@@ -10,13 +10,13 @@ HashEncadeado::HashEncadeado() {
 // Destrutor
 HashEncadeado::~HashEncadeado() {
     // Percorre lista enquanto o inicio for diferente de null
-    while(this->inicio != NULL) {
+    while(this->inicio != nullptr) {
         // Se o proximo ao inicio tambem for diferente de null
-        if(inicio->getProximo() != NULL) {
+        if(inicio->getProximo() != nullptr) {
             // Pega o proximo do inicio como No temporario
             HashNo *temp = inicio->getProximo();
             // Seta o proximo do inicio como null para evitar erro de lixo de memoria
-            this->inicio->setProximo(NULL);
+            this->inicio->setProximo(nullptr);
             // Deleta o no inicio
             delete this->inicio;
             // Inicio recebe o antigo proximo dele, o temporario
@@ -24,7 +24,7 @@ HashEncadeado::~HashEncadeado() {
             this->inicio = temp;
         } else {
             // Inicio recebe null
-            this->inicio = NULL;
+            this->inicio = nullptr;
         }
     }
 }
