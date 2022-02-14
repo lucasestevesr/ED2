@@ -76,3 +76,64 @@ void HuffmanHeap::escolherMenorNo(HuffmanNo **a, HuffmanNo **b) {
     *a = *b;
     *b = t;
 }
+
+// Função para criar novo nó
+HuffmanNo* HuffmanHeap::criarNovoNo(char dado, int frequencia) {
+    HuffmanNo* novo_no = new HuffmanNo(dado, frequencia);
+
+    novo_no->setEsquerda(nullptr);
+    novo_no->setDireita(nullptr);
+
+    return novo_no;
+}
+
+// Função verificar se o tamanho da Heap é 1
+bool HuffmanHeap::temTamanhoUm() {
+    return (this->tamanho == 1);
+}
+
+// Função recuperar o Nó de valor mínimo no Heap
+HuffmanNo* HuffmanHeap::getNoValorMinimo() {
+    HuffmanNo *no = this->arrayNos[0];
+    this->arrayNos[0] = this->arrayNos[this->tamanho - 1];
+
+    this->tamanho = this->tamanho - 1;
+    heapifyMinimo(0);
+
+    return no;
+}
+
+// Função inserir HuffmanNo no HuffmanHeap
+void HuffmanHeap::inserirNo(HuffmanNo* minHeapNo) {
+    this->tamanho = this->tamanho + 1;
+    int i = this->tamanho - 1;
+
+    while (i && minHeapNo->getFrequencia() < this->arrayNos[(i - 1) / 2]->getFrequencia()) {
+        this->arrayNos[i] = this->arrayNos[(i - 1) / 2];
+        i = (i - 1) / 2;
+    }
+
+    this->arrayNos[i] = minHeapNo;
+}
+
+// Função construir a min Heap
+void HuffmanHeap::construirMinHeap() {
+    int n = this->tamanho - 1;
+    int i;
+
+    for (i = (n - 1) / 2; i >= 0; --i)
+        heapifyMinimo(i);
+}
+
+// Função para criar e construir a min Heap
+HuffmanHeap* HuffmanHeap::criarEconstruirMinHeap(char data[], int freq[], int size) {
+    HuffmanHeap *minHeap = new HuffmanHeap(size);
+
+    for (int i = 0; i < size; ++i)
+        minHeap->arrayNos[i] = new HuffmanNo(data[i], freq[i]);
+
+    minHeap->tamanho = size;
+    construirMinHeap();
+
+    return minHeap;
+}
