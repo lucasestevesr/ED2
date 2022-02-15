@@ -22,6 +22,7 @@ class HuffmanHeap {
         void setRaiz(HuffmanNo *raiz);
         HuffmanNo **getArrayNos();
         void setArrayNos(HuffmanNo **arrayNos);
+        void setNoArrayNos(HuffmanNo *no, int indice);
         // Funções para manusear a árvore
         void heapifyMinimo(int indice);
         void escolherMenorNo(HuffmanNo **a, HuffmanNo **b);
@@ -30,7 +31,6 @@ class HuffmanHeap {
         HuffmanNo* getNoValorMinimo();
         void inserirNo(HuffmanNo* minHeapNo);
         void construirMinHeap();
-        HuffmanHeap* criarEconstruirMinHeap(char data[], int freq[], int size);
 };
 
 #endif //ED2_HUFFMANHEAP_H

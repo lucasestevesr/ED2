@@ -1,5 +1,8 @@
 #ifndef ED2_HUFFMANNO_H
 #define ED2_HUFFMANNO_H
+#include <iostream>
+
+using namespace std;
 
 class HuffmanNo {
     private:
@@ -23,6 +26,10 @@ class HuffmanNo {
         void setDireita(HuffmanNo *direita);
         // Função para verificar se o Nó é folha
         bool ehFolha();
+        // Imprimir Nos de forma encadeada
+        void imprimirDados(int arr[], int top);
+        void imprimirArray(int arr[], int n);
+
 };
 
 #endif //ED2_HUFFMANNO_H

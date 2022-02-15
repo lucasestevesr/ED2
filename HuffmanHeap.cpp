@@ -50,6 +50,10 @@ HuffmanNo **HuffmanHeap::getArrayNos() {
 void HuffmanHeap::setArrayNos(HuffmanNo **arrayNos) {
     this->arrayNos = arrayNos;
 }
+
+void HuffmanHeap::setNoArrayNos(HuffmanNo *no, int indice) {
+    this->arrayNos[indice] = no;
+}
 // Fim Getters e Setters
 
 //
@@ -123,17 +127,4 @@ void HuffmanHeap::construirMinHeap() {
 
     for (i = (n - 1) / 2; i >= 0; --i)
         heapifyMinimo(i);
-}
-
-// Função para criar e construir a min Heap
-HuffmanHeap* HuffmanHeap::criarEconstruirMinHeap(char data[], int freq[], int size) {
-    HuffmanHeap *minHeap = new HuffmanHeap(size);
-
-    for (int i = 0; i < size; ++i)
-        minHeap->arrayNos[i] = new HuffmanNo(data[i], freq[i]);
-
-    minHeap->tamanho = size;
-    construirMinHeap();
-
-    return minHeap;
 }
