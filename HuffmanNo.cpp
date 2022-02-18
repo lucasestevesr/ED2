@@ -49,30 +49,3 @@ void HuffmanNo::setDireita(HuffmanNo *direita) {
 bool HuffmanNo::ehFolha() {
     return this->esquerda == nullptr && this->direita == nullptr;
 }
-
-// Imprimir Nos de forma encadeada
-void HuffmanNo::imprimirDados(int arr[], int top) {
-    if (this->esquerda != nullptr) {
-        arr[top] = 0;
-        imprimirDados(arr, top + 1);
-    }
-
-    if (this->direita != nullptr) {
-        arr[top] = 1;
-        imprimirDados(arr, top + 1);
-    }
-
-    if (this->ehFolha()) {
-        cout << this->dado << ": ";
-        imprimirDados(arr, top);
-    }
-}
-
-// Imprimir array
-void HuffmanNo::imprimirArray(int arr[], int n) {
-    int i;
-    for (i = 0; i < n; ++i)
-        cout<< arr[i];
-
-    cout<<"\n";
-}

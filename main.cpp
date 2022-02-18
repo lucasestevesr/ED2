@@ -7,6 +7,7 @@
 #include "Hash.h"
 #include "ArvoreVP.h"
 #include "ArvoreB.h"
+#include "HuffmanArvore.h"
 #include <chrono>
 
 using namespace std;
@@ -334,6 +335,17 @@ void mainMenu(ifstream &arquivo_processado, ifstream &posicoes_salvas, string di
 }
 
 int main(int argc, char const *argv[]) {
+    char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+    int freq[] = { 5, 9, 12, 13, 16, 45 };
+
+    int size = sizeof(arr) / sizeof(arr[0]);
+
+    HuffmanArvore::codificar(arr, freq, size);
+
+    exit(1);
+
+
+
     // Verificando os parâmetro de input
     srand((unsigned) time(NULL));
     if (argc != 2) {
