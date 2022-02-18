@@ -3,7 +3,7 @@
 #include "HuffmanHeap.h"
 #include "HuffmanNo.h"
 
-#define TAMANHO_MAXIMO 1000
+#define TAMANHO_MAXIMO 2000
 
 class HuffmanArvore {
     public:
