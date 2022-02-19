@@ -109,7 +109,52 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 2: {
+            string reviews_texts = "geeksforgeeks";
 
+            // Criando vetor das letras e sua respectivas frequencias zeradas
+            int qntMaxLetras = 300;
+            char *letras = new char[qntMaxLetras];
+            int *frequencias = new int[qntMaxLetras];
+            for(int i = 0; i < qntMaxLetras; i++) {
+                letras[i] = '$';
+                frequencias[i] = 0;
+            }
+
+            // Percorre letra por letra e vai incrementando sua frequencia
+            int qntChars = reviews_texts.length();
+            char letraAtual;
+            int freqCifrao = 0;
+            for(int i = 0; i < qntChars; i++) {
+                letraAtual = reviews_texts[i];
+                if(letraAtual == '$') {
+                    freqCifrao += 1;
+                } else {
+                    for(int j = 1; j < qntMaxLetras; j++) {
+                        // Cifrão real que está na string
+                        if(letras[j] == '$') { // Cifrão que representa vazio
+                            letras[j] = letraAtual;
+                            frequencias[j] += 1;
+                            break;
+                        }else if(letraAtual == letras[j]) { // Incrementar outras letras
+                            frequencias[j] += 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            letras[0] = '$';
+            frequencias[0] = freqCifrao;
+
+            // Soma a quantidade de letras encontradas
+            int qntLetrasEncontradas = 0;
+            for(int i = 0; i < qntMaxLetras; i++) {
+                if(frequencias[i] > 0) {
+                    qntLetrasEncontradas++;
+                }
+            }
+
+            HuffmanArvore *arvore = new HuffmanArvore();
+            arvore->codificar(letras, frequencias, qntLetrasEncontradas);
             break;
         }
         case 3: {

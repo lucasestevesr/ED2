@@ -3,15 +3,21 @@
 #include "HuffmanHeap.h"
 #include "HuffmanNo.h"
 
-#define TAMANHO_MAXIMO 2000
+#define TAMANHO_MAXIMO 300
 
 class HuffmanArvore {
+    private:
+        bool** codigosHuffman;
+        int* tamanhosHuffman;
     public:
-        static HuffmanHeap* criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho);
-        static HuffmanNo* construirHuffmanArvore(char *dados, int *frequencia, long tamanho);
-        static void codificar(char *dados, int *frequencia, long tamanho);
-        static void imprimirCodificado(HuffmanNo* root, int arr[], int top);
-        static void imprimirArray(int *arr, int n);
+        HuffmanArvore();
+        HuffmanHeap* criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho);
+        HuffmanNo* construirHuffmanArvore(char *dados, int *frequencia, long tamanho);
+        void codificar(char *dados, int *frequencia, long tamanho);
+        void salvarCodigos(HuffmanNo* root, int arr[], int top);
+        void imprimirCodificado(HuffmanNo* root, int arr[], int top);
+        void salvarArray(int *arr, int n, bool* codigo);
+        void imprimirArray(int *arr, int n);
 };
 
 #endif //ED2_HUFFMANARVORE_H

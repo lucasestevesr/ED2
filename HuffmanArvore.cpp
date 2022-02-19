@@ -1,5 +1,10 @@
 #include "HuffmanArvore.h"
 
+HuffmanArvore::HuffmanArvore() {
+    this->codigosHuffman = new bool*[TAMANHO_MAXIMO];
+    this->tamanhosHuffman = new int[TAMANHO_MAXIMO];
+}
+
 HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho) {
     HuffmanHeap *minHeap = new HuffmanHeap(tamanho);
 
@@ -36,9 +41,27 @@ HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, int *frequencia, l
 void HuffmanArvore::codificar(char *dados, int *frequencia, long tamanho) {
     HuffmanNo *root = construirHuffmanArvore(dados, frequencia, tamanho);
 
-    int arr[TAMANHO_MAXIMO], top = 0;
+    //int arr[TAMANHO_MAXIMO], top = 0;
+    int arr[tamanho], top = 0;
 
-    imprimirCodificado(root, arr, top);
+    salvarCodigos(root, arr, top);
+}
+
+void HuffmanArvore::salvarCodigos(HuffmanNo* root, int arr[], int top) {
+    if (root->getEsquerda()) {
+        arr[top] = 0;
+        salvarCodigos(root->getEsquerda(), arr, top + 1);
+    }
+    if (root->getDireita()) {
+        arr[top] = 1;
+        salvarCodigos(root->getDireita(), arr, top + 1);
+    }
+    if (root->ehFolha()) {
+        int char_int = root->getDado() + 128;
+        this->codigosHuffman[char_int] = new bool[top];
+        this->tamanhosHuffman[char_int] = top;
+        this->salvarArray(arr, top, this->codigosHuffman[char_int]);
+    }
 }
 
 void HuffmanArvore::imprimirCodificado(HuffmanNo* root, int arr[], int top) {
@@ -54,6 +77,13 @@ void HuffmanArvore::imprimirCodificado(HuffmanNo* root, int arr[], int top) {
         cout<< root->getDado() << ": ";
         imprimirArray(arr, top);
     }
+}
+
+void HuffmanArvore::salvarArray(int *arr, int n, bool* codigo) {
+    int i;
+
+    for (i = 0; i < n; ++i)
+        codigo[i] = arr[i];
 }
 
 void HuffmanArvore::imprimirArray(int *arr, int n) {
