@@ -103,7 +103,8 @@ void HuffmanArvore::imprimirArray(int *arr, int n) {
 }
 
 void HuffmanArvore::salvarTamanhos(char *letras, int *frequencias) {
-    for(int i = 0; i < minHeap->getCapacidade(); i++){
+    this->tamanhoComprimido = 1;
+    for(int i = 0; i < minHeap->getCapacidade(); i++) {
         int char_int = letras[i] + METADE_MAXIMO;
         this->tamanhoComprimido += (this->tamanhosHuffman[char_int] * frequencias[i]);
     }
@@ -147,5 +148,5 @@ string HuffmanArvore::descomprimirHuffman(bool *comprimido) {
         }
     }
 
-    return descomprimido;
+    return descomprimido + ' ';
 }

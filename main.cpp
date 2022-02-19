@@ -150,7 +150,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             for(int i = 0; i < qntMaxLetras; i++) {
                 if(frequencias[i] > 0) {
                     qntLetrasEncontradas++;
-                    cout << letras[i] << " : " << frequencias[i] << endl;
+//                    cout << letras[i] << " : " << frequencias[i] << endl;
                 }
             }
 
@@ -158,6 +158,13 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             arvore->codificar(letras, frequencias, qntLetrasEncontradas);
 
             bool *review_text_comprimido = arvore->comprimirHuffman(letras, frequencias, reviews_texts);
+            cout << "input: " << reviews_texts << endl;
+            cout << "comprimido: ";
+            for(int i = 0; i < arvore->getTamanhoComprimido(); i++) {
+                cout << review_text_comprimido[i];
+            }
+            cout << endl;
+
             string descomprimido = arvore->descomprimirHuffman(review_text_comprimido);
             cout << "descomprimido: " << descomprimido << endl;
             break;
