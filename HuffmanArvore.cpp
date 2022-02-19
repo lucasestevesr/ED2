@@ -9,6 +9,10 @@ HuffmanArvore::HuffmanArvore(long tamanhoOriginal) {
     this->minHeap = nullptr;
 }
 
+HuffmanArvore::~HuffmanArvore() {
+    delete this->minHeap;
+}
+
 HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho) {
     HuffmanHeap *minHeap = new HuffmanHeap(tamanho);
 

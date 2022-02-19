@@ -167,6 +167,10 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
 
             string descomprimido = arvore->descomprimirHuffman(review_text_comprimido);
             cout << "descomprimido: " << descomprimido << endl;
+
+            delete [] letras;
+            delete [] frequencias;
+            delete arvore;
             break;
         }
         case 3: {

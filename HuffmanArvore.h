@@ -17,6 +17,7 @@ class HuffmanArvore {
 
     public:
         HuffmanArvore(long tamanhoOriginal);
+        ~HuffmanArvore();
         long getTamanhoComprimido();
         HuffmanHeap* criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho);
         HuffmanNo* construirHuffmanArvore(char *dados, int *frequencia, long tamanho);
