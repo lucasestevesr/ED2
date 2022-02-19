@@ -9,8 +9,13 @@ class HuffmanArvore {
     private:
         bool** codigosHuffman;
         int* tamanhosHuffman;
+        long tamanhoComprimido;
+        long tamanhoOriginal;
+        HuffmanNo *raiz;
+
     public:
-        HuffmanArvore();
+        HuffmanArvore(long tamanhoOriginal);
+        long getTamanhoComprimido();
         HuffmanHeap* criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho);
         HuffmanNo* construirHuffmanArvore(char *dados, int *frequencia, long tamanho);
         void codificar(char *dados, int *frequencia, long tamanho);
@@ -18,6 +23,9 @@ class HuffmanArvore {
         void imprimirCodificado(HuffmanNo* root, int arr[], int top);
         void salvarArray(int *arr, int n, bool* codigo);
         void imprimirArray(int *arr, int n);
+        bool* comprimirHuffman(char *letras, int *frequencias, string reviews_texts);
+        void salvarTamanhos(char *letras, int *frequencias);
+        string descomprimirHuffman(bool *comprimido);
 };
 
 #endif //ED2_HUFFMANARVORE_H

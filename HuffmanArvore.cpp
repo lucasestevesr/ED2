@@ -1,8 +1,11 @@
 #include "HuffmanArvore.h"
 
-HuffmanArvore::HuffmanArvore() {
+HuffmanArvore::HuffmanArvore(long tamanhoOriginal) {
     this->codigosHuffman = new bool*[TAMANHO_MAXIMO];
     this->tamanhosHuffman = new int[TAMANHO_MAXIMO];
+    this->tamanhoComprimido = 0;
+    this->tamanhoOriginal = tamanhoOriginal;
+    this->raiz = nullptr;
 }
 
 HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho) {
@@ -40,6 +43,7 @@ HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, int *frequencia, l
 
 void HuffmanArvore::codificar(char *dados, int *frequencia, long tamanho) {
     HuffmanNo *root = construirHuffmanArvore(dados, frequencia, tamanho);
+    this->raiz = root;
 
     //int arr[TAMANHO_MAXIMO], top = 0;
     int arr[tamanho], top = 0;
@@ -93,4 +97,54 @@ void HuffmanArvore::imprimirArray(int *arr, int n) {
         cout<< arr[i];
 
     cout<<"\n";
+}
+
+void HuffmanArvore::salvarTamanhos(char *letras, int *frequencias) {
+    for(int i = 0; i < TAMANHO_MAXIMO; i++){
+        if(frequencias[i] > 0) {
+            int char_int = letras[i] + 128;
+            this->tamanhoComprimido += (this->tamanhosHuffman[char_int] * frequencias[i]);
+        }
+    }
+}
+
+bool* HuffmanArvore::comprimirHuffman(char *letras, int *frequencias, string reviews_texts) {
+    this->salvarTamanhos(letras, frequencias);
+
+    bool* stringComprimida = new bool[(int)this->tamanhoComprimido];
+    int counter = 0;
+
+    for(int i = 0; i < this->tamanhoOriginal; i++){
+        int char_int = reviews_texts[i] + 128;
+        for(int j = 0; j < this->tamanhosHuffman[char_int]; j++) {
+            stringComprimida[counter] = this->codigosHuffman[char_int][j];
+            counter++;
+        }
+    }
+
+    return stringComprimida;
+}
+
+long HuffmanArvore::getTamanhoComprimido() {
+    return this->tamanhoComprimido;
+}
+
+string HuffmanArvore::descomprimirHuffman(bool *comprimido) {
+    HuffmanNo* noAtual = this->raiz;
+
+    string descomprimido = "";
+    int posicaoLetraAtual = 0;
+    for (int i = 0; i < ((int)this->tamanhoComprimido); i++) {
+        if (noAtual->ehFolha()) {
+            descomprimido += noAtual->getDado();
+            noAtual = this->raiz;
+        }
+        if (comprimido[i]){
+            noAtual = noAtual->getDireita();
+        }else{
+            noAtual = noAtual->getEsquerda();
+        }
+    }
+
+    return descomprimido;
 }
