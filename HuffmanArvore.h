@@ -3,7 +3,8 @@
 #include "HuffmanHeap.h"
 #include "HuffmanNo.h"
 
-#define TAMANHO_MAXIMO 300
+#define TAMANHO_MAXIMO 256
+#define METADE_MAXIMO 128
 
 class HuffmanArvore {
     private:
@@ -12,6 +13,7 @@ class HuffmanArvore {
         long tamanhoComprimido;
         long tamanhoOriginal;
         HuffmanNo *raiz;
+        HuffmanHeap *minHeap;
 
     public:
         HuffmanArvore(long tamanhoOriginal);

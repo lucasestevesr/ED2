@@ -112,7 +112,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             string reviews_texts = "geeksforgeeks";
 
             // Criando vetor das letras e sua respectivas frequencias zeradas
-            int qntMaxLetras = 300;
+            int qntMaxLetras = 256;
             char *letras = new char[qntMaxLetras];
             int *frequencias = new int[qntMaxLetras];
             for(int i = 0; i < qntMaxLetras; i++) {
@@ -127,9 +127,9 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             for(int i = 0; i < qntChars; i++) {
                 letraAtual = reviews_texts[i];
                 if(letraAtual == '$') {
-                    freqCifrao += 1;
+//                    freqCifrao += 1;
                 } else {
-                    for(int j = 1; j < qntMaxLetras; j++) {
+                    for(int j = 0; j < qntMaxLetras; j++) {
                         // Cifrão real que está na string
                         if(letras[j] == '$') { // Cifrão que representa vazio
                             letras[j] = letraAtual;
@@ -142,25 +142,22 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
                     }
                 }
             }
-            letras[0] = '$';
-            frequencias[0] = freqCifrao;
+//            letras[0] = '$';
+//            frequencias[0] = freqCifrao;
 
             // Soma a quantidade de letras encontradas
             int qntLetrasEncontradas = 0;
             for(int i = 0; i < qntMaxLetras; i++) {
                 if(frequencias[i] > 0) {
                     qntLetrasEncontradas++;
+                    cout << letras[i] << " : " << frequencias[i] << endl;
                 }
             }
 
             HuffmanArvore *arvore = new HuffmanArvore(reviews_texts.length());
             arvore->codificar(letras, frequencias, qntLetrasEncontradas);
+
             bool *review_text_comprimido = arvore->comprimirHuffman(letras, frequencias, reviews_texts);
-//            cout << "Comprimido: ";
-//            for(int i = 0; i < arvore->getTamanhoComprimido(); i++) {
-//                cout << review_text_comprimido[i];
-//            }
-//            cout << endl;
             string descomprimido = arvore->descomprimirHuffman(review_text_comprimido);
             cout << "descomprimido: " << descomprimido << endl;
             break;

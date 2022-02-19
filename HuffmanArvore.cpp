@@ -6,6 +6,7 @@ HuffmanArvore::HuffmanArvore(long tamanhoOriginal) {
     this->tamanhoComprimido = 0;
     this->tamanhoOriginal = tamanhoOriginal;
     this->raiz = nullptr;
+    this->minHeap = nullptr;
 }
 
 HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho) {
@@ -25,6 +26,7 @@ HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, int *frequencia, l
     HuffmanNo *left, *right, *top;
 
     HuffmanHeap *minHeap = criarEconstruirMinHeap(dados, frequencia, tamanho);
+    this->minHeap = minHeap;
 
     while (!minHeap->isSizeOne()) {
         left = minHeap->extractMin();
@@ -46,9 +48,10 @@ void HuffmanArvore::codificar(char *dados, int *frequencia, long tamanho) {
     this->raiz = root;
 
     //int arr[TAMANHO_MAXIMO], top = 0;
-    int arr[tamanho], top = 0;
+    int arr[this->minHeap->getCapacidade()], top = 0;
 
     salvarCodigos(root, arr, top);
+//    imprimirCodificado(root, arr, top);
 }
 
 void HuffmanArvore::salvarCodigos(HuffmanNo* root, int arr[], int top) {
@@ -61,7 +64,7 @@ void HuffmanArvore::salvarCodigos(HuffmanNo* root, int arr[], int top) {
         salvarCodigos(root->getDireita(), arr, top + 1);
     }
     if (root->ehFolha()) {
-        int char_int = root->getDado() + 128;
+        int char_int = root->getDado() + METADE_MAXIMO;
         this->codigosHuffman[char_int] = new bool[top];
         this->tamanhosHuffman[char_int] = top;
         this->salvarArray(arr, top, this->codigosHuffman[char_int]);
@@ -100,11 +103,9 @@ void HuffmanArvore::imprimirArray(int *arr, int n) {
 }
 
 void HuffmanArvore::salvarTamanhos(char *letras, int *frequencias) {
-    for(int i = 0; i < TAMANHO_MAXIMO; i++){
-        if(frequencias[i] > 0) {
-            int char_int = letras[i] + 128;
-            this->tamanhoComprimido += (this->tamanhosHuffman[char_int] * frequencias[i]);
-        }
+    for(int i = 0; i < minHeap->getCapacidade(); i++){
+        int char_int = letras[i] + METADE_MAXIMO;
+        this->tamanhoComprimido += (this->tamanhosHuffman[char_int] * frequencias[i]);
     }
 }
 
@@ -112,13 +113,13 @@ bool* HuffmanArvore::comprimirHuffman(char *letras, int *frequencias, string rev
     this->salvarTamanhos(letras, frequencias);
 
     bool* stringComprimida = new bool[(int)this->tamanhoComprimido];
-    int counter = 0;
+    int charAtual = 0;
 
     for(int i = 0; i < this->tamanhoOriginal; i++){
-        int char_int = reviews_texts[i] + 128;
+        int char_int = reviews_texts[i] + METADE_MAXIMO;
         for(int j = 0; j < this->tamanhosHuffman[char_int]; j++) {
-            stringComprimida[counter] = this->codigosHuffman[char_int][j];
-            counter++;
+            stringComprimida[charAtual] = this->codigosHuffman[char_int][j];
+            charAtual++;
         }
     }
 
@@ -133,7 +134,7 @@ string HuffmanArvore::descomprimirHuffman(bool *comprimido) {
     HuffmanNo* noAtual = this->raiz;
 
     string descomprimido = "";
-    int posicaoLetraAtual = 0;
+
     for (int i = 0; i < ((int)this->tamanhoComprimido); i++) {
         if (noAtual->ehFolha()) {
             descomprimido += noAtual->getDado();
