@@ -109,7 +109,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             break;
         }
         case 2: {
-            string reviews_texts = "geeksforgeeks";
+            string reviews_texts = "geeks$for$geeks";
 
             // Criando vetor das letras e sua respectivas frequencias zeradas
             int qntMaxLetras = 256;
@@ -123,27 +123,22 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
             // Percorre letra por letra e vai incrementando sua frequencia
             int qntChars = reviews_texts.length();
             char letraAtual;
-            int freqCifrao = 0;
             for(int i = 0; i < qntChars; i++) {
                 letraAtual = reviews_texts[i];
-                if(letraAtual == '$') {
-//                    freqCifrao += 1;
-                } else {
-                    for(int j = 0; j < qntMaxLetras; j++) {
-                        // Cifrão real que está na string
-                        if(letras[j] == '$') { // Cifrão que representa vazio
-                            letras[j] = letraAtual;
-                            frequencias[j] += 1;
-                            break;
-                        }else if(letraAtual == letras[j]) { // Incrementar outras letras
-                            frequencias[j] += 1;
-                            break;
-                        }
+                for(int j = 0; j < qntMaxLetras; j++) {
+                    // Cifrão real que está na string
+                    if(letras[j] == '$' && letraAtual == '$' && frequencias[i] > 0) {
+                        frequencias[j] += 1;
+                    }else if(letras[j] == '$') { // Cifrão que representa vazio
+                        letras[j] = letraAtual;
+                        frequencias[j] += 1;
+                        break;
+                    }else if(letraAtual == letras[j]) { // Incrementar outras letras
+                        frequencias[j] += 1;
+                        break;
                     }
                 }
             }
-//            letras[0] = '$';
-//            frequencias[0] = freqCifrao;
 
             // Soma a quantidade de letras encontradas
             int qntLetrasEncontradas = 0;
