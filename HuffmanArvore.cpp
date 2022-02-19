@@ -13,7 +13,7 @@ HuffmanArvore::~HuffmanArvore() {
     delete this->minHeap;
 }
 
-HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, int *frequencia, long tamanho) {
+HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, long *frequencia, long tamanho) {
     HuffmanHeap *minHeap = new HuffmanHeap(tamanho);
 
     for (int i = 0; i < tamanho; ++i) {
@@ -26,7 +26,7 @@ HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, int *frequencia,
     return minHeap;
 }
 
-HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, int *frequencia, long tamanho) {
+HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, long *frequencia, long tamanho) {
     HuffmanNo *left, *right, *top;
 
     HuffmanHeap *minHeap = criarEconstruirMinHeap(dados, frequencia, tamanho);
@@ -47,7 +47,7 @@ HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, int *frequencia, l
     return minHeap->extractMin();
 }
 
-void HuffmanArvore::codificar(char *dados, int *frequencia, long tamanho) {
+void HuffmanArvore::codificar(char *dados, long *frequencia, long tamanho) {
     HuffmanNo *root = construirHuffmanArvore(dados, frequencia, tamanho);
     this->raiz = root;
 
@@ -106,15 +106,17 @@ void HuffmanArvore::imprimirArray(int *arr, int n) {
     cout<<"\n";
 }
 
-void HuffmanArvore::salvarTamanhos(char *letras, int *frequencias) {
+void HuffmanArvore::salvarTamanhos(char *letras, long *frequencias) {
     this->tamanhoComprimido = 1;
     for(int i = 0; i < minHeap->getCapacidade(); i++) {
-        int char_int = letras[i] + METADE_MAXIMO;
-        this->tamanhoComprimido += (this->tamanhosHuffman[char_int] * frequencias[i]);
+        if(frequencias[i] > 0) {
+            int char_int = letras[i] + METADE_MAXIMO;
+            this->tamanhoComprimido += (this->tamanhosHuffman[char_int] * frequencias[i]);
+        }
     }
 }
 
-bool* HuffmanArvore::comprimirHuffman(char *letras, int *frequencias, string reviews_texts) {
+bool* HuffmanArvore::comprimirHuffman(char *letras, long *frequencias, string reviews_texts) {
     this->salvarTamanhos(letras, frequencias);
 
     bool* stringComprimida = new bool[(int)this->tamanhoComprimido];
@@ -131,7 +133,7 @@ bool* HuffmanArvore::comprimirHuffman(char *letras, int *frequencias, string rev
     return stringComprimida;
 }
 
-long HuffmanArvore::getTamanhoComprimido() {
+double HuffmanArvore::getTamanhoComprimido() {
     return this->tamanhoComprimido;
 }
 

@@ -9,26 +9,26 @@
 #include "ArvoreB.h"
 #include "HuffmanArvore.h"
 #include <chrono>
+#include <string>
+#include <cctype>
+#include <algorithm>
 
 using namespace std;
 
 typedef Review *ReviewPonteiro;
 
 // Definindo constantes para os nomes dos arquivos
-const string nome_csv = "tiktok_app_reviews2.csv";
+const string nome_csv = "tiktok_app_reviews.csv";
 const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_posicoes = "posicoes_reviews.bin";
-const string nome_txt = "export_reviews.txt";
-const string nome_input = "input.txt";
-const string nome_saida = "saida.txt";
-const string nome_testes = "teste.txt";
+const string nome_comprimido = "reviewsComp.bin";
+const string nome_descomprimido = "reviewsOrig.bin";
 
 int menu() {
     int selecao;
     cout << "-------------------- MENU --------------------" << endl;
-    cout << "[1] Comprimir" << endl;
-    cout << "[2] Descomprimir" << endl;
-    cout << "[3] Modulo de analises" << endl;
+    cout << "[1] Comprimir e Descomprimir" << endl;
+    cout << "[2] Modulo de analises" << endl;
     cout << "[0] Sair" << endl;
     cin >> selecao;
 
@@ -36,157 +36,141 @@ int menu() {
     return selecao;
 }
 
-void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews, ofstream &arquivo_saida) {
+void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews) {
     // Função serve para fazer o switch da opção escolhida pelo usuário
-    switch (selecao) {
-        case 0: {
-            // Caso escolha 0, fecha o arquivo e finaliza o programa
-            cout << "Programa finalizado!" << endl;
-            arquivo_processado.close();
-            posicoes_salvas.close();
-            delete [] posicoesReviews;
-            Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
-            exit(0);
-            break;
+    if(selecao == 0) {
+        // Caso escolha 0, fecha o arquivo e finaliza o programa
+        cout << "Programa finalizado!" << endl;
+        arquivo_processado.close();
+        posicoes_salvas.close();
+        delete [] posicoesReviews;
+        Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
+        exit(0);
+    }else if(selecao == 1) {
+        // Recuperando N reviews aleatorios
+        int n = 0;
+        cout << "Comprimir N reviews_texts aleatorios e salva-los em um arquivo reviewsComp.bin" << endl;
+        cout << "Digite o valor de N: " << endl;
+        cin >> n;
+        ReviewPonteiro *reviews_menor = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
+
+        auto start = std::chrono::high_resolution_clock::now();
+        // Concatenando o review text dos reviews aleatorios
+        string reviews_texts = "", str = "";
+        for(int i = 0; i < n; i++) {
+            str = " ";
+            for(int j = 0; j < reviews_menor[i]->getText().length(); j++) {
+                str += reviews_menor[i]->getText()[j];
+                if(j == 50) {
+                    break;
+                }
+            }
+            reviews_texts += str;
         }
-        case 1: {
-            // Recuperando N reviews aleatorios
-            int n = 0;
-            cout << "Comprimir N reviews_texts aleatorios e salva-los em um arquivo reviewsComp.bin" << endl;
-            cout << "Digite o valor de N: " << endl;
-            cin >> n;
-            //ReviewPonteiro *reviews = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
 
-            // Concatenando o review text dos reviews aleatorios
-            string reviews_texts = "";
-            for(int i = 0; i < n; i++) {
-                reviews_texts += + " " + reviewsMaior[i]->getText();
-            }
-
-            // Criando vetor das letras e sua respectivas frequencias zeradas
-            int qntMaxLetras = 300;
-            char *letras = new char[qntMaxLetras];
-            int *frequencias = new int[qntMaxLetras];
-            for(int i = 0; i < qntMaxLetras; i++) {
-                letras[i] = '$';
-                frequencias[i] = 0;
-            }
-
-            // Percorre letra por letra e vai incrementando sua frequencia
-            int qntChars = reviews_texts.length();
-            char letraAtual;
-            int freqCifrao = 0;
-            for(int i = 0; i < qntChars; i++) {
-                letraAtual = reviews_texts[i];
-                if(letraAtual == '$') {
-                    freqCifrao += 1;
-                } else {
-                    for(int j = 1; j < qntMaxLetras; j++) {
-                        // Cifrão real que está na string
-                        if(letras[j] == '$') { // Cifrão que representa vazio
-                            letras[j] = letraAtual;
-                            frequencias[j] += 1;
-                            break;
-                        }else if(letraAtual == letras[j]) { // Incrementar outras letras
-                            frequencias[j] += 1;
-                            break;
-                        }
-                    }
-                }
-            }
-            letras[0] = '$';
-            frequencias[0] = freqCifrao;
-
-            // Soma a quantidade de letras encontradas
-            int qntLetrasEncontradas = 0;
-            for(int i = 0; i < qntMaxLetras; i++) {
-                if(frequencias[i] > 0) {
-                    qntLetrasEncontradas++;
-                    cout << "Letra: " << letras[i] << " freq: " << frequencias[i] << endl;
-                }
-            }
-            cout << "Tem: " << qntLetrasEncontradas << " letras" << endl;
-            break;
+        // Criando vetor das letras e sua respectivas frequencias zeradas
+        int qntMaxLetras = 300;
+        char *letras = new char[qntMaxLetras];
+        long *frequencias = new long[qntMaxLetras];
+        for(int i = 0; i < qntMaxLetras; i++) {
+            letras[i] = '$';
+            frequencias[i] = 0;
         }
-        case 2: {
-            string reviews_texts = "geeks$for$geeks";
 
-            // Criando vetor das letras e sua respectivas frequencias zeradas
-            int qntMaxLetras = 256;
-            char *letras = new char[qntMaxLetras];
-            int *frequencias = new int[qntMaxLetras];
-            for(int i = 0; i < qntMaxLetras; i++) {
-                letras[i] = '$';
-                frequencias[i] = 0;
-            }
-
-            // Percorre letra por letra e vai incrementando sua frequencia
-            int qntChars = reviews_texts.length();
-            char letraAtual;
-            for(int i = 0; i < qntChars; i++) {
-                letraAtual = reviews_texts[i];
-                for(int j = 0; j < qntMaxLetras; j++) {
-                    // Cifrão real que está na string
-                    if(letras[j] == '$' && letraAtual == '$' && frequencias[i] > 0) {
-                        frequencias[j] += 1;
-                    }else if(letras[j] == '$') { // Cifrão que representa vazio
-                        letras[j] = letraAtual;
-                        frequencias[j] += 1;
-                        break;
-                    }else if(letraAtual == letras[j]) { // Incrementar outras letras
-                        frequencias[j] += 1;
-                        break;
-                    }
+        // Percorre letra por letra e vai incrementando sua frequencia
+        long qntChars = reviews_texts.length();
+        char letraAtual;
+        for(long i = 0; i < qntChars; i++) {
+            letraAtual = reviews_texts[i];
+            for(int j = 0; j < qntMaxLetras; j++) {
+                // Cifrão real que está na string
+                if(letras[j] == '$' && letraAtual == '$' && frequencias[j] > 0) {
+                    frequencias[j] += 1;
+                }else if(letras[j] == '$') { // Cifrão que representa vazio
+                    letras[j] = letraAtual;
+                    frequencias[j] += 1;
+                    break;
+                }else if(letraAtual == letras[j]) { // Incrementar outras letras
+                    frequencias[j] += 1;
+                    break;
                 }
             }
+        }
 
-            // Soma a quantidade de letras encontradas
-            int qntLetrasEncontradas = 0;
-            for(int i = 0; i < qntMaxLetras; i++) {
-                if(frequencias[i] > 0) {
-                    qntLetrasEncontradas++;
+        // Soma a quantidade de letras encontradas
+        int qntLetrasEncontradas = 0;
+        for(int i = 0; i < qntMaxLetras; i++) {
+            if(frequencias[i] > 0) {
+                qntLetrasEncontradas++;
 //                    cout << letras[i] << " : " << frequencias[i] << endl;
-                }
             }
+        }
 
-            HuffmanArvore *arvore = new HuffmanArvore(reviews_texts.length());
-            arvore->codificar(letras, frequencias, qntLetrasEncontradas);
+        // Comprimindo texto
+        HuffmanArvore *arvore = new HuffmanArvore(reviews_texts.length());
+        arvore->codificar(letras, frequencias, qntLetrasEncontradas);
+        bool *review_text_comprimido = arvore->comprimirHuffman(letras, frequencias, reviews_texts);
+        ofstream comprimidoBin;
+//            comprimidoBin.open(diretorio + nome_comprimido, ios::binary | ios::trunc);
+        comprimidoBin.open(diretorio + nome_comprimido, ios::trunc);
+        for(int i = 0; i < arvore->getTamanhoComprimido(); i++) {
+            comprimidoBin << review_text_comprimido[i];
+        }
 
-            bool *review_text_comprimido = arvore->comprimirHuffman(letras, frequencias, reviews_texts);
-            cout << "input: " << reviews_texts << endl;
-            cout << "comprimido: ";
-            for(int i = 0; i < arvore->getTamanhoComprimido(); i++) {
-                cout << review_text_comprimido[i];
-            }
-            cout << endl;
+//            comprimidoBin.write((char*)&review_text_comprimido, sizeof(review_text_comprimido));
+        comprimidoBin.close();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        double tempo_comprimir = int_m.count();
+
+        delete [] letras;
+        delete [] frequencias;
+
+        cout << "---------------------------------------------------------------------------------------" << endl;
+        cout << "Sucesso! Conjunto de " << n << " reviews aleatorios comprimidos e salvos no arquivo " << nome_comprimido << endl;
+        cout << "Tempo para comprimir: " << to_string(tempo_comprimir) << " milisegundos" << endl;
+        cout << "---------------------------------------------------------------------------------------" << endl;
+        cout << "[1] Descomprimir" << endl;
+        cout << "[0] Sair" << endl;
+
+        int descomprimir;
+        cin >> descomprimir;
+        if(descomprimir) {
+            auto start2 = std::chrono::high_resolution_clock::now();
 
             string descomprimido = arvore->descomprimirHuffman(review_text_comprimido);
-            cout << "descomprimido: " << descomprimido << endl;
+            ofstream descomprimidoBin;
+//            comprimidoBin.open(diretorio + nome_comprimido, ios::binary | ios::trunc);
+            descomprimidoBin.open(diretorio + nome_descomprimido, ios::trunc);
+            descomprimidoBin << descomprimido;
+            descomprimidoBin.close();
 
-            delete [] letras;
-            delete [] frequencias;
-            delete arvore;
-            break;
-        }
-        case 3: {
+            auto end2 = std::chrono::high_resolution_clock::now();
+            auto int_m2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2);
+            double tempo_descomprimir = int_m2.count();
 
-            break;
+            cout << "---------------------------------------------------------------------------------------" << endl;
+            cout << "Sucesso! Conjunto de " << n << " reviews aleatorios descomprimidos e salvos no arquivo " << nome_descomprimido << endl;
+            cout << "Tempo para descomprimir: " << to_string(tempo_descomprimir) << " milisegundos" << endl;
+            cout << "---------------------------------------------------------------------------------------" << endl;
         }
-        default: {
-            cout << "Erro: Opcao invalida!" << endl;
-        }
+
+        delete [] reviews_menor;
+        delete arvore;
+    }else {
+        cout << "Erro: Opcao invalida!" << endl;
     }
 }
 
 void mainMenu(ifstream &arquivo_processado, ifstream &posicoes_salvas, string diretorio, ReviewPonteiro *reviewsMaior, int *posicoesReviews, int quantidadeReviews) {
-    // Abrindo arquivo de saida
-    ofstream arquivo_saida;
-    arquivo_saida.open(diretorio + nome_saida, ios::trunc);
     int selecao = 1;
     while (selecao != 0) {
         selecao = menu();
-        selecionar(selecao, arquivo_processado, posicoes_salvas, diretorio, reviewsMaior, posicoesReviews, quantidadeReviews, arquivo_saida);
+        selecionar(selecao, arquivo_processado, posicoes_salvas, diretorio, reviewsMaior, posicoesReviews, quantidadeReviews);
     }
+    arquivo_processado.close();
+    posicoes_salvas.close();
     delete [] posicoesReviews;
     Arquivo::desalocarVetorReviews(reviewsMaior, quantidadeReviews);
 }
