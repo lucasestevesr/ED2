@@ -66,12 +66,14 @@ void HuffmanHeap::setNoArrayNos(HuffmanNo *no, int indice) {
 
 
 // Funcao responsavel por inserir um novo no na minHep
-void HuffmanHeap::insertMinHeap(HuffmanNo* minHeapNode) {
+void HuffmanHeap::insertMinHeap(HuffmanNo* minHeapNode, int *comparacoes) {
     // incrementa total de elementos na heap
     ++this->tamanho;
     int i = this->tamanho - 1;
 
+    (*comparacoes) += 2;
     while (i && minHeapNode->getFrequencia() < this->arrayNos[(i - 1) / 2]->getFrequencia()) {
+        (*comparacoes) += 2;
         this->arrayNos[i] = this->arrayNos[(i - 1) / 2];
         i = (i - 1) / 2;
     }
@@ -80,12 +82,12 @@ void HuffmanHeap::insertMinHeap(HuffmanNo* minHeapNode) {
 }
 
 // Recupera o no de valor minimo na heap
-HuffmanNo* HuffmanHeap::extractMin() {
+HuffmanNo* HuffmanHeap::extractMin(int *comparacoes) {
     HuffmanNo* temp = this->arrayNos[0];
     this->arrayNos[0] = this->arrayNos[this->tamanho - 1];
 
     --this->tamanho;
-    minHeapify(0);
+    minHeapify(0, comparacoes);
 
     return temp;
 }
@@ -102,32 +104,35 @@ void HuffmanHeap::swapMinHeapNode(HuffmanNo** a, HuffmanNo** b) {
 }
 
 // Função responsavel por auxiliar a construcao da Heap
-void HuffmanHeap::minHeapify(int idx) {
+void HuffmanHeap::minHeapify(int idx, int *comparacoes) {
     int smallest = idx;
     int left = 2 * idx + 1;
     int right = 2 * idx + 2;
 
-    // verificando se o elemento deve trocar de posicao com o elemento da esquerda 
+    // verificando se o elemento deve trocar de posicao com o elemento da esquerda
+    (*comparacoes) += 2;
     if (left < this->tamanho && this->arrayNos[left]->getFrequencia() < this->arrayNos[smallest]->getFrequencia())
         smallest = left;
 
-    // verificando se o elemento deve trocar de posicao com o elemento da direira 
+    // verificando se o elemento deve trocar de posicao com o elemento da direira
+    (*comparacoes) += 2;
     if (right < this->tamanho && this->arrayNos[right]->getFrequencia() < this->arrayNos[smallest]->getFrequencia())
         smallest = right;
 
+    (*comparacoes) += 1;
     if (smallest != idx) {
         // inverte os dois nos
         swapMinHeapNode(&this->arrayNos[smallest], &this->arrayNos[idx]);
         // chama recursivo para o novo valor de smallest
-        minHeapify(smallest);
+        minHeapify(smallest, comparacoes);
     }
 }
 
 // Função responsavel por construir a minHeap
-void HuffmanHeap::buildMinHeap() {
+void HuffmanHeap::buildMinHeap(int *comparacoes) {
     int n = this->tamanho - 1;
     int i;
 
     for (i = (n - 1) / 2; i >= 0; --i)
-        minHeapify(i);
+        minHeapify(i, comparacoes);
 }

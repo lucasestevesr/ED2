@@ -23,6 +23,7 @@ const string nome_bin = "tiktok_app_reviews.bin";
 const string nome_posicoes = "posicoes_reviews.bin";
 const string nome_comprimido = "reviewsComp.bin";
 const string nome_descomprimido = "reviewsOrig.bin";
+const string nome_saida = "saida.txt";
 
 int menu() {
     int selecao;
@@ -107,8 +108,9 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
         }
 
         // Comprimindo texto
+        int comparacoes = 0;
         HuffmanArvore *arvore = new HuffmanArvore(reviews_texts.length());
-        arvore->codificar(letras, frequencias, qntLetrasEncontradas);
+        arvore->codificar(letras, frequencias, qntLetrasEncontradas, &comparacoes);
         bool *review_text_comprimido = arvore->comprimirHuffman(letras, frequencias, reviews_texts);
         ofstream comprimidoBin;
 //            comprimidoBin.open(diretorio + nome_comprimido, ios::binary | ios::trunc);
@@ -129,6 +131,7 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
 
         cout << "---------------------------------------------------------------------------------------" << endl;
         cout << "Sucesso! Conjunto de " << n << " reviews aleatorios comprimidos e salvos no arquivo " << nome_comprimido << endl;
+        cout << "Quantidade de comparacoes: " << comparacoes << endl;
         cout << "Tempo para comprimir: " << to_string(tempo_comprimir) << " milisegundos" << endl;
         cout << "---------------------------------------------------------------------------------------" << endl;
         cout << "[1] Descomprimir" << endl;

@@ -19,9 +19,9 @@ class HuffmanArvore {
         HuffmanArvore(long tamanhoOriginal);
         ~HuffmanArvore();
         double getTamanhoComprimido();
-        HuffmanHeap* criarEconstruirMinHeap(char *dados, long *frequencia, long tamanho);
-        HuffmanNo* construirHuffmanArvore(char *dados, long *frequencia, long tamanho);
-        void codificar(char *dados, long *frequencia, long tamanho);
+        HuffmanHeap* criarEconstruirMinHeap(char *dados, long *frequencia, long tamanho, int *comparacoes);
+        HuffmanNo* construirHuffmanArvore(char *dados, long *frequencia, long tamanho, int *comparacoes);
+        void codificar(char *dados, long *frequencia, long tamanho, int *comparacoes);
         void salvarCodigos(HuffmanNo* root, int arr[], int top);
         void imprimirCodificado(HuffmanNo* root, int arr[], int top);
         void salvarArray(int *arr, int n, bool* codigo);

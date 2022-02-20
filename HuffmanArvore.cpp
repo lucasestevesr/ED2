@@ -14,7 +14,7 @@ HuffmanArvore::~HuffmanArvore() {
 }
 
 // Funcao responsavel por criar a minHeap
-HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, long *frequencia, long tamanho) {
+HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, long *frequencia, long tamanho, int *comparacoes) {
     
     // Inicializando a capacidade da heap igual ao tamanho passado
     HuffmanHeap *minHeap = new HuffmanHeap(tamanho);
@@ -27,20 +27,20 @@ HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, long *frequencia
     // definindo o tamanho da Heap
     minHeap->setTamanho(tamanho);
     // construindo a heap
-    minHeap->buildMinHeap();
+    minHeap->buildMinHeap(comparacoes);
 
     return minHeap;
 }
 
 // Funcao responsavel por construir a Arvore de Huffman 
 
-HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, long *frequencia, long tamanho) {
+HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, long *frequencia, long tamanho, int *comparacoes) {
     
     // Ponteiro para raiz, para esquerda e direita (todos do mesmo tipo)
     HuffmanNo *left, *right, *top;
 
     // instanciando uma minHeap com os vetores de dados, frequencia e tamanho
-    HuffmanHeap *minHeap = criarEconstruirMinHeap(dados, frequencia, tamanho);
+    HuffmanHeap *minHeap = criarEconstruirMinHeap(dados, frequencia, tamanho, comparacoes);
     
     // fazendo atribuicao para a minHeap definida como atributo da arvore
     this->minHeap = minHeap;
@@ -49,8 +49,8 @@ HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, long *frequencia, 
     while (!minHeap->isSizeOne()) {
 
         // extraindo dois elementos de frequencia minima
-        left = minHeap->extractMin();
-        right = minHeap->extractMin();
+        left = minHeap->extractMin(comparacoes);
+        right = minHeap->extractMin(comparacoes);
 
         // Criando um novo nó como a soma da frequencia dos dois nos anteriores
         top = new HuffmanNo('$', left->getFrequencia() + right->getFrequencia());
@@ -60,14 +60,14 @@ HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, long *frequencia, 
         top->setDireita(right);
 
         // adicionando o no a minHeap
-        minHeap->insertMinHeap(top);
+        minHeap->insertMinHeap(top, comparacoes);
     }
 
-    return minHeap->extractMin();
+    return minHeap->extractMin(comparacoes);
 }
 
-void HuffmanArvore::codificar(char *dados, long *frequencia, long tamanho) {
-    HuffmanNo *root = construirHuffmanArvore(dados, frequencia, tamanho);
+void HuffmanArvore::codificar(char *dados, long *frequencia, long tamanho, int *comparacoes) {
+    HuffmanNo *root = construirHuffmanArvore(dados, frequencia, tamanho, comparacoes);
     this->raiz = root;
 
     //int arr[TAMANHO_MAXIMO], top = 0;
