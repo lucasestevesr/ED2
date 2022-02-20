@@ -13,34 +13,53 @@ HuffmanArvore::~HuffmanArvore() {
     delete this->minHeap;
 }
 
+// Funcao responsavel por criar a minHeap
 HuffmanHeap* HuffmanArvore::criarEconstruirMinHeap(char *dados, long *frequencia, long tamanho) {
+    
+    // Inicializando a capacidade da heap igual ao tamanho passado
     HuffmanHeap *minHeap = new HuffmanHeap(tamanho);
 
+    // Atribuindo a heap os elementos com suas respectivas frequencias
     for (int i = 0; i < tamanho; ++i) {
         minHeap->setNoArrayNos(new HuffmanNo(dados[i], frequencia[i]), i);
     }
 
+    // definindo o tamanho da Heap
     minHeap->setTamanho(tamanho);
+    // construindo a heap
     minHeap->buildMinHeap();
 
     return minHeap;
 }
 
+// Funcao responsavel por construir a Arvore de Huffman 
+
 HuffmanNo* HuffmanArvore::construirHuffmanArvore(char *dados, long *frequencia, long tamanho) {
+    
+    // Ponteiro para raiz, para esquerda e direita (todos do mesmo tipo)
     HuffmanNo *left, *right, *top;
 
+    // instanciando uma minHeap com os vetores de dados, frequencia e tamanho
     HuffmanHeap *minHeap = criarEconstruirMinHeap(dados, frequencia, tamanho);
+    
+    // fazendo atribuicao para a minHeap definida como atributo da arvore
     this->minHeap = minHeap;
 
+    // iterando enquanto a heap não possuir exatamente 1 elemento
     while (!minHeap->isSizeOne()) {
+
+        // extraindo dois elementos de frequencia minima
         left = minHeap->extractMin();
         right = minHeap->extractMin();
 
+        // Criando um novo nó como a soma da frequencia dos dois nos anteriores
         top = new HuffmanNo('$', left->getFrequencia() + right->getFrequencia());
 
+        // fazendo os dois nos como filhos esquerdo e direito da nova raiz
         top->setEsquerda(left);
         top->setDireita(right);
 
+        // adicionando o no a minHeap
         minHeap->insertMinHeap(top);
     }
 
@@ -75,15 +94,23 @@ void HuffmanArvore::salvarCodigos(HuffmanNo* root, int arr[], int top) {
     }
 }
 
+// Funcao responsavel por imprimir a codificacao de Huffman a partir da raiz da arvore
 void HuffmanArvore::imprimirCodificado(HuffmanNo* root, int arr[], int top) {
+
+    // Definindo 0 para o no da esquerda
     if (root->getEsquerda()) {
         arr[top] = 0;
         imprimirCodificado(root->getEsquerda(), arr, top + 1);
     }
+
+    // Definindo 1 para o no da direita
     if (root->getDireita()) {
         arr[top] = 1;
         imprimirCodificado(root->getDireita(), arr, top + 1);
     }
+
+    // Verifica se este no eh folha, caso seja
+    // imprimir o caractere corresponde e seu codigo
     if (root->ehFolha()) {
         cout<< root->getDado() << ": ";
         imprimirArray(arr, top);
@@ -116,15 +143,17 @@ void HuffmanArvore::salvarTamanhos(char *letras, long *frequencias) {
     }
 }
 
+// Funcao responsavel por fazer a compressao de Huffman
 bool* HuffmanArvore::comprimirHuffman(char *letras, long *frequencias, string reviews_texts) {
     this->salvarTamanhos(letras, frequencias);
-
+    // recebe o tamanho de todos os campos review_texts concatenados no formato binario
     bool* stringComprimida = new bool[(int)this->tamanhoComprimido];
     int charAtual = 0;
-
+    // percorre todo o array de elementos
     for(int i = 0; i < this->tamanhoOriginal; i++){
         int char_int = reviews_texts[i] + METADE_MAXIMO;
         for(int j = 0; j < this->tamanhosHuffman[char_int]; j++) {
+            // atribuindo o codigo binario correspondente de cada caractere
             stringComprimida[charAtual] = this->codigosHuffman[char_int][j];
             charAtual++;
         }
@@ -137,22 +166,31 @@ double HuffmanArvore::getTamanhoComprimido() {
     return this->tamanhoComprimido;
 }
 
+// Função responsavel por fazer a decodificacao de huffman
 string HuffmanArvore::descomprimirHuffman(bool *comprimido) {
+    
+    // A execucao começa a partir da raiz da árvore
     HuffmanNo* noAtual = this->raiz;
 
     string descomprimido = "";
 
+    // percorrendo toda o conteudo comprimido
     for (int i = 0; i < ((int)this->tamanhoComprimido); i++) {
+        
+        // se o no eh folha adicione-o ao retorno
         if (noAtual->ehFolha()) {
             descomprimido += noAtual->getDado();
             noAtual = this->raiz;
         }
+        // verificando se o indice eh 1 mover para o nó a direta
         if (comprimido[i]){
             noAtual = noAtual->getDireita();
-        }else{
+        } else{ // caso contrario mova para o nó a esquerda
             noAtual = noAtual->getEsquerda();
         }
     }
 
+
+    // resultado
     return descomprimido + ' ';
 }
