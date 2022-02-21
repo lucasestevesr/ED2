@@ -148,8 +148,9 @@ bool* HuffmanArvore::comprimirHuffman(char *letras, long *frequencias, string re
     this->salvarTamanhos(letras, frequencias);
     // recebe o tamanho de todos os campos review_texts concatenados no formato binario
     bool* stringComprimida = new bool[(int)this->tamanhoComprimido];
+
     int charAtual = 0;
-    // percorre todo o array de elementos
+    // percorre o array de elementos
     for(int i = 0; i < this->tamanhoOriginal; i++){
         int char_int = reviews_texts[i] + METADE_MAXIMO;
         for(int j = 0; j < this->tamanhosHuffman[char_int]; j++) {

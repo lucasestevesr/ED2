@@ -161,6 +161,121 @@ void selecionar(int selecao, ifstream &arquivo_processado, ifstream &posicoes_sa
 
         delete [] reviews_menor;
         delete arvore;
+    }else if(selecao == 2) {
+        int m = 0, n = 0;
+        int ns[] = {10000, 100000, 1000000, 10000, 100000, 1000000, 10000, 100000, 1000000};
+        int nAtualIdx = 0;
+
+        cout << "Modulo de testes! Resultados disponiveis no arquivo " << nome_saida << endl;
+
+        ofstream arquivo_saida;
+        arquivo_saida.open(diretorio + nome_saida, ios::out | ios::trunc);
+
+        arquivo_saida << "Modulo de testes! Testes realizados com 10000, 100000 e 1000000 reviews." << endl;
+
+        double mediaTempo1 = 0;
+        double mediaComparacoes1 = 0;
+        double mediaTempo2 = 0;
+        double mediaComparacoes2 = 0;
+        double mediaTempo3 = 0;
+        double mediaComparacoes3 = 0;
+        while(m < 9) {
+            // Recuperando N reviews aleatorios
+            n = ns[nAtualIdx];
+
+            ReviewPonteiro *reviews_menor = Arquivo::recuperarReviewsAleatoriosDoVetor(reviewsMaior, quantidadeReviews, n);
+
+            auto start = std::chrono::high_resolution_clock::now();
+            // Concatenando o review text dos reviews aleatorios
+            string reviews_texts = "", str = "";
+            for(int i = 0; i < n; i++) {
+                str = " ";
+                for(int j = 0; j < reviews_menor[i]->getText().length(); j++) {
+                    str += reviews_menor[i]->getText()[j];
+                    if(j == 50) {
+                        break;
+                    }
+                }
+                reviews_texts += str;
+            }
+
+            // Criando vetor das letras e sua respectivas frequencias zeradas
+            int qntMaxLetras = 300;
+            char *letras = new char[qntMaxLetras];
+            long *frequencias = new long[qntMaxLetras];
+            for(int i = 0; i < qntMaxLetras; i++) {
+                letras[i] = '$';
+                frequencias[i] = 0;
+            }
+
+            // Percorre letra por letra e vai incrementando sua frequencia
+            long qntChars = reviews_texts.length();
+            char letraAtual;
+            for(long i = 0; i < qntChars; i++) {
+                letraAtual = reviews_texts[i];
+                for(int j = 0; j < qntMaxLetras; j++) {
+                    // Cifrão real que está na string
+                    if(letras[j] == '$' && letraAtual == '$' && frequencias[j] > 0) {
+                        frequencias[j] += 1;
+                    }else if(letras[j] == '$') { // Cifrão que representa vazio
+                        letras[j] = letraAtual;
+                        frequencias[j] += 1;
+                        break;
+                    }else if(letraAtual == letras[j]) { // Incrementar outras letras
+                        frequencias[j] += 1;
+                        break;
+                    }
+                }
+            }
+
+            // Soma a quantidade de letras encontradas
+            int qntLetrasEncontradas = 0;
+            for(int i = 0; i < qntMaxLetras; i++) {
+                if(frequencias[i] > 0) {
+                    qntLetrasEncontradas++;
+//                    cout << letras[i] << " : " << frequencias[i] << endl;
+                }
+            }
+
+            // Comprimindo texto
+            int comparacoes = 0;
+            HuffmanArvore *arvore = new HuffmanArvore(reviews_texts.length());
+            arvore->codificar(letras, frequencias, qntLetrasEncontradas, &comparacoes);
+            // Como está no módulo de teste não é necessário criar a string comprimida
+            // Porque não vai usa-la para descomprimir e vai alocar memoria atoa
+            //bool *review_text_comprimido = arvore->comprimirHuffman(letras, frequencias, reviews_texts);
+
+            auto end = std::chrono::high_resolution_clock::now();
+            auto int_m = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+            double tempo_comprimir = int_m.count();
+
+            if(n == ns[0] || n == ns[3] || n == ns[6]) {
+                mediaTempo1 += tempo_comprimir/3;
+                mediaComparacoes1 += comparacoes/3;
+            }else if(n == ns[1] || n == ns[4] || n == ns[7]){
+                mediaTempo2 += tempo_comprimir/3;
+                mediaComparacoes2 += comparacoes/3;
+            }else if(n == ns[2] || n == ns[5] || n == ns[8]){
+                mediaTempo3 += tempo_comprimir/3;
+                mediaComparacoes3 += comparacoes/3;
+            }
+            arquivo_saida << "Teste para n=" << n << " comparacoes: " << comparacoes << " tempo: " << to_string(tempo_comprimir) << " milisegundos" << endl;
+
+            delete [] letras;
+            delete [] frequencias;
+            delete [] reviews_menor;
+            delete arvore;
+            m++;
+            nAtualIdx++;
+        }
+        cout << "Testes finalizados com sucesso. Os resultados estao disponiveis no arquivo " << nome_saida << endl;
+        arquivo_saida << "--------------------------------------------------------------------------------" << endl;
+        arquivo_saida << "Media de tempo para 10000 reviews: " << to_string(mediaTempo1) << " milisegundos." << endl;
+        arquivo_saida << "Media de comparacoes para 10000 reviews: " << to_string(mediaComparacoes1) << " comparacoes." << endl;
+        arquivo_saida << "Media de tempo para 100000 reviews: " << to_string(mediaTempo2) << " milisegundos." << endl;
+        arquivo_saida << "Media de comparacoes para 100000 reviews: " << to_string(mediaComparacoes2) << " comparacoes." << endl;
+        arquivo_saida << "Media de tempo para 1000000 reviews: " << to_string(mediaTempo3) << " milisegundos." << endl;
+        arquivo_saida << "Media de comparacoes para 1000000 reviews: " << to_string(mediaComparacoes3) << " comparacoes." << endl;
     }else {
         cout << "Erro: Opcao invalida!" << endl;
     }
